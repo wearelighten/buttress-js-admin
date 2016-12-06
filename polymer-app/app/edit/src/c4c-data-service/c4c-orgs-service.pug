@@ -1,0 +1,20 @@
+link(rel="import", href="/bower_components/polymer/polymer.html")
+link(rel="import", href="/bower_components/iron-ajax/iron-ajax.html")
+link(rel="import", href="../c4c-app/c4c-behaviors.html")
+
+dom-module#c4c-orgs-service
+  template
+    style.
+      :host {
+        display: none;
+      }
+
+    iron-ajax#service(
+      url="http://dev.rhizome.com/api/v1/org",
+      headers='{"Accept":"application/json"}'
+      handleAs="json",
+      on-response="_onAjaxResponse",
+      on-error="_onAjaxError"
+    )
+
+  script(src="c4c-orgs-service.js")

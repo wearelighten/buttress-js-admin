@@ -1,0 +1,87 @@
+
+link(rel="import" href="/bower_components/polymer/polymer.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
+link(rel="import" href="/bower_components/iron-form/iron-form.html")
+link(rel="import" href="/bower_components/paper-button/paper-button.html")
+link(rel="import" href="/bower_components/paper-fab/paper-fab.html")
+link(rel="import" href="/bower_components/paper-input/paper-input.html")
+link(rel="import" href="/bower_components/paper-dialog/paper-dialog.html")
+link(rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html")
+link(rel="import" href="/bower_components/paper-menu/paper-menu.html")
+link(rel="import" href="/bower_components/paper-item/paper-item.html")
+link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
+link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import" href="../shared-styles.html")
+
+dom-module#c4c-org-dialog
+  template
+    style(include="shared-styles").
+      :host{
+
+      }
+
+    paper-dialog#dialog(on-iron-overlay-closed="__dialogClosed")
+      content
+      form#form(
+        is="iron-form", 
+        on-change="__formChanged"
+        on-iron-form-presubmit="__formPresubmit" 
+      )
+        paper-input(name="name", label="Name", value="{{__edit.name}}", required, auto-validate)
+        paper-dropdown-menu(name="type", label="Type", required)
+          paper-menu.dropdown-content(attr-for-selected="label", selected="{{__edit.type}}")
+            paper-item(label="company") Company
+            paper-item(label="charity") Charity
+            paper-item(label="education") Education
+            paper-item(label="political") Political
+        paper-input(name="website", label="Website", value="{{__edit.website}}", required, auto-validate)
+        .buttons
+          paper-button(dialog-dismiss) Cancel
+          paper-button#submit(autofocus, on-click="__formBeginSubmit") Add
+        .output
+
+  script(src="c4c-org-dialog.js")
+
+dom-module#c4c-orgs
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+
+      paper-fab {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+      }
+
+    template(is="dom-repeat", items="{{orgs}}", as="org")
+      .card
+        .layout.horizontal
+          .circle {{index}}
+          .layout.vertical
+            h1 {{org.name}}
+            a(href="{{org.website}}")
+              | {{org.website}}
+          .flex
+          .layout.vertical
+            paper-icon-button(icon="delete", on-click="__rmOrg")
+            paper-button(on-click="__updateOrg") Details
+
+    paper-dialog#rmOrgDialog(on-iron-overlay-closed="__dialogClosed")
+      h2 Delete Organisation
+      p Are you sure? This is permanent!
+      .buttons
+        paper-button(dialog-dismiss) No
+        paper-button#submit(dialog-confirm, autofocus, on-click="__rmOrgConfirmed") Yes     
+
+    c4c-org-dialog#editOrg(org="{{__editOrg}}", open="{{__dialogOpen}}", on-dialog-closed="__dialogClosed")
+      h2 {{__dialogTitle}}
+
+    paper-fab#fab(icon="add", on-click="__addOrg")
+
+  script(src="c4c-orgs.js")
