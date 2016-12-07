@@ -47,6 +47,12 @@ Polymer({
       type: String,
       computed: "__computeScalarBaseUrl(urlPrefix, route, rqEntityId)"
     },
+    requestQueue: {
+      type: Array,
+      value: function () {
+        return [];
+      }
+    },
     request: {
       type: Object,
       value: {
@@ -70,7 +76,7 @@ Polymer({
   ],
 
   _onStatusChanged: function() {
-    this.__silly(`data:${this.status}`);
+    this.__debug(`data:${this.status}`);
     if (this.auth === null) {
       return;
     }
@@ -84,7 +90,7 @@ Polymer({
     if (!changeRecord) {
       return;
     }
-    this.__silly(changeRecord);
+    this.__debug(changeRecord);
 
     changeRecord.indexSplices.forEach(i => {
       i.addedKeys.forEach(a => {
@@ -112,73 +118,113 @@ Polymer({
     this.__debug(`list rq`);
 
     this.rqEntityId = -1;
-    this.request.entityId = this.rqEntityId;
-    this.request.url = this.vectorBaseUrl;
-    this.request.method = 'GET';
-    this.request.contentType = '';
-    this.request.body = {};
+    let request = {
+      type: 'list',
+      url: this.vectorBaseUrl,
+      entityId: this.rqEntityId,
+      method: 'GET',
+      contentType: '',
+      body: {}
+    };
 
-    this.__generateRequest();
+    this.__queueRequest(request);
   },
   __generateRmRequest: function(entityId) {
     this.__debug(`remove rq: ${entityId}`);
+
     this.rqEntityId = entityId;
-    this.request.url = this.scalarBaseUrl;
-    this.request.entityId = this.rqEntityId;
-    this.request.method = 'DELETE';
-    this.request.contentType = '';
-    this.request.body = {};
-    this.__generateRequest();
+    let request = {
+      type: 'rm',
+      url: this.scalarBaseUrl,
+      entityId: this.rqEntityId,
+      method: 'DELETE',
+      contentType: '',
+      body: {}
+    };
+
+    this.__queueRequest(request);
   },
   __generateAddRequest: function(entity) {
     this.__debug(`add rq: ${entity.name}`);
+
     this.rqEntityId = -1;
-    this.request.url = this.vectorBaseUrl;
-    this.request.entityId = this.rqEntityId;
-    this.request.contentType = 'application/x-www-form-urlencoded';
-    this.request.method = 'POST';
-    this.request.body = entity;
-    this.__generateRequest();
+    let request = {
+      type: 'add',
+      url: this.vectorBaseUrl,
+      entityId: this.rqEntityId,
+      method: 'POST',
+      contentType: 'application/x-www-form-urlencoded',
+      body: entity
+    };
+    this.__queueRequest(request);
+
+    // this.rqEntityId = -1;
+    // this.request.url = this.vectorBaseUrl;
+    // this.request.entityId = this.rqEntityId;
+    // this.request.contentType = 'application/x-www-form-urlencoded';
+    // this.request.method = 'POST';
+    // this.request.body = entity;
+    // this.__generateRequest();
   },
   __generateUpdateRequest: function(entity) {
     this.__debug(`update rq: ${entity.id}`)
+
     this.rqEntityId = entity.id;
-    this.request.url = this.scalarBaseUrl;
-    this.request.entityId = this.rqEntityId;
-    this.request.method = 'PUT';
-    this.request.contentType = 'application/x-www-form-urlencoded';
-    this.request.body = entity;
-    this.__generateRequest();
+    let request = {
+      type: 'add',
+      url: this.scalarBaseUrl,
+      entityId: this.rqEntityId,
+      method: 'PUT',
+      contentType: 'application/x-www-form-urlencoded',
+      body: entity
+    };
+    this.__queueRequest(request);
+
+
+    // this.rqEntityId = entity.id;
+    // this.request.url = this.scalarBaseUrl;
+    // this.request.entityId = this.rqEntityId;
+    // this.request.method = 'PUT';
+    // this.request.contentType = 'application/x-www-form-urlencoded';
+    // this.request.body = entity;
+    // this.__generateRequest();
   },
-  __generateRequest: function() {
-    this.request.params = {
+
+  __queueRequest: function(request) {
+    this.requestQueue.push(request);
+    if (this.status !== 'working') {
+      this.__generateRequest(this.requestQueue[0]);
+    }
+  },
+
+  __generateRequest: function(rq) {
+    rq.response = null;
+    rq.params = {
       urq: Date.now(),
       token: this.auth.user.authToken
     };
-    this.request.response = null;
-    this.__debug(this.request);
-    this.rqEntityId = this.request.entityId;
-    this.rqUrl = this.request.url;
-    this.rqMethod = this.request.method;
-    this.rqContentType = this.request.contentType;
-    this.rqParams = this.request.params;
-    this.rqBody = this.request.body;
 
-    this.async(() => {
-      this.__silly(this.$.ajaxService.toRequestOptions())
-      this.$.ajaxService.generateRequest();
-    }, 100)
+    this.__debug(rq);
+    this.rqUrl = rq.url;
+    this.rqMethod = rq.method;
+    this.rqContentType = rq.contentType;
+    this.rqParams = rq.params;
+    this.rqBody = rq.body;
 
+    this.$.ajaxService.generateRequest();
     this.status = 'working';
   },
 
   __ajaxResponse: function(ev) {
-    if (this.request.method === 'GET' && ev.detail.response instanceof Array) {
-      this.__ajaxListResponse(ev.detail.response);
+    let rq = this.requestQueue.shift();
+
+    rq.response = ev.detail.response;
+    if (rq.type === 'list') {
+      this.__ajaxListResponse(rq);
     }
 
-    if (this.request.method === 'POST') {
-      this.__ajaxAddResponse(ev.detail.response);
+    if (rq.type === 'add') {
+      this.__ajaxAddResponse(rq);
     }
     this.status = 'done';
   },
@@ -186,13 +232,13 @@ Polymer({
     this.status = 'error';
   },
 
-  __ajaxListResponse: function(response) {
-    this.data = this.liveData = this.request.response = response;
+  __ajaxListResponse: function(rq) {
+    this.data = this.liveData = rq.response;
   },
-  __ajaxAddResponse: function(response) {
+  __ajaxAddResponse: function(rq) {
     this.data.forEach((d, idx) => {
       if (!d.id) {
-        this.set(['data',idx, 'id'], response.id);
+        this.set(['data',idx, 'id'], rq.response.id);
       }
     })
   },

@@ -23,35 +23,6 @@ dom-module#c4c-data-service
       last-response="{{rqResponse}}"
       )
 
-    //iron-ajax#ajaxService(
-      url="{{vectorBaseUrl}}",
-      handleAs="json",
-      on-response="__ajaxResponse",
-      on-error="__ajaxError",
-      )
-
-
-    iron-ajax#addService(
-    url="[[vectorBaseUrl]]",
-    method="POST",
-    content-type="application/x-www-form-urlencoded",
-    handleAs="json",
-    last-response="{{addResponse}}"
-    )
-    iron-ajax#putService(
-    url="[[scalarBaseUrl]]",
-    method="PUT",
-    content-type="application/x-www-form-urlencoded",
-    handleAs="json",
-    last-response="{{updateResponse}}"
-    )
-    iron-ajax#rmService(
-    url="[[scalarBaseUrl]]",
-    method="DELETE",
-    handleAs="json",
-    last-response="{{rmResponse}}"
-    )
-
     //- When bower_components is removed, or overwritten
     //- Need to use the adjusted version that forces the workerUrl
     //- if (!this.workerUrl) {
