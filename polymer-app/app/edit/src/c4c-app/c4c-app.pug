@@ -19,19 +19,23 @@ link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
 link(rel="import" href="/bower_components/iron-selector/iron-selector.html")
+link(rel="import" href="/bower_components/iron-image/iron-image.html")
+//link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import" href="/bower_components/iron-icons/social-icons.html")
+link(rel="import" href="/bower_components/iron-icons/communication-icons.html")
 link(rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html")
+link(rel="import" href="/bower_components/paper-toast/paper-toast.html")
 link(rel="import" href="../my-icons.html")
 link(rel="import" href="../c4c-auth/c4c-auth.html")
-link(rel="import" href="../c4c-data-service/c4c-orgs-service.html")
 link(rel="import" href="../c4c-data-service/c4c-data-service.html")
-link(rel="import", href="./c4c-behaviors.html")
+link(rel="import", href="c4c-behaviors.html")
 
 dom-module#c4c-app
   template
     style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment ")
     style(is="custom-style").
       :root {
-      --accent-color: #db4127;
+      --accent-color: #bb1d26;
       --default-primary-color-lighten-90: #EDFFFF;
       --default-primary-color-lighten-70: #BBFFFF;
       --default-primary-color-lighten-40: #6EDEFF;
@@ -40,7 +44,7 @@ dom-module#c4c-app
       --default-primary-color-lighten-15: #2E9ED7;
       --default-primary-color-lighten-10: #2292CB;
       --default-primary-color-lighten-5: #1585BE;
-      --default-primary-color: #0878b1;
+      --default-primary-color: #c62828;
       --default-primary-color-darken-5: #006BA4;
       --default-primary-color-darken-10: #005F98;
       --default-primary-color-darken-15: #00528B;
@@ -58,7 +62,7 @@ dom-module#c4c-app
       }
     style.
       :host {
-        --app-primary-color: #4285f4;
+        --app-primary-color: var(--default-primary-color);
         --app-secondary-color: black;
 
         display: block;
@@ -87,6 +91,14 @@ dom-module#c4c-app
 
         line-height: 40px;
       }
+      iron-image {
+        border-radius: 50%;
+      }
+      paper-iron-button {
+        --paper-icon-button: {
+          margin-right: 50px;
+        }
+      }
 
       .drawer-list a.iron-selected {
         color: black;
@@ -101,8 +113,10 @@ dom-module#c4c-app
         data="{{routeData}}",
         tail="{{subroute}}")
     c4c-auth-service#authService(status="{{authStatus}}", auth="{{auth}}", login-details="[[loginDetails]]")
-    //- c4c-orgs-service#orgsService(status="{{orgsStatus}}", auth="[[auth]]", orgs="{{orgs}}")
-    c4c-data-service#dataService(status="{{dataStatus}}", auth="[[auth]]", orgs="{{orgs}}")
+    c4c-data-service#orgsService(route="org", status="{{orgsStatus}}", auth="[[auth]]", data="{{orgs}}", on-error="__dataServiceError")
+    c4c-data-service#groupsService(route="group", status="{{groupsStatus}}", auth="[[auth]]", data="{{groups}}")
+    c4c-data-service#appsService(route="app", status="{{appsStatus}}", auth="[[auth]]", data="{{apps}}")
+    paper-toast#toast()
 
     iron-pages(attr-for-selected="name", selected="{{mode}}")
       section(name="authenticating")
@@ -113,9 +127,16 @@ dom-module#c4c-app
         app-header(reveals)
           app-toolbar
             paper-icon-button(icon="menu" on-click="_toggleDrawer")
-            div(main-title) Rhizome Admin
+            div(main-title) Admin
+            .flex
+            paper-icon-button.center-justified(icon="communication:chat", style="margin-right: 5px;")
+            paper-icon-button.center-justified(icon="social:notifications-none", style="margin-right: 10px;")
+            iron-image.center-justified(sizing="cover", src="{{auth.user.profiles.0.images.profile}}", width=32,height=32, style="width: 32px; height; 32px;")
 
         app-drawer#drawer(swipe-open)
+          app-header
+            app-toolbar
+              div(main-title) Rhizome
           iron-selector(selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation")
             a(name="orgs", href="/orgs") Organisations
             a(name="groups", href="/groups") Groups

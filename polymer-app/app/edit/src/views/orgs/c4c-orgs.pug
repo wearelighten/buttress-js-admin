@@ -1,4 +1,3 @@
-
 link(rel="import" href="/bower_components/polymer/polymer.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
@@ -12,7 +11,7 @@ link(rel="import" href="/bower_components/paper-menu/paper-menu.html")
 link(rel="import" href="/bower_components/paper-item/paper-item.html")
 link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
 link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
-link(rel="import" href="../shared-styles.html")
+link(rel="import" href="../../shared-styles.html")
 
 dom-module#c4c-org-dialog
   template
@@ -24,12 +23,12 @@ dom-module#c4c-org-dialog
     paper-dialog#dialog(on-iron-overlay-closed="__dialogClosed")
       content
       form#form(
-        is="iron-form", 
+        is="iron-form",
         on-change="__formChanged"
-        on-iron-form-presubmit="__formPresubmit" 
+        on-iron-form-presubmit="__formPresubmit"
       )
         paper-input(name="name", label="Name", value="{{__edit.name}}", required, auto-validate)
-        paper-dropdown-menu(name="type", label="Type", required)
+        paper-dropdown-menu(name="type", label="Type", required, auto-validate)
           paper-menu.dropdown-content(attr-for-selected="label", selected="{{__edit.type}}")
             paper-item(label="company") Company
             paper-item(label="charity") Charity
@@ -69,7 +68,9 @@ dom-module#c4c-orgs
               | {{org.website}}
           .flex
           .layout.vertical
-            paper-icon-button(icon="delete", on-click="__rmOrg")
+            .layout.horizontal
+              .flex
+              paper-icon-button(icon="delete", on-click="__rmOrg")
             paper-button(on-click="__updateOrg") Details
 
     paper-dialog#rmOrgDialog(on-iron-overlay-closed="__dialogClosed")
@@ -77,11 +78,11 @@ dom-module#c4c-orgs
       p Are you sure? This is permanent!
       .buttons
         paper-button(dialog-dismiss) No
-        paper-button#submit(dialog-confirm, autofocus, on-click="__rmOrgConfirmed") Yes     
+        paper-button#submit(dialog-confirm, autofocus, on-click="__rmOrgConfirmed") Yes
 
     c4c-org-dialog#editOrg(org="{{__editOrg}}", open="{{__dialogOpen}}", on-dialog-closed="__dialogClosed")
       h2 {{__dialogTitle}}
 
-    paper-fab#fab(icon="add", on-click="__addOrg")
+    paper-fab#fab(icon="icons:add", on-click="__addOrg")
 
   script(src="c4c-orgs.js")

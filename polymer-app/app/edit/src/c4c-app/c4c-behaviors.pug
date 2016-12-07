@@ -39,6 +39,11 @@ script.
         console.error.apply(console, arguments);
       }
     },
+    __verbose: function() {
+      if (this.logLevel >= this.LogLevel.VERBOSE) {
+        console.log.apply(console, arguments);
+      }
+    },
     __log: function() {
       if (this.logLevel >= this.LogLevel.VERBOSE) {
         console.log.apply(console, arguments);

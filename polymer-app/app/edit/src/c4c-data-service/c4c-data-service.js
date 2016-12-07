@@ -6,40 +6,7 @@ Polymer({
   properties: {
     logLevel: {
       type: Number,
-      value: 4
-    },
-    status: {
-      type: String,
-      value: '',
-      notify: true,
-      observer: "_onStatusChanged"
-    },
-    url: {
-      type: String,
-      value: function() {
-        return 'http://dev.rhizome.com/api/v1';
-      }
-    },
-    orgs: {
-      type: Array,
-      value: [],
-      notify: true
-    },
-    liveOrgsData: {
-      type: Array,
-      value: []
-    },
-    orgId: {
-      type: String,
-      value: ""
-    },
-    orgsBaseUrl: {
-      type: String,
-      computed: "_computeOrgsBaseUrl(status)"
-    },
-    orgBaseUrl: {
-      type: String,
-      computed: "_computeOrgBaseUrl(orgId)"
+      value: 3
     },
     auth: {
       type: Object,
@@ -47,104 +14,194 @@ Polymer({
         user: null
       }
     },
+    status: {
+      type: String,
+      value: '',
+      notify: true,
+      observer: "_onStatusChanged"
+    },
+    route: {
+      type: String,
+      value: ''
+    },
+    data: {
+      type: Array,
+      value: [],
+      notify: true
+    },
+    liveData: {
+      type: Array,
+      value: []
+    },
+    urlPrefix: {
+      type: String,
+      value: function() {
+        return 'http://dev.rhizome.com/api/v1';
+      }
+    },
+    vectorBaseUrl: {
+      type: String,
+      computed: "__computeVectorBaseUrl(urlPrefix, route)"
+    },
+    scalarBaseUrl: {
+      type: String,
+      computed: "__computeScalarBaseUrl(urlPrefix, route, rqEntityId)"
+    },
+    request: {
+      type: Object,
+      value: {
+        url: this.vectorBaseUrl,
+        contentType: '',
+        response: [],
+        entityId: '',
+        body: {}
+      }
+    },
+    rqEntityId: String,
+    rqUrl: String,
+    rqContentType: String,
+    rqParams: {},
+    rqBody: {},
+    rqResponse: []
   },
   observers: [
-    '__orgsSplices(orgs.splices)',
-    '__orgsChanges(orgs.*)',
-    '__addResponse(addResponse)'
+    '__dataSplices(data.splices)',
+    '__dataChanges(data.*)'
   ],
 
   _onStatusChanged: function() {
-    this.__debug(`data:${this.status}`);
+    this.__silly(`data:${this.status}`);
     if (this.auth === null) {
       return;
     }
 
     if (this.status === "begin") {
-      this._generateGetRequest();
+      this.__generateListRequest();
     }
   },
 
-  __orgsSplices: function(changeRecord) {
+  __dataSplices: function(changeRecord) {
     if (!changeRecord) {
       return;
     }
-    this.__debug("splices");
-    this.__debug(changeRecord);
+    this.__silly(changeRecord);
 
     changeRecord.indexSplices.forEach(i => {
       i.addedKeys.forEach(a => {
-        this._generatePostRequest(this.get(`orgs.${a}`));
+        this.__generateAddRequest(this.get(`data.${a}`));
       });
 
       i.removed.forEach(r => {
-        this._generateDelRequest(r.id);
+        this.__generateRmRequest(r.id);
       });
     });
-
   },
-  __orgsChanges: function(changeRecord) {
+
+  __dataChanges: function(changeRecord) {
     this.__debug(changeRecord);
     if (changeRecord.value instanceof Array === true ||
-        changeRecord.value instanceof Object === false) {
+        changeRecord.value instanceof Object === false ||
+        changeRecord.path === 'data.length' ||
+        changeRecord.path === 'data.splices') {
       return;
     }
-    this.__debug("changes");
-    this.__debug(changeRecord.value);
-    this._generatePutRequest(changeRecord.value);
+    this.__generateUpdateRequest(changeRecord.value);
   },
 
-  _generateDelRequest: function(orgId) {
-    this.$.orgsRmService.params = {
+  __generateListRequest: function() {
+    this.__debug(`list rq`);
+
+    this.rqEntityId = -1;
+    this.request.entityId = this.rqEntityId;
+    this.request.url = this.vectorBaseUrl;
+    this.request.method = 'GET';
+    this.request.contentType = '';
+    this.request.body = {};
+
+    this.__generateRequest();
+  },
+  __generateRmRequest: function(entityId) {
+    this.__debug(`remove rq: ${entityId}`);
+    this.rqEntityId = entityId;
+    this.request.url = this.scalarBaseUrl;
+    this.request.entityId = this.rqEntityId;
+    this.request.method = 'DELETE';
+    this.request.contentType = '';
+    this.request.body = {};
+    this.__generateRequest();
+  },
+  __generateAddRequest: function(entity) {
+    this.__debug(`add rq: ${entity.name}`);
+    this.rqEntityId = -1;
+    this.request.url = this.vectorBaseUrl;
+    this.request.entityId = this.rqEntityId;
+    this.request.contentType = 'application/x-www-form-urlencoded';
+    this.request.method = 'POST';
+    this.request.body = entity;
+    this.__generateRequest();
+  },
+  __generateUpdateRequest: function(entity) {
+    this.__debug(`update rq: ${entity.id}`)
+    this.rqEntityId = entity.id;
+    this.request.url = this.scalarBaseUrl;
+    this.request.entityId = this.rqEntityId;
+    this.request.method = 'PUT';
+    this.request.contentType = 'application/x-www-form-urlencoded';
+    this.request.body = entity;
+    this.__generateRequest();
+  },
+  __generateRequest: function() {
+    this.request.params = {
       urq: Date.now(),
       token: this.auth.user.authToken
     };
-    this.orgId = orgId;
-    this.$.orgsRmService.generateRequest()
-    this.status = "working";
+    this.request.response = null;
+    this.__debug(this.request);
+    this.rqEntityId = this.request.entityId;
+    this.rqUrl = this.request.url;
+    this.rqMethod = this.request.method;
+    this.rqContentType = this.request.contentType;
+    this.rqParams = this.request.params;
+    this.rqBody = this.request.body;
+
+    this.async(() => {
+      this.__silly(this.$.ajaxService.toRequestOptions())
+      this.$.ajaxService.generateRequest();
+    }, 100)
+
+    this.status = 'working';
   },
-  _generateGetRequest: function() {
-    this.$.orgsService.params = {
-      urq: Date.now(),
-      token: this.auth.user.authToken
-    };
-    this.$.orgsService.generateRequest()
-    this.status = "working";
+
+  __ajaxResponse: function(ev) {
+    if (this.request.method === 'GET' && ev.detail.response instanceof Array) {
+      this.__ajaxListResponse(ev.detail.response);
+    }
+
+    if (this.request.method === 'POST') {
+      this.__ajaxAddResponse(ev.detail.response);
+    }
+    this.status = 'done';
   },
-  _generatePostRequest: function(org) {
-    this.$.orgsAddService.params = {
-      urq: Date.now(),
-      token: this.auth.user.authToken
-    };
-    this.__debug(org);
-    this.$.orgsAddService.body = org;
-    this.$.orgsAddService.generateRequest();
-    this.status = "working";
+  __ajaxError: function() {
+    this.status = 'error';
   },
-  _generatePutRequest: function(org) {
-    this.$.orgsPutService.params = {
-      urq: Date.now(),
-      token: this.auth.user.authToken
-    };
-    this.orgId = org.id;
-    this.$.orgsPutService.body = org;
-    this.$.orgsPutService.generateRequest();
-    this.status = "working";
+
+  __ajaxListResponse: function(response) {
+    this.data = this.liveData = this.request.response = response;
   },
-  __addResponse: function(res) {
-    this.__debug(res);
-    this.orgs.forEach((o, idx) => {
-      if (!o.id) {
-        this.set(['orgs',idx, 'id'], res.id);
+  __ajaxAddResponse: function(response) {
+    this.data.forEach((d, idx) => {
+      if (!d.id) {
+        this.set(['data',idx, 'id'], response.id);
       }
     })
   },
-  _computeOrgsBaseUrl: function(status) {
-    status;
-    return `${this.url}/org`
+
+  __computeVectorBaseUrl: function(urlPrefix, route) {
+    return `${urlPrefix}/${route}`
   },
-  _computeOrgBaseUrl: function(orgId) {
-    return `${this.url}/org/${orgId}`
+  __computeScalarBaseUrl: function() {
+    return `${this.urlPrefix}/${this.route}/${this.rqEntityId}`
   }
 });
 

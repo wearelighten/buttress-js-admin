@@ -2,7 +2,7 @@ Polymer({
   is: 'c4c-app',
   behaviors: [
     Polymer.C4CLogging
-  ],  
+  ],
   properties: {
     mode: {
       type: String,
@@ -21,7 +21,7 @@ Polymer({
     },
     orgsStatus: {
       type: String,
-      value: "idle",
+      value: 'idle'
     },
     dataStatus: {
       type: String,
@@ -59,7 +59,7 @@ Polymer({
 
   _pageChanged: function(page) {
     // Load page import on demand. Show 404 page if fails
-    var resolvedPageUrl = this.resolveUrl(`../views/c4c-${page}.html`);
+    var resolvedPageUrl = this.resolveUrl(`../views/${page}/c4c-${page}.html`);
     this.importHref(resolvedPageUrl, null, this._showPage404, true);
   },
 
@@ -71,10 +71,15 @@ Polymer({
     if (this.auth.user) {
       this.mode = "application";
       this.orgsStatus = "begin";
-      this.dataStatus = "begin";
     } else {
       this.mode = "authenticate";
     }
+  },
+  __dataServiceError: function(ev) {
+    this.__silly(ev);
+
+    this.$.toast.text = ev.detail.error.message;
+    this.$.toast.open();
   },
 
   _showPage404: function() {
