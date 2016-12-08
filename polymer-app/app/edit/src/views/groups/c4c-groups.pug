@@ -1,17 +1,47 @@
-//-
-  @license
-  Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-  This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-  The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-  The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-  Code distributed by Google as part of the polymer project is also
-  subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-
 link(rel="import" href="/bower_components/polymer/polymer.html")
-link(rel="import" href="../shared-styles.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
+link(rel="import" href="/bower_components/iron-form/iron-form.html")
+link(rel="import" href="/bower_components/paper-button/paper-button.html")
+link(rel="import" href="/bower_components/paper-fab/paper-fab.html")
+link(rel="import" href="/bower_components/paper-input/paper-input.html")
+link(rel="import" href="/bower_components/paper-dialog/paper-dialog.html")
+link(rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html")
+link(rel="import" href="/bower_components/paper-menu/paper-menu.html")
+link(rel="import" href="/bower_components/paper-item/paper-item.html")
+link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
+link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
+link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+link(rel="import" href="../../c4c-app-db/c4c-table-lookup.html")
+link(rel="import" href="../c4c-view-behaviors.html")
+link(rel="import" href="../../shared-styles.html")
+
+dom-module#c4c-group-dialog
+  template
+    style(include="shared-styles").
+      :host{
+
+      }
+
+    paper-dialog#dialog(on-iron-overlay-closed="__dialogClosed")
+      h2 {{title}}
+      form#form(
+      is="iron-form",
+      on-change="__formChanged"
+      on-iron-form-presubmit="__formPresubmit"
+      )
+        paper-input(name="name", label="Name", value="{{__edit.name}}", required, auto-validate)
+        .buttons
+          paper-button(dialog-dismiss) Cancel
+          paper-button#submit(autofocus, on-click="__formBeginSubmit") {{submitTitle}}
+        .output
+
+  script(src="c4c-group-dialog.js")
 
 dom-module#c4c-groups
   template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
     style(include="shared-styles").
       :host {
         display: block;
@@ -19,13 +49,48 @@ dom-module#c4c-groups
         padding: 10px;
       }
 
-    .card
-      .circle 2
-      h1 Groups
-      p Ea duis bonorum nec, falli paulo aliquid ei eum.
-      p Id nam odio natum malorum, tibique copiosae expetenda mel ea.Detracto suavitate repudiandae no eum. Id adhuc minim soluta nam.Id nam odio natum malorum, tibique copiosae expetenda mel ea.
+      paper-fab {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+      }
 
-  script.
-    Polymer({
-      is: 'c4c-groups'
-    });
+    iron-pages(
+    selected='[[__viewMode]]',
+    attr-for-selected='name',
+    role='loading'
+    )
+      .layout.horizontal.center.center-justified.auth-container(name="spinner", style="height: 90vh;")
+        paper-spinner(active, alt="Loading organisations data...", style="width: 64px; height: 64px;")
+      div(name="list")
+        template(is="dom-repeat", items="{{db.data}}")
+          c4c-table-lookup(db="{{appDb}}", foreign="org.id", local="{{item.organisation}}", value="{{__itemOrg}}")
+          .card
+            .layout.horizontal
+              .circle {{index}}
+              .layout.vertical
+                h1 {{item.name}}
+                p {{__itemOrg.name}}
+              .flex
+              .layout.vertical
+                .layout.horizontal
+                  .flex
+                  paper-icon-button(icon="delete", on-click="__rmItem")
+                paper-button(on-click="__updateItem") Details
+        paper-fab#fab(icon="icons:add", on-click="__addItem")
+
+    paper-dialog#rmItemDialog(on-iron-overlay-closed="__dialogClosed")
+      h2 Delete Group
+      p Are you sure? This is permanent!
+      .buttons
+        paper-button(dialog-dismiss) No
+        paper-button#submit(dialog-confirm, autofocus, on-click="__rmItemConfirmed") Yes
+
+    c4c-group-dialog#editItemDialog(
+      item="{{__editItem}}",
+      title="{{__dialogTitle}}",
+      submit-title="{{__dialogSubmitTitle}}",
+      open="{{__dialogOpen}}",
+      on-dialog-closed="__dialogClosed")
+
+  script(src="c4c-groups.js")

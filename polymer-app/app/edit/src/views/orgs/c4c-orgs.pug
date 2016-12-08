@@ -9,8 +9,11 @@ link(rel="import" href="/bower_components/paper-dialog/paper-dialog.html")
 link(rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html")
 link(rel="import" href="/bower_components/paper-menu/paper-menu.html")
 link(rel="import" href="/bower_components/paper-item/paper-item.html")
+link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
 link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
 link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+link(rel="import" href="../c4c-view-behaviors.html")
 link(rel="import" href="../../shared-styles.html")
 
 dom-module#c4c-org-dialog
@@ -21,7 +24,7 @@ dom-module#c4c-org-dialog
       }
 
     paper-dialog#dialog(on-iron-overlay-closed="__dialogClosed")
-      content
+      h2 {{title}}
       form#form(
         is="iron-form",
         on-change="__formChanged"
@@ -37,7 +40,7 @@ dom-module#c4c-org-dialog
         paper-input(name="website", label="Website", value="{{__edit.website}}", required, auto-validate)
         .buttons
           paper-button(dialog-dismiss) Cancel
-          paper-button#submit(autofocus, on-click="__formBeginSubmit") Add
+          paper-button#submit(autofocus, on-click="__formBeginSubmit") {{submitTitle}}
         .output
 
   script(src="c4c-org-dialog.js")
@@ -58,31 +61,42 @@ dom-module#c4c-orgs
         right: 30px;
       }
 
-    template(is="dom-repeat", items="{{orgs}}", as="org")
-      .card
-        .layout.horizontal
-          .circle {{index}}
-          .layout.vertical
-            h1 {{org.name}}
-            a(href="{{org.website}}")
-              | {{org.website}}
-          .flex
-          .layout.vertical
+    iron-pages(
+        selected='[[__viewMode]]',
+        attr-for-selected='name',
+        role='loading'
+      )
+      .layout.horizontal.center.center-justified.auth-container(name="spinner", style="height: 90vh;")
+        paper-spinner(active, alt="Loading organisations data...", style="width: 64px; height: 64px;")
+      div(name="list")
+        template(is="dom-repeat", items="{{db.data}}")
+          .card
             .layout.horizontal
+              .circle {{index}}
+              .layout.vertical
+                h1 {{item.name}}
+                a(href="{{item.website}}")
+                  | {{item.website}}
               .flex
-              paper-icon-button(icon="delete", on-click="__rmOrg")
-            paper-button(on-click="__updateOrg") Details
+              .layout.vertical
+                .layout.horizontal
+                  .flex
+                  paper-icon-button(icon="delete", on-click="__rmItem")
+                paper-button(on-click="__updateItem") Details
+        paper-fab#fab(icon="icons:add", on-click="__addItem")
 
-    paper-dialog#rmOrgDialog(on-iron-overlay-closed="__dialogClosed")
+    paper-dialog#rmItemDialog(on-iron-overlay-closed="__dialogClosed")
       h2 Delete Organisation
       p Are you sure? This is permanent!
       .buttons
         paper-button(dialog-dismiss) No
-        paper-button#submit(dialog-confirm, autofocus, on-click="__rmOrgConfirmed") Yes
+        paper-button#submit(dialog-confirm, autofocus, on-click="__rmItemConfirmed") Yes
 
-    c4c-org-dialog#editOrg(org="{{__editOrg}}", open="{{__dialogOpen}}", on-dialog-closed="__dialogClosed")
-      h2 {{__dialogTitle}}
-
-    paper-fab#fab(icon="icons:add", on-click="__addOrg")
+    c4c-org-dialog#editItemDialog(
+      item="{{__editItem}}",
+      title="{{__dialogTitle}}",
+      submit-title="{{__dialogSubmitTitle}}",
+      open="{{__dialogOpen}}",
+      on-dialog-closed="__dialogClosed")
 
   script(src="c4c-orgs.js")

@@ -19,19 +19,8 @@ Polymer({
       },
       notify: true
     },
-    orgsStatus: {
-      type: String,
-      value: 'idle'
-    },
-    dataStatus: {
-      type: String,
-      value: "idle",
-    },
-    orgs: {
-      type: Array,
-    },
-    orgsData: {
-      type: Array,
+    appDb: {
+      type: Object
     },
     page: {
       type: String,
@@ -54,7 +43,7 @@ Polymer({
   },
 
   _routePageChanged: function(page) {
-    this.page = page || "orgs";
+    this.page = page || 'orgs';
   },
 
   _pageChanged: function(page) {
@@ -70,7 +59,6 @@ Polymer({
     this.__debug(this.auth.user);
     if (this.auth.user) {
       this.mode = "application";
-      this.orgsStatus = "begin";
     } else {
       this.mode = "authenticate";
     }

@@ -76,16 +76,21 @@ Polymer({
   ],
 
   _onStatusChanged: function() {
-    this.__debug(`data:${this.status}`);
+    this.__debug(`data:${this.route}:${this.status}`);
     if (this.auth === null) {
       return;
     }
 
-    if (this.status === "begin") {
+    if (this.status === "initialise") {
       this.__generateListRequest();
     }
   },
 
+  /**
+   * Used to generate Add and Remove requests
+   * @param {Object} changeRecord - data needed to calculate what has changed
+   * @private
+   */
   __dataSplices: function(changeRecord) {
     if (!changeRecord) {
       return;
@@ -103,6 +108,11 @@ Polymer({
     });
   },
 
+  /**
+   * Used to update individual records
+   * @param {Object} changeRecord - definition of what's changed
+   * @private
+   */
   __dataChanges: function(changeRecord) {
     this.__debug(changeRecord);
     if (changeRecord.value instanceof Array === true ||
@@ -157,14 +167,6 @@ Polymer({
       body: entity
     };
     this.__queueRequest(request);
-
-    // this.rqEntityId = -1;
-    // this.request.url = this.vectorBaseUrl;
-    // this.request.entityId = this.rqEntityId;
-    // this.request.contentType = 'application/x-www-form-urlencoded';
-    // this.request.method = 'POST';
-    // this.request.body = entity;
-    // this.__generateRequest();
   },
   __generateUpdateRequest: function(entity) {
     this.__debug(`update rq: ${entity.id}`)
@@ -179,15 +181,6 @@ Polymer({
       body: entity
     };
     this.__queueRequest(request);
-
-
-    // this.rqEntityId = entity.id;
-    // this.request.url = this.scalarBaseUrl;
-    // this.request.entityId = this.rqEntityId;
-    // this.request.method = 'PUT';
-    // this.request.contentType = 'application/x-www-form-urlencoded';
-    // this.request.body = entity;
-    // this.__generateRequest();
   },
 
   __queueRequest: function(request) {

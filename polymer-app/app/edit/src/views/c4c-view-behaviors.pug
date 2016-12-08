@@ -1,0 +1,235 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+
+script.
+  /**
+   * @polymerBehavior Polymer.C4CEditDialog
+   */
+  Polymer.C4CEditDialog= {
+    properties: {
+      auth: {
+        type: Object
+      },
+      title: {
+        type: String,
+        value: ""
+      },
+      submitTitle: {
+        type: String,
+        value: ""
+      },
+      item: {
+        type: Object,
+        notify: true,
+        value: {},
+      },
+      __edit: {
+        type: Object,
+        value: {
+          name: '',
+          type: '',
+          website: ''
+        }
+      },
+      open: {
+        type: Boolean,
+        notify: true,
+        observer: '__openChanged'
+      }
+    },
+    __openChanged: function () {
+      if (this.open === true) {
+        this.__debug(this.item);
+        if (this.item) {
+          this.__edit = Object.assign({}, this.item);
+        } else {
+          this.__edit = Object.assign({});
+        }
+        this.$.dialog.open();
+      } else {
+        this.$.dialog.close();
+      }
+    },
+
+    __formChanged: function () {
+      this.$.submit.disabled = !this.$.form.validate();
+    },
+
+    __formBeginSubmit: function () {
+      if (!this.$.form.validate()) {
+        return;
+      }
+      this.$.form.submit();
+    },
+
+    __formPresubmit: function (ev) {
+      ev.preventDefault();
+      this.item = Object.assign({}, this.__edit);
+      this.$.form.reset();
+      this.$.dialog.close();
+
+    },
+    __dialogClosed: function (ev) {
+      if (ev.target === this.$.dialog) {
+        this.fire('dialog-closed');
+      }
+    }
+  };
+      /**
+   * @polymerBehavior Polymer.C4CLogging
+   */
+  Polymer.C4CListView = {
+    properties: {
+      auth: {
+        type: Object
+      },
+      title: {
+        type: String,
+        value: ''
+      },
+      db: {
+        type: Object,
+        notify: true
+      },
+      appDb: {
+        type: Object,
+        notify: true
+      },
+      __viewMode: {
+        type: String,
+        value: 'spinner'
+      },
+      __mode: {
+        type: String,
+        value: ''
+      },
+      __fab: {
+        type: Object
+      },
+      __rmItemDialog: {
+        type: Object
+      },
+      __editItemDialog: {
+        type: Object
+      },
+      __dialogOpen: {
+        type: Boolean,
+        computed: '__computeDialogOpen(__mode)'
+      },
+      __dialogTitle: {
+        type: String,
+        computed: '__computeDialogTitle(title, __mode)'
+      },
+      __dialogSubmitTitle: {
+        type: String,
+        computed: '__computeDialogSubmitTitle(__mode)'
+      },
+      __selectedModel: {
+        type: Object,
+        value: null
+      },
+      __editItem: {
+        type: Object,
+        value: {}
+      }
+    },
+    observers: [
+      '__authStatus(auth.user)',
+      '__dbStatus(db.status)',
+      '__itemCommitted(__editItem.*)'
+    ],
+
+    attached: function () {
+      this.__debug('attached');
+      this.__tryLoadData();
+    },
+    __authStatus: function () {
+      this.__tryLoadData();
+    },
+
+    __tryLoadData: function () {
+      this.__debug(this.db);
+      if (this.db.status === 'done') {
+        this.__viewMode = 'list'
+        return;
+      }
+
+      if (this.db.status === 'uninitialised') {
+        this.set('db.status', 'initialise');
+      }
+    },
+    __dbStatus: function () {
+      if (this.db.status === 'done') {
+        this.__viewMode = 'list';
+      }
+    },
+
+    __addItem: function () {
+      this.__editItem = {};
+      this.set('__mode', 'add');
+      this.__fab.disabled = true;
+    },
+    __rmItem: function (ev) {
+      this.__selectedModel = ev.model;
+      this.__rmItemDialog.open();
+      this.__fab.disabled = true;
+    },
+    __updateItem: function (ev) {
+      this.__selectedModel = ev.model;
+      this.__editItem = this.__selectedModel.get('item');
+      // this.$.updOrgDialog.open();
+      this.__fab.disabled = true;
+      this.__mode = 'update';
+    },
+
+    __rmItemConfirmed: function () {
+      if (this.__selectedModel === null) {
+        this.__warn("tried to delete without selecting");
+        return;
+      }
+      this.splice('db.data', this.__selectedModel.get('index'), 1);
+    },
+    __dialogClosed: function () {
+      this.$.fab.disabled = false;
+      this.__mode = '';
+    },
+    __itemCommitted: function () {
+      if (this.__mode === '') {
+        return;
+      }
+      let clone = Object.assign({}, this.__editItem);
+      this.__debug(clone);
+      if (this.__mode === 'add') {
+        this.push('db.data', clone);
+      } else {
+        this.set(['db.data', this.__selectedModel.get('index')], clone);
+      }
+    },
+
+    __computeDialogTitle(title, __mode) {
+      if (!__mode) {
+        return;
+      }
+
+      let titles = {
+        'add': `Add ${this.title}`,
+        'update': `Update ${this.title}`
+      };
+      this.__silly(`title: ${__mode}: ${titles[__mode]}`);
+      return titles[__mode];
+    },
+    __computeDialogSubmitTitle(__mode) {
+      if (!__mode) {
+        return;
+      }
+      let titles = {
+        'add': 'Add',
+        'update': 'Update'
+      };
+      this.__silly(`submit: ${__mode}: ${titles[__mode]}`);
+      return titles[__mode];
+    },
+    __computeDialogOpen(__mode) {
+      this.__silly(`open: ${__mode}`);
+      return __mode === 'add' || __mode === 'update';
+    },
+  }
