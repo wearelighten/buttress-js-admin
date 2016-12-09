@@ -27,7 +27,7 @@ Polymer({
     }
   },
   observers: [
-    '__auth(auth.*)',
+    '__auth(auth.user)',
   ],
 
   attached: function() {
@@ -38,5 +38,11 @@ Polymer({
       return;
     }
     this.__debug('app-db:auth');
+    // if (this.get('db.org.status') === 'uninitialised') {
+    //   this.set('db.org.status', 'initialise');
+    // }
+
+    // this.set('db.group.status', 'initialise');
+    // this.set('db.app.status', 'initialise');
   },
 });

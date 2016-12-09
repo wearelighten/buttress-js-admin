@@ -23,6 +23,10 @@ script.
         type: Number,
         value: 4,
       },
+      logLabel: {
+        type: String,
+        value: ''
+      },
       enableLogTrace: {
         type: Boolean,
         value: false
@@ -53,12 +57,20 @@ script.
     },
     __log: function() {
       if (this.logLevel >= this.LogLevel.VERBOSE) {
+
         console.log.apply(console, arguments);
       }
     },
     __debug: function() {
       if (this.logLevel >= this.LogLevel.DEBUG) {
+        if (this.logLabel && console.group) {
+          console.group(this.logLabel);
+        }
         console.log.apply(console, arguments);
+        if (this.logLabel && console.group) {
+          console.groupEnd(this.logLabel);
+        }
+
         if (this.enableLogTrace) {
           console.trace();
         }

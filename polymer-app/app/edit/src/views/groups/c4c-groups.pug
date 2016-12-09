@@ -75,7 +75,7 @@ dom-module#c4c-groups
               c4c-group-card(db="{{db}}", item="{{item}}", on-view-item="__viewItem", on-rm-item="__rmItem")
             paper-fab#fab(icon="icons:add", on-click="__addItem")
           div(name="detail")
-            c4c-group-detail(db="{{db}}", item="{{__selectedItem}}")
+            c4c-group-detail(db="{{db}}", item="{{__selectedItem}}", route="{{route}}", route-data="{{routeData}}")
 
     paper-dialog#rmItemDialog(on-iron-overlay-closed="__dialogClosed")
       h2 Delete Group

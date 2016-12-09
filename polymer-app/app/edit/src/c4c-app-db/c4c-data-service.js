@@ -8,6 +8,10 @@ Polymer({
       type: Number,
       value: 3
     },
+    logLabel: {
+      type: String,
+      value: 'data-service'
+    },
     auth: {
       type: Object,
       value: {
@@ -18,7 +22,6 @@ Polymer({
       type: String,
       value: '',
       notify: true,
-      observer: "_onStatusChanged"
     },
     route: {
       type: String,
@@ -72,16 +75,18 @@ Polymer({
   },
   observers: [
     '__dataSplices(data.splices)',
-    '__dataChanges(data.*)'
+    '__dataChanges(data.*)',
+    '__auth(route, auth.user)'
   ],
 
-  _onStatusChanged: function() {
+  __auth: function() {
     this.__debug(`data:${this.route}:${this.status}`);
-    if (this.auth === null) {
+
+    if (!this.get('auth.user')) {
       return;
     }
 
-    if (this.status === "initialise") {
+    if (this.status === "uninitialised") {
       this.__generateListRequest();
     }
   },

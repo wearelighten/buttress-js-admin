@@ -10,8 +10,16 @@ Polymer.C4CListView = {
       type: String,
       value: ''
     },
+    route: {
+      type: Object,
+      notify: true
+    },
+    routeData: {
+      type: Object,
+      notify: true
+    },
     subroute: {
-      type: String,
+      type: Object,
       notify: true
     },
     subrouteData: {
@@ -77,7 +85,7 @@ Polymer.C4CListView = {
     '__authStatus(auth.user)',
     '__docStatus(doc.status)',
     '__itemCommitted(__editItem.*)',
-    '__subroutePath(subroute.path)'
+    '__subroutePath(subroute.path,subrouteData.id)'
   ],
 
   attached: function () {
@@ -88,15 +96,15 @@ Polymer.C4CListView = {
   },
 
   __tryLoadData: function () {
-    this.__debug(this.doc);
+    this.__silly(this.doc);
     if (this.doc.status === 'done') {
       this.__loadMode = 'loaded';
       return;
     }
 
-    if (this.doc.status === 'uninitialised') {
-      this.set('doc.status', 'initialise');
-    }
+    // if (this.doc.status === 'uninitialised') {
+    //   this.set('doc.status', 'initialise');
+    // }
   },
   __docStatus: function () {
     if (this.doc.status !== 'done') {
@@ -112,10 +120,11 @@ Polymer.C4CListView = {
   },
 
   __viewItem: function(ev) {
+    this.__debug(ev.model.get('index'));
     this.__selectedItem = ev.model.get('item');
     // this.__debug(this.subroute);
-    this.set('subrouteData.id', this.__selectedItem.id);
     this.set('subroute.path',`/${this.__selectedItem.id}`);
+    this.set('subrouteData.id', this.__selectedItem.id);
     this.__debug(this.subroute);
   },
   __addItem: function () {
@@ -159,24 +168,24 @@ Polymer.C4CListView = {
   },
 
   __subroutePath: function() {
-    this.__debug(this.subroute);
+    this.__debug('__subroutePath');
+    this.__debug(this.get('subroute.path'));
+    this.__debug(this.get('subrouteData.id'));
     if (!this.subroute.path) {
-      this.__selectedItem = null;
       this.__pageMode = 'list';
+      this.__selectedItem = null;
       return;
     }
-    this.__debug('subroute:path');
-    this.__debug(this.subroute.path);
 
-    if (this.subrouteData) {
-      this.__selectedItem = this.__itemFromId(this.subrouteData.id);
-    }
-
+    this.__selectedItem = this.__itemFromId(this.get('subrouteData.id'));
+    this.__debug(this.get('__selectedItem.name'));
     this.__pageMode = 'detail';
   },
 
   __itemFromId: function(id) {
+    this.__debug('__itemFromId');
     if (this.__loadMode === 'loading') {
+      this.__debug('__itemFromId:loading');
       return null;
     }
     return this.doc.data.find(i => i.id === id);

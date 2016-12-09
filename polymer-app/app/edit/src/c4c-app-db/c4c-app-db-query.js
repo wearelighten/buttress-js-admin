@@ -6,17 +6,21 @@ Polymer({
       type: Number,
       value: 3
     },
+    logLabel: {
+      type: Number,
+      value: 'db-query'
+    },
     db: {
       type: Object
     },
     doc: {
       type: Object
     },
-    scalar: {
+    findOne: {
       type: Object,
       notify: true
     },
-    vector: {
+    findAll: {
       type: Array,
       notify: true
     },
@@ -36,9 +40,9 @@ Polymer({
   ],
 
   attached: function() {
-    if (this.doc.status === 'uninitialised') {
-      this.set('doc.status', 'initialise');
-    }
+    // if (this.doc.status === 'uninitialised') {
+    //   this.set('doc.status', 'initialise');
+    // }
   },
 
   __docStatus: function() {
@@ -67,9 +71,9 @@ Polymer({
       }
     }
     this.__debug(data);
-    this.vector = data;
-    this.scalar = data.length > 0 ? data[0] : null;
-    this.__debug(this.scalar);
+    this.set('findAll', data);
+    this.set('findOne', data.length > 0 ? data[0] : null);
+    this.__debug(this.findOne);
   },
 
   __executeQuery: function(data, field, operator, operand) {
