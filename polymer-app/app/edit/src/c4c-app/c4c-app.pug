@@ -13,6 +13,7 @@ link(rel="import" href="/bower_components/app-layout/app-header/app-header.html"
 link(rel="import" href="/bower_components/app-layout/app-header-layout/app-header-layout.html")
 link(rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html")
 link(rel="import" href="/bower_components/app-layout/app-toolbar/app-toolbar.html")
+link(rel="import" href="/bower_components/app-layout/demo/sample-content.html")
 link(rel="import" href="/bower_components/app-route/app-location.html")
 link(rel="import" href="/bower_components/app-route/app-route.html")
 link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
@@ -68,12 +69,55 @@ dom-module#c4c-app
         display: block;
       }
 
-      app-header {
+      app-drawer#drawer {
+
+      }
+
+      #drawer > app-header {
+        color: var(--text-primary-color);
+        background-color: var(--default-primary-color);
+      }
+
+      #drawer > app-toolbar {
+      }
+
+      app-header#app {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
         color: #fff;
         background-color: var(--app-primary-color);
+        --app-header-background-front-layer: {
+          background-image: url(/images/banner.jpg);
+        };
       }
-      app-header paper-icon-button {
+
+      app-header#app paper-icon-button {
         --paper-icon-button-ink-color: white;
+      }
+
+      #app > app-toolbar.middle {
+        height: 120px;
+      }
+
+      #app > app-toolbar.bottom {
+        height: 92px;
+      }
+
+      #app > [main-title] {
+        margin-left: 64px;
+        font-size: 32px;
+        font-weight: 300;
+      }
+
+      #app > [condensed-title] {
+        margin-left: 20px;
+        font-weight: 300;
+      }
+
+      sample-content {
+        padding-top: 276px;
       }
 
       .drawer-list {
@@ -93,11 +137,16 @@ dom-module#c4c-app
       }
       iron-image {
         border-radius: 50%;
+        margin-left: 5px;
       }
-      paper-iron-button {
+      paper-icon-button {
         --paper-icon-button: {
-          margin-right: 50px;
+          margin-right: 10px;
         }
+      }
+
+      c4c-orgs, c4c-groups, c4c-apps {
+        padding-top: 276px;
       }
 
       .drawer-list a.iron-selected {
@@ -112,8 +161,12 @@ dom-module#c4c-app
         pattern="/:page",
         data="{{routeData}}",
         tail="{{subroute}}")
+    app-route(
+        route="{{subroute}}",
+        pattern="/:id",
+        data="{{subrouteData}}")
     c4c-auth-service#authService(status="{{authStatus}}", auth="{{auth}}", login-details="[[loginDetails]]")
-    c4c-app-db#db(status="{{dbStatus}}", auth="[[auth]]", db="{{appDb}}", on-error="__dataServiceError")
+    c4c-app-db#db(status="{{dbStatus}}", auth="[[auth]]", db="{{db}}", on-error="__dataServiceError")
     paper-toast#toast()
 
     iron-pages(attr-for-selected="name", selected="{{mode}}")
@@ -122,14 +175,16 @@ dom-module#c4c-app
         .layout.horizontal.center.center-justified.auth-container(style="height: 100vh;")
           c4c-auth(auth="[[auth]]")
       section(name="application")
-        app-header(reveals)
+        app-header#app(effects="waterfall resize-title blend-background parallax-background", condenses, reveals)
           app-toolbar
-            paper-icon-button(icon="menu" on-click="_toggleDrawer")
-            div(main-title) Admin
-            .flex
-            paper-icon-button.center-justified(icon="communication:chat", style="margin-right: 5px;")
-            paper-icon-button.center-justified(icon="social:notifications-none", style="margin-right: 10px;")
-            iron-image.center-justified(sizing="cover", src="{{auth.user.profiles.0.images.profile}}", width=32,height=32, style="width: 32px; height; 32px;")
+            paper-icon-button(icon="menu", hidden$="{{__hideMenuButton}}", on-click="__toggleDrawer")
+            paper-icon-button(icon="arrow-back", hidden$="{{__hideBackButton}}", on-click="__backButton")
+            div(condensed-title) {{mainTitle}}
+            paper-icon-button(icon="communication:chat")
+            paper-icon-button(icon="social:notifications-none")
+            img(src="{{auth.user.profiles.0.images.profile}}", width=32,height=32, style="width: 32px; height; 32px; border-radius:50%;")
+          app-toolbar.middle
+          app-toolbar(main-title).bottom {{mainTitle}}
 
         app-drawer#drawer(swipe-open)
           app-header
@@ -141,14 +196,39 @@ dom-module#c4c-app
             a(name="apps", href="/apps") Applications
             a(name="users", href="/users") Users
 
+        //-sample-content(size="100")
         iron-pages(
-            selected="[[page]]",
-            attr-for-selected="name",
-            fallback-selection="view404",
-            role="main")
-          c4c-orgs(name="orgs", title="Organisation", auth="[[auth]]", db="{{appDb.org}}", app-db="{{appDb}}")
-          c4c-groups(name="groups", title="Group", auth="[[auth]]", db="{{appDb.group}}", app-db="{{appDb}}")
-          c4c-apps(name="apps", title="Application", auth="[[auth]]", db="{{appDb.app}}", app-db="{{appDb}}")
+          selected="[[page]]",
+          attr-for-selected="name",
+          fallback-selection="view404",
+          role="main")
+          c4c-orgs(
+            name="orgs",
+            title="Organisation",
+            sub-page-title="{{subPageTitle}}",
+            subroute="{{subroute}}",
+            subroute-data="{{subrouteData}}",
+            auth="[[auth]]",
+            doc="{{db.org}}",
+            db="{{db}}")
+          c4c-groups(
+            name="groups",
+            title="Group",
+            sub-page-title="{{subPageTitle}}",
+            subroute="{{subroute}}",
+            subroute-data="{{subrouteData}}",
+            auth="[[auth]]",
+            doc="{{db.group}}",
+            db="{{db}}")
+          c4c-apps(
+            name="apps",
+            title="Application",
+            sub-page-title="{{subPageTitle}}",
+            subroute="{{subroute}}",
+            subroute-data="{{subrouteData}}",
+            auth="[[auth]]",
+            doc="{{db.app}}",
+            db="{{db}}")
           c4c-users(name="users")
           c4c-view404(name="view404")
 

@@ -13,8 +13,11 @@ link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
 link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
 link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
 link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
-link(rel="import" href="../c4c-view-behaviors.html")
+link(rel="import" href="/bower_components/app-layout/demo/sample-content.html")
+link(rel="import" href="../behaviors/c4c-view-behaviors.html")
 link(rel="import" href="../../shared-styles.html")
+link(rel="import" href="c4c-org-card.html")
+link(rel="import" href="c4c-org-detail.html")
 
 dom-module#c4c-org-dialog
   template
@@ -40,7 +43,7 @@ dom-module#c4c-org-dialog
         paper-input(name="website", label="Website", value="{{__edit.website}}", required, auto-validate)
         .buttons
           paper-button(dialog-dismiss) Cancel
-          paper-button#submit(autofocus, on-click="__formBeginSubmit") {{submitTitle}}
+          paper-button(autofocus, on-click="__formBeginSubmit") {{submitTitle}}
         .output
 
   script(src="c4c-org-dialog.js")
@@ -62,35 +65,36 @@ dom-module#c4c-orgs
       }
 
     iron-pages(
-        selected='[[__viewMode]]',
-        attr-for-selected='name',
-        role='loading'
-      )
-      .layout.horizontal.center.center-justified.auth-container(name="spinner", style="height: 90vh;")
+      selected='[[__loadMode]]',
+      attr-for-selected='name',
+      role='loading')
+
+      .layout.horizontal.center.center-justified.auth-container(name="loading", style="height: 90vh;")
         paper-spinner(active, alt="Loading organisations data...", style="width: 64px; height: 64px;")
-      div(name="list")
-        template(is="dom-repeat", items="{{db.data}}")
-          .card
-            .layout.horizontal
-              .circle {{index}}
-              .layout.vertical
-                h1 {{item.name}}
-                a(href="{{item.website}}")
-                  | {{item.website}}
-              .flex
-              .layout.vertical
-                .layout.horizontal
-                  .flex
-                  paper-icon-button(icon="delete", on-click="__rmItem")
-                paper-button(on-click="__updateItem") Details
-        paper-fab#fab(icon="icons:add", on-click="__addItem")
+      div(name="loaded")
+        iron-pages(
+          selected='[[__pageMode]]',
+          attr-for-selected='name',
+          role='loaded')
+
+          div(name="list")
+            template(is="dom-repeat", items="{{doc.data}}")
+              c4c-org-card(
+                index="{{index}}",
+                item="{{item}}",
+                on-rm-item="__rmItem",
+                on-view-item="__viewItem")
+
+            paper-fab#fab(icon="icons:add", on-click="__addItem")
+          div(name="detail")
+            c4c-org-detail(db="{{db}}", item="{{__selectedItem}}")
 
     paper-dialog#rmItemDialog(on-iron-overlay-closed="__dialogClosed")
       h2 Delete Organisation
       p Are you sure? This is permanent!
       .buttons
         paper-button(dialog-dismiss) No
-        paper-button#submit(dialog-confirm, autofocus, on-click="__rmItemConfirmed") Yes
+        paper-button(dialog-confirm, autofocus, on-click="__rmItemConfirmed") Yes
 
     c4c-org-dialog#editItemDialog(
       item="{{__editItem}}",
