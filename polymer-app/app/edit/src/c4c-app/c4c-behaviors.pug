@@ -22,7 +22,14 @@ script.
       logLevel: {
         type: Number,
         value: 4,
+      },
+      enableLogTrace: {
+        type: Boolean,
+        value: false
       }
+    },
+    __assert: function() {
+      console.assert.apply(console, arguments);
     },
     __err: function() {
       if (this.logLevel >= this.LogLevel.ERR) {
@@ -39,6 +46,11 @@ script.
         console.error.apply(console, arguments);
       }
     },
+    __verbose: function() {
+      if (this.logLevel >= this.LogLevel.VERBOSE) {
+        console.log.apply(console, arguments);
+      }
+    },
     __log: function() {
       if (this.logLevel >= this.LogLevel.VERBOSE) {
         console.log.apply(console, arguments);
@@ -47,6 +59,9 @@ script.
     __debug: function() {
       if (this.logLevel >= this.LogLevel.DEBUG) {
         console.log.apply(console, arguments);
+        if (this.enableLogTrace) {
+          console.trace();
+        }
       }
     },
     __silly: function() {

@@ -27,7 +27,10 @@
     "paper-dropdown-menu": "^1.4.2",
     "paper-menu": "^1.2.2",
     "paper-item": "^1.2.1",
-    "neon-animation": "^1.2.4"
+    "neon-animation": "^1.2.4",
+    "iron-image": "^1.2.5",
+    "paper-toast": "^1.3.0",
+    "paper-spinner": "^1.2.1"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
@@ -70,6 +73,9 @@
     "iron-flex-layout": {
       "main": "./**/*.html"
     },
+    "iron-icons": {
+      "main": "./**/*.html"
+    },
     "iron-overlay-behavior": {
       "main": "./**/*.html"
     },
@@ -83,6 +89,9 @@
       "main": "./**/*.html"
     },
     "paper-styles": {
+      "main": "./**/*.html"
+    },
+    "paper-spinner": {
       "main": "./**/*.html"
     },
     "paper-material": {

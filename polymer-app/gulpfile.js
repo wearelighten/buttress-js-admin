@@ -20,12 +20,13 @@ const Paths = {
 const Globs = {
   SCRIPTS: [`${Paths.SOURCE}/*.js`, `${Paths.SOURCE}/src/**/*.js`, `${Paths.SOURCE}/src/*.js`],
   HTML: [`${Paths.SOURCE}/src/**/*.html`,`${Paths.SOURCE}/*.html`],
-  PUG: [`${Paths.SOURCE}/*.pug`,`${Paths.SOURCE}/src/**/*.pug`], 
-  MARKUP: [`${Paths.SOURCE}/src/**/*.html`,`${Paths.SOURCE}/*.html`,`${Paths.SOURCE}/src/**/*.pug`], 
+  PUG: [`${Paths.SOURCE}/*.pug`,`${Paths.SOURCE}/src/**/*.pug`],
+  MARKUP: [`${Paths.SOURCE}/src/**/*.html`,`${Paths.SOURCE}/*.html`,`${Paths.SOURCE}/src/**/*.pug`],
   BOWER_JSON: [`${Paths.SOURCE}/bower.json`],
   JSON: [`${Paths.SOURCE}/*.json`],
-  PNG: [`${Paths.SOURCE}/images/**/*.png`], 
-  ICO: [`${Paths.SOURCE}/images/**/*.ico`], 
+  PNG: [`${Paths.SOURCE}/images/**/*.png`],
+  JPG: [`${Paths.SOURCE}/images/**/*.jpg`],
+  ICO: [`${Paths.SOURCE}/images/**/*.ico`],
   IMAGES: [`${Paths.SOURCE}/images/**/*.png`,`${Paths.SOURCE}/images/**/*.jpg`,`${Paths.SOURCE}/images/**/*.gif`,`${Paths.SOURCE}/images/**/*.ico`]
 };
 
@@ -71,8 +72,14 @@ gulp.task('png', function() {
 		.pipe(gulp.dest(Paths.DEST_IMAGES));
 });
 
+gulp.task('jpg', function() {
+  return gulp.src(Globs.JPG)
+    .pipe(imagemin())
+		.pipe(gulp.dest(Paths.DEST_IMAGES));
+});
+
 gulp.task('images', function() {
-  return gulp.start(['png']);
+  return gulp.start(['png','jpg']);
 });
 
 //
@@ -99,7 +106,7 @@ gulp.task('resources', function() {
 });
 
 //
-// 
+//
 //
 gulp.task('clean', function() {
   return gulp.src([`${Paths.DEST}/*`], {read: false})

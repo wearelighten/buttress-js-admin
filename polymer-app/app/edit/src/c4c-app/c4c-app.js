@@ -2,7 +2,7 @@ Polymer({
   is: 'c4c-app',
   behaviors: [
     Polymer.C4CLogging
-  ],  
+  ],
   properties: {
     mode: {
       type: String,
@@ -12,6 +12,21 @@ Polymer({
       type: String,
       value: "idle",
     },
+    context: {
+      type: Object,
+      value: function() {
+        return {
+          auth: {},
+          db: {},
+          page: '',
+          title: '',
+          route: {},
+          routeData: {},
+          subroute: {},
+          subrouteData: {}
+        };
+      }
+    },
     auth: {
       type: Object,
       value: {
@@ -19,65 +34,99 @@ Polymer({
       },
       notify: true
     },
-    orgsStatus: {
-      type: String,
-      value: "idle",
-    },
-    dataStatus: {
-      type: String,
-      value: "idle",
-    },
-    orgs: {
-      type: Array,
-    },
-    orgsData: {
-      type: Array,
+    db: {
+      type: Object
     },
     page: {
       type: String,
       reflectToAttribute: true,
-      observer: '_pageChanged'
+      observer: '__pageChanged'
+    },
+    subPageTitle: {
+      type: String
+    },
+    mainTitle: {
+      type: String,
+      computed: '__computeMainTitle(page, subPageTitle)'
+    },
+    __hideMenuButton: {
+      type: Boolean,
+      computed: '__computeHideMenuButton(subroute.path)'
+    },
+    __hideBackButton: {
+      type: Boolean,
+      computed: '__computeHideBackButton(subroute.path)'
     }
   },
 
   observers: [
-    '_routePageChanged(routeData.page)',
-    '_authChanged(authStatus)',
+    '__routePageChanged(routeData.page)',
+    '__authChanged(authStatus)'
   ],
 
   attached: function() {
     this.authStatus = "begin";
   },
 
-  _toggleDrawer: function() {
+  __toggleDrawer: function() {
     this.$.drawer.toggle();
   },
 
-  _routePageChanged: function(page) {
-    this.page = page || "orgs";
+  __routePageChanged: function(page) {
+    this.page = page || 'orgs';
   },
 
-  _pageChanged: function(page) {
+  __pageChanged: function(page) {
     // Load page import on demand. Show 404 page if fails
-    var resolvedPageUrl = this.resolveUrl(`../views/c4c-${page}.html`);
-    this.importHref(resolvedPageUrl, null, this._showPage404, true);
+    var resolvedPageUrl = this.resolveUrl(`../views/${page}/c4c-${page}.html`);
+    this.importHref(resolvedPageUrl, null, this.__showPage404, true);
   },
 
-  _authChanged: function() {
+  __authChanged: function() {
     if ( this.authStatus !== "done") {
       return;
     }
     this.__debug(this.auth.user);
     if (this.auth.user) {
       this.mode = "application";
-      this.orgsStatus = "begin";
-      this.dataStatus = "begin";
     } else {
       this.mode = "authenticate";
     }
   },
+  __dataServiceError: function(ev) {
+    this.__silly(ev);
 
-  _showPage404: function() {
+    this.$.toast.text = ev.detail.error.message;
+    this.$.toast.open();
+  },
+
+  __showPage404: function() {
     this.page = 'view404';
+  },
+
+  __backButton: function() {
+    this.set('subroute.path', '');
+  },
+
+  __computeMainTitle: function(page) {
+    if (this.subPageTitle) {
+      return this.subPageTitle;
+    }
+    let titles = {
+      'orgs': 'Organisations',
+      'apps': 'Applications',
+      'groups': 'Groups'
+    };
+    if (!page || !titles[page]) {
+      return 'Admin';
+    }
+    return titles[page];
+  },
+
+  __computeHideMenuButton: function() {
+    return this.subroute.path ? true : false
+  },
+  __computeHideBackButton: function() {
+    return this.subroute.path ? false : true
   }
 });
