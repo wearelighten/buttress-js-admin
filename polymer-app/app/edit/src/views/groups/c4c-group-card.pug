@@ -2,7 +2,6 @@ link(rel="import" href="/bower_components/polymer/polymer.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
 link(rel="import" href="/bower_components/paper-button/paper-button.html")
-link(rel="import" href="../../c4c-app-db/c4c-table-lookup.html")
 link(rel="import" href="../../c4c-app-db/c4c-app-db-query.html")
 link(rel="import" href="../../shared-styles.html")
 
@@ -14,7 +13,7 @@ dom-module#c4c-group-card
 
       }
 
-    c4c-app-db-query(db="{{db}}", doc="{{db.org}}", query="{{orgQuery}}", scalar="{{__org}}")
+    c4c-app-db-query(db="{{db}}", doc="{{db.org}}", query="{{orgQuery}}", find-one="{{__org}}")
     .card
       .layout.horizontal
         .circle {{index}}
