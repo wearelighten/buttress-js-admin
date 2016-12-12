@@ -13,9 +13,10 @@ link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
 link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
 link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
 link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
-link(rel="import" href="../../c4c-app-db/c4c-table-lookup.html")
 link(rel="import" href="../behaviors/c4c-view-behaviors.html")
 link(rel="import" href="../../shared-styles.html")
+link(rel="import" href="c4c-app-card.html")
+link(rel="import" href="c4c-app-detail.html")
 
 dom-module#c4c-app-dialog
   template
@@ -32,9 +33,24 @@ dom-module#c4c-app-dialog
       on-iron-form-presubmit="__formPresubmit"
       )
         paper-input(name="name", label="Name", value="{{__edit.name}}", required, auto-validate)
+        paper-dropdown-menu(name="type", label="Type", required, auto-validate)
+          paper-menu.dropdown-content(attr-for-selected="label", selected="{{__edit.type}}")
+            paper-item(label="server") Server
+            paper-item(label="browser") Browser
+        paper-dropdown-menu(name="authLevel", label="Auth Level", required, auto-validate)
+          paper-menu.dropdown-content(attr-for-selected="label", selected="{{__edit.authLevel}}")
+            paper-item(label="0") NONE
+            paper-item(label="1") USER
+            paper-item(label="2") ADMIN
+            paper-item(label="3") SUPER
+        paper-dropdown-menu(name="group", label="Owner Group", required, auto-validate)
+          paper-menu.dropdown-content(attr-for-title="title", attr-for-selected="label", selected="{{__edit.ownerGroupId}}")
+            template(is="dom-repeat", items="{{db.group.data}}", as="group")
+              paper-item(title="{{group.name}}", label="{{group.id}}") {{group.name}}
+
         .buttons
           paper-button(dialog-dismiss) Cancel
-          paper-button#submit(autofocus, on-click="__formBeginSubmit") {{submitTitle}}
+          paper-button(autofocus, on-click="__formBeginSubmit") {{submitTitle}}
         .output
 
   script(src="c4c-app-dialog.js")
@@ -71,22 +87,10 @@ dom-module#c4c-apps
 
           div(name="list")
             template(is="dom-repeat", items="{{doc.data}}")
-              c4c-table-lookup(db="{{db}}", foreign="org.id", local="{{item.organisation}}", value="{{__itemOrg}}")
-              .card
-                .layout.horizontal
-                  .circle {{index}}
-                  .layout.vertical
-                    h1 {{item.name}}
-                    p {{__itemOrg.name}}
-                  .flex
-                  .layout.vertical
-                    .layout.horizontal
-                      .flex
-                      paper-icon-button(icon="delete", on-click="__rmItem")
-                    paper-button(on-click="__viewItem") Details
+              c4c-app-card(db="{{db}}", item="{{item}}", on-view-item="__viewItem", on-rm-item="__rmItem")
             paper-fab#fab(icon="icons:add", on-click="__addItem")
           div(name="detail")
-            h1 {{__selectedItem.name}}
+            c4c-app-detail(db="{{db}}", item="{{__selectedItem}}", route="{{route}}", route-data="{{routeData}}")
 
 
     paper-dialog#rmItemDialog(on-iron-overlay-closed="__dialogClosed")
@@ -94,13 +98,14 @@ dom-module#c4c-apps
       p Are you sure? This is permanent!
       .buttons
         paper-button(dialog-dismiss) No
-        paper-button#submit(dialog-confirm, autofocus, on-click="__rmItemConfirmed") Yes
+        paper-button(dialog-confirm, autofocus, on-click="__rmItemConfirmed") Yes
 
     c4c-app-dialog#editItemDialog(
-    item="{{__editItem}}",
-    title="{{__dialogTitle}}",
-    submit-title="{{__dialogSubmitTitle}}",
-    open="{{__dialogOpen}}",
-    on-dialog-closed="__dialogClosed")
+      db="{{db}}"
+      item="{{__editItem}}",
+      title="{{__dialogTitle}}",
+      submit-title="{{__dialogSubmitTitle}}",
+      open="{{__dialogOpen}}",
+      on-dialog-closed="__dialogClosed")
 
   script(src="c4c-apps.js")
