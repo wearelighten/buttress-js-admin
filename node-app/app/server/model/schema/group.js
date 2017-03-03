@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Rhizome - The API that feeds grassroots movements
+ * ButtressJS - Realtime datastore for business software
  *
  * @file group.js
  * @description Group model definition. Groups are subsets of organisations.

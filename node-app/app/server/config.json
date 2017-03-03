@@ -1,70 +1,53 @@
 {
   "environment": {
-    "RHIZOME_ADMIN_SERVER_ID": "",
+    "BUTTRESS_ADMIN_SERVER_ID": "",
     "NODE_ENV": "development",
-    "RHIZOME_ADMIN_GOOGLE_CLIENT_ID": "",
-    "RHIZOME_ADMIN_GOOGLE_CLIENT_SECRET": "",
-    "RHIZOME_ADMIN_APP_TOKEN": "",
-    "RHIZOME_ADMIN_RHIZOME_URL": "http://dev.rhizome.com/api/v1"
+    "BUTTRESS_ADMIN_GOOGLE_CLIENT_ID": "",
+    "BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET": "",
+    "BUTTRESS_ADMIN_APP_TOKEN": "",
+    "BUTTRESS_ADMIN_BUTTRESS_URL": "http://dev.local.buttressjs.com/api/v1"
   },
   "global": {
     "env": "%NODE_ENV%",
     "app": {
-      "title": "Rhizome Admin",
-      "description": "Administration tool for Rhizome.",
-      "code": "rhizome-admin",
-      "version": "v0.0.1",
+      "title": "ButtressJS Admin",
+      "description": "Administration tool for ButtressJS.",
+      "code": "buttress-js-admin",
+      "version": "v1.0.0",
       "protocol": "http",
-      "subdomain": "dev.polymer.admin",
-      "domain": "rhizome.com"
+      "subdomain": "dev.admin",
+      "domain": "buttressjs.com"
     },
     "auth": {
       "users": [
         "chris@evansfinch.co.uk"
       ],
-      "rhizome": {
-        "url": "%RHIZOME_ADMIN_RHIZOME_URL%",
-        "appToken": "%RHIZOME_ADMIN_APP_TOKEN%"
+      "buttress": {
+        "url": "%BUTTRESS_ADMIN_BUTTRESS_URL%",
+        "appToken": "%BUTTRESS_ADMIN_APP_TOKEN%"
       },
       "google": {
-        "clientId": "%RHIZOME_ADMIN_GOOGLE_CLIENT_ID%",
-        "clientSecret": "%RHIZOME_ADMIN_GOOGLE_CLIENT_SECRET%"
+        "clientId": "%BUTTRESS_ADMIN_GOOGLE_CLIENT_ID%",
+        "clientSecret": "%BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET%"
       }
     }
   },
   "local": {
     "workstation1": {
       "logPath": {
-        "dev":"/home/chris/Work/Workspaces/WebStorm/ra/node-app/logs/dev",
-        "prod":"/home/chris/Work/Workspaces/WebStorm/ra/node-app/logs/prod",
-        "test":"/home/chris/Work/Workspaces/WebStorm/ra/node-app/logs/test"
+        "dev":"/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/logs/dev",
+        "prod":"/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/logs/prod",
+        "test":"/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/logs/test"
       },
       "appDataPath": {
-        "dev": "/home/chris/Work/Workspaces/WebStorm/ra/node-app/app_data",
-        "prod": "/home/chris/Work/Workspaces/WebStorm/ra/node-app/app_data",
-        "test": "/home/chris/Work/Workspaces/WebStorm/ra/node-app/app_data/test"
+        "dev": "/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/app_data",
+        "prod": "/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/app_data",
+        "test": "/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/app_data/test"
       },
       "listenPort": {
-        "dev": 6011,
-        "prod": 6010,
-        "test": 6012
-      }
-    },
-    "yubaba": {
-      "logPath": {
-        "dev": "/home/chris/apps/rhizome-DEV/logs",
-        "prod": "/home/chris/apps/rhizome/logs",
-        "test": "/home/chris/apps/rhizome/logs"
-      },
-      "appDataPath": {
-       "dev": "/home/chris/apps/rhizome-DEV/app_data",
-       "prod": "/home/chris/apps/rhizome/app_data",
-       "test": "/home/chris/apps/rhizome/app_data"
-      },
-      "listenPort": {
-        "dev": 6001,
-        "prod": 6000,
-        "test": 6002
+        "dev": 7011,
+        "prod": 7010,
+        "test": 7012
       }
     }
   }

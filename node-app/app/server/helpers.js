@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Rhizome Admin - Administration tool for Rhizome
+ * ButtressJS - Realtime datastore for business software
  *
  * @file helpers.js
  * @description Helpers

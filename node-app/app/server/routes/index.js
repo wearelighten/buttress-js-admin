@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Rhizome - The API that feeds grassroots movements
+ * ButtressJS - Realtime datastore for business software
  *
  * @file index.js
  * @description Route management
@@ -62,7 +62,7 @@ exports.init = app => {
   Route.app = app;
 
   app.get('/favicon.ico', (req, res, next) => res.sendStatus(404));
-  app.get('/index.html', (req, res, next) => res.send('<html><head><title>Rhizome Admin</title></head></html>'));
+  app.get('/index.html', (req, res, next) => res.send('<html><head><title>ButtressJS Admin</title></head></html>'));
 
   app.use(_configCrossDomain);
 

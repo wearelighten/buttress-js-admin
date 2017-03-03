@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Rhizome Admin - Administration tool for Rhizome
+ * ButtressJS - Realtime datastore for business software
  *
  * @file app.js
  * @description
@@ -24,30 +24,30 @@ const passport = require('passport');
 /**
  * Express
  */
-var app = module.exports = express();
+const app = module.exports = express();
 
 /**
  * Configuration
  */
-var configureDevelopment = () => {
+const configureDevelopment = () => {
   Config.env = 'dev';
   app.use(morgan('short'));
   app.set('port', Config.listenPort);
 };
 
-var configureProduction = () => {
+const configureProduction = () => {
   Config.env = 'prod';
   app.use(morgan('short'));
   app.set('port', Config.listenPort);
 };
 
-var configureTest = () => {
+const configureTest = () => {
   Config.env = 'test';
   app.use(morgan('short'));
   app.set('port', Config.listenPort);
 };
 
-var configureApp = env => {
+const configureApp = env => {
   app.enable('trust proxy', 1);
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true}));
@@ -65,23 +65,21 @@ var configureApp = env => {
   app.use(passport.session());
 
   switch (env) {
-    default:
-    case 'development': {
+    default: {
+    } break;
+    case 'dev': {
       configureDevelopment();
-    }
-      break;
-    case 'production': {
+    } break;
+    case 'prod': {
       configureProduction();
-    }
-      break;
+    } break;
     case 'test': {
       configureTest();
-    }
-      break;
+    } break;
   }
 };
 
-configureApp(app.get('env'));
+configureApp(Config.env);
 
 /**
  *
@@ -90,7 +88,7 @@ Bootstrap
   .app(app)
   .then(() => {
     Logging.log(`${Config.app.title} ${Config.app.version} listening on port ` +
-      `${app.get('port')} in ${app.settings.env} mode.`, Logging.Constants.LogLevel.INFO);
+      `${Config.listenPort} in ${app.settings.env} mode.`, Logging.Constants.LogLevel.INFO);
     app.server = app.listen(app.set('port'));
   })
   .catch(Logging.Promise.logError());

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Rhizome - The API that feeds grassroots movements
+ * ButtressJS - Realtime datastore for business software
  *
  * @file route.js
  * @description Route Class - Route authorisation (against app permissions), validation and execution

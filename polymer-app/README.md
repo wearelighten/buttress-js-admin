@@ -1,1 +1,1 @@
-# Rhizome ADMIN
+# ButtressJS Admin

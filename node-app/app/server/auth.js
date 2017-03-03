@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Rhizome Admin - Administration tool for Rhizome
+ * ButtressJS - Realtime datastore for business software
  *
  * @file auth.js
  * @description
@@ -14,7 +14,7 @@ var Logging = require('./logging');
 var Config = require('./config');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var Rhizome = require('rhizome-api-js');
+var Buttress = require('buttress-js-api');
 
 module.exports.init = app => {
   passport.use(new GoogleStrategy({
@@ -40,7 +40,7 @@ module.exports.init = app => {
     if (authenticated) {
       authentication = {
         authLevel: 3,
-        domains: ["http://dev.polymer.admin.rhizome.com/"],
+        domains: ["http://dev.admin.buttressjs.com"],
         permissions: [{
           route: "*",
           permission: "*"
@@ -50,10 +50,10 @@ module.exports.init = app => {
 
     Logging.logDebug(authentication);
 
-    Rhizome.Auth
+    Buttress.Auth
       .findOrCreateUser(user, authentication)
-      .then(Logging.Promise.log("RhizomeUser: "))
-      .then(rhizomeUser => cb(null, rhizomeUser))
+      .then(Logging.Promise.log("ButtressUser: "))
+      .then(buttressUser => cb(null, buttressUser))
       .catch(Logging.Promise.logError());
   }));
 
@@ -92,7 +92,7 @@ module.exports.init = app => {
           surname: req.user.person.surname,
           formalName: req.user.person.formalName
         },
-        authToken: req.user.rhizomeAuthToken
+        authToken: req.user.buttressAuthToken
       }
     });
   });

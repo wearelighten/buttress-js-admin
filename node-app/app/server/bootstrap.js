@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Rhizome Admin - Administration tool for Rhizome
+ * ButtressJS - Realtime datastore for business software
  *
  * @file config.js
  * @description
@@ -16,13 +16,13 @@ const Config = require('./config');
 // var Model = require('./model');
 // var Routes = require('./routes');
 // var Logging = require('./logging');
-const Rhizome = require('rhizome-api-js');
+const Buttress = require('buttress-js-api');
 const Auth = require('./auth');
 
 var _installApp = app => {
-  Rhizome.init({
-    rhizomeUrl: Config.auth.rhizome.url,
-    appToken: Config.auth.rhizome.appToken
+  Buttress.init({
+    buttressUrl: Config.auth.buttress.url,
+    appToken: Config.auth.buttress.appToken
   });
   Auth.init(app);
   // Model.init(app);

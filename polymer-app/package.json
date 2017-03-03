@@ -1,8 +1,8 @@
 {
-  "name": "rhizome-admin-front-end",
+  "name": "buttress-js-admin",
   "version": "1.0.0",
   "description": "",
-  "author": "Coders for Labour",
+  "author": "Lighten",
   "license": "MIT",
   "private": true,
   "engines": {
@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/coders-for-corbyn/rhizome-admin.git"
+    "url": "https://github.com/wearelighten/buttress-js-admin.git"
   },
   "bugs": {
-    "url": "https://github.com/coders-for-corbyn/rhizome-admin/issues"
+    "url": "https://github.com/wearelighten/buttress-js-admin/issues"
   },
   "dependencies": {},
   "devDependencies": {

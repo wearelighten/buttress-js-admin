@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Rhizome Admin - Administration tool for Rhizome
+ * ButtressJS - Realtime datastore for business software
  *
  * @file config.js
  * @description
@@ -10,19 +10,19 @@
  *
  */
 
-var fs = require('fs');
+const fs = require('fs');
 
 /**
  * @type {{development: string, production: string, test: string}}
  * @private
  */
-var _map = {
+const _map = {
   development: 'dev',
   production: 'prod',
   test: 'test'
 };
 
-var _env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
+const _env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 const _regEx = /^%(\w+)%$/;
 
 /**
@@ -31,6 +31,9 @@ const _regEx = /^%(\w+)%$/;
  */
 const _recurseVars = (env, root) => {
   for (let variable in root) {
+    if (!root.hasOwnProperty(variable)) {
+      continue;
+    }
     if (root[variable] instanceof Object) {
       _recurseVars(env, root[variable]);
     } else if (root[variable] instanceof Array) {
@@ -50,7 +53,7 @@ const _recurseVars = (env, root) => {
  */
 class Config {
   constructor() {
-    this._settings = this._loadSettings();
+    this._settings = Config._loadSettings();
     this._settings.env = _map[this._settings.env];
   }
 
@@ -58,12 +61,15 @@ class Config {
     return this._settings;
   }
 
-  _loadSettings() {
-    var json = fs.readFileSync('./config.json');
-    var settings = JSON.parse(json);
+  static _loadSettings() {
+    let json = fs.readFileSync('./config.json');
+    let settings = JSON.parse(json);
 
-    var variable;
+    let variable;
     for (variable in settings.environment) {
+      if (!settings.environment.hasOwnProperty(variable)) {
+        continue;
+      }
       if (!process.env[variable] && !settings.environment[variable]) {
         throw new Error(`You must specify the ${variable} environment variable`);
       }
@@ -72,8 +78,11 @@ class Config {
       }
     }
 
-    var local = settings.local[process.env.RHIZOME_SERVER_ID];
+    let local = settings.local[process.env.BUTTRESS_ADMIN_SERVER_ID];
     for (variable in local) {
+      if (!local.hasOwnProperty(variable)) {
+        continue;
+      }
       if (local[variable] instanceof Object && local[variable][_map[_env]]) {
         local[variable] = local[variable][_map[_env]];
       }
