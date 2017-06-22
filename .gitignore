@@ -1,3 +1,7 @@
+# App
+nginx/*
+!nginx/admin.buttressjs.example.conf
+
 #IDE
 .idea
 
