@@ -5,7 +5,7 @@
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_ID": "",
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET": "",
     "BUTTRESS_ADMIN_APP_TOKEN": "",
-    "BUTTRESS_ADMIN_BUTTRESS_URL": "http://dev.local.buttressjs.com/api/v1"
+    "BUTTRESS_ADMIN_BUTTRESS_URL": "http://admin.buttressjs.example.com/api/v1"
   },
   "global": {
     "env": "%NODE_ENV%",
@@ -13,10 +13,10 @@
       "title": "ButtressJS Admin",
       "description": "Administration tool for ButtressJS.",
       "code": "buttress-js-admin",
-      "version": "v1.0.0",
+      "version": "1.0.0",
       "protocol": "http",
-      "subdomain": "dev.admin",
-      "domain": "buttressjs.com"
+      "subdomain": "admin.buttressjs",
+      "domain": "example.com"
     },
     "auth": {
       "users": [
@@ -33,21 +33,21 @@
     }
   },
   "local": {
-    "workstation1": {
+    "serverID": {
       "logPath": {
-        "dev":"/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/logs/dev",
-        "prod":"/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/logs/prod",
-        "test":"/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/logs/test"
+        "dev":"/path/to/project/buttress-js-admin/node-app/logs/dev",
+        "prod":"/path/to/project/buttress-js-admin/node-app/logs/prod",
+        "test":"/path/to/project/buttress-js-admin/node-app/logs/test"
       },
       "appDataPath": {
-        "dev": "/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/app_data",
-        "prod": "/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/app_data",
-        "test": "/home/chris/Work/Workspaces/WebStorm/buttress-js-admin/node-app/app_data/test"
+        "dev": "/path/to/project/buttress-js-admin/node-app/app_data",
+        "prod": "/path/to/project/buttress-js-admin/node-app/app_data",
+        "test": "/path/to/project/buttress-js-admin/node-app/app_data/test"
       },
       "listenPort": {
-        "dev": 7011,
-        "prod": 7010,
-        "test": 7012
+        "dev": 6001,
+        "prod": 6000,
+        "test": 6002
       }
     }
   }
