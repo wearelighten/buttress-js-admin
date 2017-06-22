@@ -1,0 +1,54 @@
+{
+  "environment": {
+    "BUTTRESS_ADMIN_SERVER_ID": "",
+    "NODE_ENV": "development",
+    "BUTTRESS_ADMIN_GOOGLE_CLIENT_ID": "",
+    "BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET": "",
+    "BUTTRESS_ADMIN_APP_TOKEN": "",
+    "BUTTRESS_ADMIN_BUTTRESS_URL": "http://admin.buttressjs.example.com/api/v1"
+  },
+  "global": {
+    "env": "%NODE_ENV%",
+    "app": {
+      "title": "ButtressJS Admin",
+      "description": "Administration tool for ButtressJS.",
+      "code": "buttress-js-admin",
+      "version": "1.0.0",
+      "protocol": "http",
+      "subdomain": "admin.buttressjs",
+      "domain": "example.com"
+    },
+    "auth": {
+      "users": [
+        "chris@evansfinch.co.uk"
+      ],
+      "buttress": {
+        "url": "%BUTTRESS_ADMIN_BUTTRESS_URL%",
+        "appToken": "%BUTTRESS_ADMIN_APP_TOKEN%"
+      },
+      "google": {
+        "clientId": "%BUTTRESS_ADMIN_GOOGLE_CLIENT_ID%",
+        "clientSecret": "%BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET%"
+      }
+    }
+  },
+  "local": {
+    "serverID": {
+      "logPath": {
+        "dev":"/path/to/project/buttress-js-admin/node-app/logs/dev",
+        "prod":"/path/to/project/buttress-js-admin/node-app/logs/prod",
+        "test":"/path/to/project/buttress-js-admin/node-app/logs/test"
+      },
+      "appDataPath": {
+        "dev": "/path/to/project/buttress-js-admin/node-app/app_data",
+        "prod": "/path/to/project/buttress-js-admin/node-app/app_data",
+        "test": "/path/to/project/buttress-js-admin/node-app/app_data/test"
+      },
+      "listenPort": {
+        "dev": 6001,
+        "prod": 6000,
+        "test": 6002
+      }
+    }
+  }
+}
