@@ -28,9 +28,10 @@ dom-module#bjs-group-dialog
     paper-dialog#dialog(on-iron-overlay-closed="__dialogClosed")
       h2 {{title}}
       form#form(
-      is="iron-form",
-      on-change="__formChanged"
-      on-iron-form-presubmit="__formPresubmit"
+        is="iron-form",
+        on-change="__formChanged"
+        on-iron-form-presubmit="__formPresubmit",
+        method=""
       )
         paper-input(name="name", label="Name", value="{{__edit.name}}", required, auto-validate)
         paper-dropdown-menu(name="org", label="Owner Org", required, auto-validate)

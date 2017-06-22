@@ -31,7 +31,8 @@ dom-module#bjs-org-dialog
       form#form(
         is="iron-form",
         on-change="__formChanged"
-        on-iron-form-presubmit="__formPresubmit"
+        on-iron-form-presubmit="__formPresubmit",
+        method=""
       )
         paper-input(name="name", label="Name", value="{{__edit.name}}", required, auto-validate)
         paper-dropdown-menu(name="type", label="Type", required, auto-validate)

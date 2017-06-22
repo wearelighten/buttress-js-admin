@@ -13,7 +13,7 @@
       "title": "ButtressJS Admin",
       "description": "Administration tool for ButtressJS.",
       "code": "buttress-js-admin",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "protocol": "http",
       "subdomain": "admin.buttressjs",
       "domain": "example.com"
