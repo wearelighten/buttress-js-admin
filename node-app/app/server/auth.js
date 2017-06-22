@@ -37,7 +37,7 @@ module.exports.init = app => {
 
     var authenticated = Config.auth.users.indexOf(user.email) !== -1;
     var authentication;
-    if (!authenticated) {
+    if (authenticated) {
       authentication = {
         authLevel: 3,
         domains: ["http://dev.admin.buttressjs.com"],
