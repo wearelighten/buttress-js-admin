@@ -121,7 +121,7 @@ schema.methods.addImage = function(label, image, encoding) {
     var uid = Model.app.getPublicUID();
     var dirName = `${Config.appDataPath}/public/${uid}/campaign-images`;
     var pathName = `${dirName}/${label}.png`;
-    var prefix = `${Config.app.protocol}://${Config.app.subdomain}.${Config.app.domain}`;
+    var prefix = `${Config.app.protocol}://${Config.app.host}`;
     var url = `${prefix}/${uid}/campaign-images/${label}.png`;
     Logging.log(pathName, Logging.Constants.LogLevel.DEBUG);
 
@@ -211,7 +211,7 @@ schema.methods.addTemplate = function(label, markup, format, encoding) {
  */
 schema.methods.createPreviewEmail = function(template, body) {
   var uid = Model.app.getPublicUID();
-  var prefix = `${Config.app.protocol}://${Config.app.subdomain}.${Config.app.domain}`;
+  var prefix = `${Config.app.protocol}://${Config.app.host}`;
   var url = `${prefix}/${uid}/campaign-previews/${template}-preview.html`;
 
   var params = {
