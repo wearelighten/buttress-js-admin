@@ -45,7 +45,7 @@ Polymer({
     urlPrefix: {
       type: String,
       value: function() {
-        return 'http://admin.buttressjs.example.com/api/v1';
+        return '%BUTTRESS_ADMIN_BUTTRESS_URL%';
       }
     },
     vectorBaseUrl: {
