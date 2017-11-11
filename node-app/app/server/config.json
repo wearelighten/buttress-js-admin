@@ -2,10 +2,17 @@
   "environment": {
     "BUTTRESS_ADMIN_SERVER_ID": "",
     "NODE_ENV": "development",
+    "BUTTRESS_HOST_URL": "",
+    "BUTTRESS_ADMIN_HOST_URL": "",
+    "BUTTRESS_ADMIN_LISTEN_PORT_PROD": "6020",
+    "BUTTRESS_ADMIN_LISTEN_PORT_DEV": "6021",
+    "BUTTRESS_ADMIN_LISTEN_PORT_TEST": "6022",
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_ID": "",
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET": "",
     "BUTTRESS_ADMIN_APP_TOKEN": "",
-    "BUTTRESS_ADMIN_BUTTRESS_URL": "http://admin.buttressjs.example.com/api/v1"
+    "BUTTRESS_ADMIN_BUTTRESS_URL": "http://buttressjs.example.com/api/v1",
+    "BUTTRESS_ADMIN_APP_PATH": "./",
+    "BUTTRESS_ADMIN_AUTH_USER": "chris@evansfinch.co.uk"
   },
   "global": {
     "env": "%NODE_ENV%",
@@ -15,12 +22,11 @@
       "code": "buttress-js-admin",
       "version": "1.0.1",
       "protocol": "http",
-      "subdomain": "admin.buttressjs",
-      "domain": "example.com"
+      "host": "%BUTTRESS_ADMIN_HOST_URL%"
     },
     "auth": {
       "users": [
-        "chris@evansfinch.co.uk"
+        "%BUTTRESS_ADMIN_AUTH_USER%"
       ],
       "buttress": {
         "url": "%BUTTRESS_ADMIN_BUTTRESS_URL%",
@@ -30,25 +36,21 @@
         "clientId": "%BUTTRESS_ADMIN_GOOGLE_CLIENT_ID%",
         "clientSecret": "%BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET%"
       }
-    }
-  },
-  "local": {
-    "serverID": {
-      "logPath": {
-        "dev":"/path/to/project/buttress-js-admin/node-app/logs/dev",
-        "prod":"/path/to/project/buttress-js-admin/node-app/logs/prod",
-        "test":"/path/to/project/buttress-js-admin/node-app/logs/test"
-      },
-      "appDataPath": {
-        "dev": "/path/to/project/buttress-js-admin/node-app/app_data",
-        "prod": "/path/to/project/buttress-js-admin/node-app/app_data",
-        "test": "/path/to/project/buttress-js-admin/node-app/app_data/test"
-      },
-      "listenPort": {
-        "dev": 6001,
-        "prod": 6000,
-        "test": 6002
-      }
+    },
+    "logPath": {
+      "prod":"%BUTTRESS_ADMIN_APP_PATH%/node-app/logs/prod",
+      "dev":"%BUTTRESS_ADMIN_APP_PATH%/node-app/logs/dev",
+      "test":"%BUTTRESS_ADMIN_APP_PATH%/node-app/logs/test"
+    },
+    "appDataPath": {
+      "prod": "%BUTTRESS_ADMIN_APP_PATH%/node-app/app_data",
+      "dev": "%BUTTRESS_ADMIN_APP_PATH%/node-app/app_data",
+      "test": "%BUTTRESS_ADMIN_APP_PATH%/node-app/app_data/test"
+    },
+    "listenPort": {
+      "prod": "%BUTTRESS_ADMIN_LISTEN_PORT_PROD%",
+      "dev": "%BUTTRESS_ADMIN_LISTEN_PORT_DEV%",
+      "test": "%BUTTRESS_ADMIN_LISTEN_PORT_TEST%"
     }
   }
 }

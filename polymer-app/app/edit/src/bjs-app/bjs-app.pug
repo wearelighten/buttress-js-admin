@@ -26,15 +26,18 @@ link(rel="import" href="/bower_components/iron-icons/social-icons.html")
 link(rel="import" href="/bower_components/iron-icons/communication-icons.html")
 link(rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html")
 link(rel="import" href="/bower_components/paper-toast/paper-toast.html")
-link(rel="import" href="../my-icons.html")
-link(rel="import" href="../bjs-auth/bjs-auth.html")
-link(rel="import" href="../bjs-app-db/bjs-app-db.html")
-link(rel="import", href="bjs-behaviors.html")
+
+link(rel="import", href="/src/bjs-auth/bjs-auth.html")
+link(rel="import", href="/src/bjs-app-db/bjs-app-db.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+link(rel="import" href="/src/my-icons.html")
+link(rel="import" href="/src/shared-styles.html")
 
 dom-module#bjs-app
   template
     style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment ")
-    style(is="custom-style").
+    style(include="shared-styles").
       :root {
       --accent-color: #bb1d26;
       --default-primary-color-lighten-90: #EDFFFF;
@@ -70,7 +73,7 @@ dom-module#bjs-app
       }
 
       app-drawer#drawer {
-
+        z-index: 1;
       }
 
       #drawer > app-header {
@@ -142,7 +145,7 @@ dom-module#bjs-app
         }
       }
 
-      bjs-orgs, bjs-groups, bjs-apps {
+      #viewPages {
         padding-top: 276px;
       }
 
@@ -194,7 +197,7 @@ dom-module#bjs-app
             a(name="users", href="/users") Users
 
         //-sample-content(size="100")
-        iron-pages(
+        iron-pages#viewPages(
           selected="[[page]]",
           attr-for-selected="name",
           fallback-selection="view404",
@@ -232,7 +235,18 @@ dom-module#bjs-app
             auth="[[auth]]",
             doc="{{db.app}}",
             db="{{db}}")
-          bjs-users(name="users")
+          bjs-users(
+            name="users",
+            db="{{db}}",
+            doc="{{db.user}}",
+            auth="[[auth]]",
+            title="Users",
+            route="{{route}}",
+            route-data="{{routeData}}",
+            sub-page-title="{{subPageTitle}}",
+            subroute="{{subroute}}",
+            subroute-data="{{subrouteData}}",
+          )
           bjs-view404(name="view404")
 
   script(src="bjs-app.js")

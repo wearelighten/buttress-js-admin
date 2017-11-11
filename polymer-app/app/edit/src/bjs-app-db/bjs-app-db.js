@@ -23,6 +23,11 @@ Polymer({
             status: 'uninitialised',
             data: [],
             metadata: {}
+          },
+          user: {
+            status: 'uninitialised',
+            data: [],
+            metadata: {}
           }
         }
       },
