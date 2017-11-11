@@ -65,17 +65,17 @@ const configureApp = env => {
   app.use(passport.session());
 
   switch (env) {
-    default: {
-    } break;
-    case 'dev': {
+    default:
+      break;
+    case 'dev':
       configureDevelopment();
-    } break;
-    case 'prod': {
+      break;
+    case 'prod':
       configureProduction();
-    } break;
-    case 'test': {
+      break;
+    case 'test':
       configureTest();
-    } break;
+      break;
   }
 };
 
