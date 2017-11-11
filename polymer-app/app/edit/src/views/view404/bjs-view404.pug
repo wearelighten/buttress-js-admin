@@ -1,0 +1,21 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+
+link(rel="import" href="/src/shared-styles.html")
+
+dom-module#bjs-view404
+  template
+    style.
+      :host {
+        display: block;
+
+        padding: 10px 20px;
+      }
+
+    .card
+      h1 Oops you hit a 404.
+      a(href="/") Head back to home.
+
+  script.
+    Polymer({
+      is: 'bjs-view404'
+    });
