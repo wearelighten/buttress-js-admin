@@ -1,0 +1,46 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+
+link(rel="import" href="/bower_components/iron-image/iron-image.html")
+
+link(rel="import" href="/src/shared-styles.html")
+
+dom-module#bjs-user-card
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+
+      }
+
+    .card
+      .layout.horizontal
+        .circle
+          iron-image(src="[[item.auth.0.images.profile]]", sizing="contain")
+        .layout.vertical
+          h2 {{item.id}}
+          p Accounts: [[item.auth.length]]
+        .flex
+        .layout.vertical
+          .layout.horizontal
+            .flex
+            paper-icon-button(icon="delete", on-click="__rmItem")
+          paper-button(on-click="__viewItem") Details
+
+  script.
+    Polymer({
+      is: 'bjs-user-card',
+      properties: {
+        index: {
+          type: Number
+        },
+        item: {
+          type: Object
+        }
+      },
+      __rmItem: function() {
+        this.fire('rm-item', this.get('item'));
+      },
+      __viewItem: function() {
+        this.fire('view-item', this.get('item'));
+      }
+    });
