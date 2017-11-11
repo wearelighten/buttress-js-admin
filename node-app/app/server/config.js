@@ -23,25 +23,48 @@ const _map = {
 };
 
 const _env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
-const _regEx = /^%(\w+)%$/;
+const _regEx = /%(\w+)%/;
 
 /**
  * @param  {Object} env - environment variables
  * @param  {Object|Array} root - root object
  */
-const _recurseVars = (env, root) => {
+const __recurseVars = (env, root) => {
   for (let variable in root) {
-    if (!root.hasOwnProperty(variable)) {
+    if (!root.hasOwnProperty(variable)) { // eslint-disable-line no-prototype-builtins
       continue;
     }
+
     if (root[variable] instanceof Object) {
-      _recurseVars(env, root[variable]);
+      __recurseVars(env, root[variable]);
     } else if (root[variable] instanceof Array) {
-      _recurseVars(env, root[variable]);
-    } else if (typeof root[variable] === "string") {
+      __recurseVars(env, root[variable]);
+    } else if (typeof root[variable] === 'string') {
       const match = _regEx.exec(root[variable]);
       if (match) {
-        root[variable] = env[match[1]];
+        root[variable] = root[variable].replace(`%${match[1]}%`, env[match[1]]);
+      }
+    }
+  }
+};
+
+/**
+ * @param  {Object} object - environment variables
+ */
+const __parse = object => {
+  if (object instanceof Object === false) {
+    return;
+  }
+
+  for (let variable in object) {
+    if (!object.hasOwnProperty(variable)) { // eslint-disable-line no-prototype-builtins
+      continue;
+    }
+    if (object[variable] instanceof Object) {
+      if (object[variable][_map[_env]]) {
+        object[variable] = object[variable][_map[_env]];
+      } else {
+        __parse(object[variable]);
       }
     }
   }
@@ -67,7 +90,7 @@ class Config {
 
     let variable;
     for (variable in settings.environment) {
-      if (!settings.environment.hasOwnProperty(variable)) {
+      if (!settings.environment.hasOwnProperty(variable)) { // eslint-disable-line no-prototype-builtins
         continue;
       }
       if (!process.env[variable] && !settings.environment[variable]) {
@@ -78,20 +101,10 @@ class Config {
       }
     }
 
-    let local = settings.local[process.env.BUTTRESS_ADMIN_SERVER_ID];
-    for (variable in local) {
-      if (!local.hasOwnProperty(variable)) {
-        continue;
-      }
-      if (local[variable] instanceof Object && local[variable][_map[_env]]) {
-        local[variable] = local[variable][_map[_env]];
-      }
-    }
+    __parse(settings.global);
+    __recurseVars(settings.environment, settings.global);
 
-    _recurseVars(settings.environment, settings.global);
-    _recurseVars(settings.environment, local);
-
-    return Object.assign(settings.global, settings.local.environment, local);
+    return settings.global;
   }
 }
 
