@@ -9,9 +9,16 @@ dom-module#bjs-app-db
         display: none;
       }
 
-    bjs-data-service#org(route="org", status="{{db.org.status}}", auth="[[auth]]", data="{{db.org.data}}")
-    bjs-data-service#group(route="group", status="{{db.group.status}}", auth="[[auth]]", data="{{db.group.data}}")
-    bjs-data-service#app(route="app", status="{{db.app.status}}", auth="[[auth]]", data="{{db.app.data}}")
-    bjs-data-service#app(route="user", status="{{db.user.status}}", auth="[[auth]]", data="{{db.user.data}}")
+    iron-ajax#schema(
+      url="//%BUTTRESS_ADMIN_BUTTRESS_URL%/app/schema",
+      params="{{rqSchemaParams}}"
+      handleAs="json",
+      last-response="{{dbSchema}}"
+    )
+
+    bjs-data-service#org(route="org", status="{{db.org.status}}", auth="[[auth]]", data="{{db.org.data}}", priority="1")
+    bjs-data-service#group(route="group", status="{{db.group.status}}", auth="[[auth]]", data="{{db.group.data}}", priority="1")
+    bjs-data-service#app(route="app", status="{{db.app.status}}", auth="[[auth]]", data="{{db.app.data}}", priority="1")
+    bjs-data-service#app(route="user", status="{{db.user.status}}", auth="[[auth]]", data="{{db.user.data}}", priority="0")
 
   script(src="bjs-app-db.js")
