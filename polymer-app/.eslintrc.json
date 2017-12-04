@@ -10,7 +10,8 @@
         }
     },
     "globals": {
-        "Polymer": true
+        "Polymer": true,
+        "Fingerprint2": true
     },
     "rules": {
         "no-this-before-super": "warn",
