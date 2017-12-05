@@ -368,6 +368,11 @@ Polymer({
             status: 'uninitialised',
             data: [],
             metadata: {}
+          },
+          tracking: {
+            status: 'uninitialised',
+            data: [],
+            metadata: {}
           }
         }
       },
