@@ -1,0 +1,79 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
+link(rel="import" href="/bower_components/iron-form/iron-form.html")
+link(rel="import" href="/bower_components/paper-button/paper-button.html")
+link(rel="import" href="/bower_components/paper-fab/paper-fab.html")
+link(rel="import" href="/bower_components/paper-input/paper-input.html")
+link(rel="import" href="/bower_components/paper-dialog/paper-dialog.html")
+link(rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html")
+link(rel="import" href="/bower_components/paper-menu/paper-menu.html")
+link(rel="import" href="/bower_components/paper-item/paper-item.html")
+link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
+link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
+link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+link(rel="import" href="/bower_components/iron-data-table/iron-data-table.html")
+
+link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+
+link(rel="import" href="/src/shared-styles.html")
+
+dom-module#bjs-trackings
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        display: block;
+        padding: 10px;
+      }
+
+      #DataTable {
+        height: 700px;
+      }
+      #DataTable .detail {
+        width: 100%;
+      }
+      #DataTable .detail pre {
+        background: #333;
+        color: #FFF;
+        overflow-x: auto;
+      }
+
+    bjs-app-db-query(
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__trackingQuery]]",
+      num-results="{{__totalTracking}}",
+      num-pages="{{__numTrackingPages}}",
+      page="[[__trackingPage]]",
+      find-all="{{__tracking}}"
+    )
+    
+    .layout.horizontal
+      .layout.horizontal.wrap
+        paper-icon-button(icon="icons:arrow-back", on-tap="__onPageBack")
+        p Page [[__trackingPage]] of [[__numTrackingPages]]
+        paper-icon-button(icon="icons:arrow-forward", on-tap="__onPageForward")
+      p.secondary [[__totalTracking]] results
+
+    .card
+      iron-data-table#DataTable(
+        items="[[__trackingExpanded]]",
+        details-enabled
+      )
+        template(is="row-detail")
+          div.detail
+            pre [[item.json]]
+        data-table-column(name="Type")
+          template  [[item.type]]
+        data-table-column(name="Name")
+          template  [[item.name]]
+        data-table-column(name="Timestamp")
+          template  [[item.timestamp]]
+
+  script(src="bjs-trackings.js")

@@ -10,12 +10,7 @@
  *
  */
 
-// var path = require('path');
-// var fs = require('fs');
 const Config = require('./config');
-// var Model = require('./model');
-// var Routes = require('./routes');
-// var Logging = require('./logging');
 const Buttress = require('buttress-js-api');
 const Auth = require('./auth');
 
