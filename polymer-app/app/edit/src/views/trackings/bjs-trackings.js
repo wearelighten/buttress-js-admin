@@ -38,15 +38,6 @@ Polymer({
     },
   },
 
-  __onPageBack: function() {
-    if (this.__trackingPage <= 1) return;
-    this.__trackingPage--;
-  },
-  __onPageForward: function() {
-    if (this.__trackingPage >= this.__numTrackingPages) return;
-    this.__trackingPage++;
-  },
-
   __computeTrackingExpanded: function(tracking) {
     return tracking.map(track => {
       return {

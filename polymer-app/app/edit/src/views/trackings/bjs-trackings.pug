@@ -19,9 +19,11 @@ link(rel="import" href="/bower_components/iron-data-table/iron-data-table.html")
 link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
 link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 
+link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
+
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
 
-link(rel="import" href="/src/shared-styles.html")
+link(rel="import", href="/src/shared-styles.html")
 
 dom-module#bjs-trackings
   template
@@ -53,13 +55,18 @@ dom-module#bjs-trackings
       page="[[__trackingPage]]",
       find-all="{{__tracking}}"
     )
-    
-    .layout.horizontal
-      .layout.horizontal.wrap
-        paper-icon-button(icon="icons:arrow-back", on-tap="__onPageBack")
-        p Page [[__trackingPage]] of [[__numTrackingPages]]
-        paper-icon-button(icon="icons:arrow-forward", on-tap="__onPageForward")
-      p.secondary [[__totalTracking]] results
+
+    .card
+      .layout.horizontal
+        .layout.horizontal.wrap
+          p Page [[__trackingPage]] of [[__numTrackingPages]]
+        .flex
+        .layout.horizontal.wrap
+          bjs-pagination(
+            current="{{__trackingPage}}",
+            max-steps="5",
+            last="50"
+          )
 
     .card
       iron-data-table#DataTable(
