@@ -55,8 +55,17 @@ Polymer({
     fields: {
       type: Array,
     },
-    sort: {
-      type: Array
+    
+    sortPath: {
+      type: String
+    },
+    sortType: {
+      type: String,
+      value: 'string'
+    },
+    sortOrder: {
+      type: String,
+      value: 'DESC'
     },
 
     paused: {
@@ -116,6 +125,10 @@ Polymer({
       this.__silly(this.page, this.limit, this.numPages);
       data = data.splice((this.page-1) * this.limit, this.limit);
       this.__debug(data);
+    }
+
+    if (this.get('sortPath')) {
+      data = data.sort((a, b) => this.__sort(a, b));
     }
 
     this.set('findAll', data);
@@ -179,38 +192,56 @@ Polymer({
     return outData;
   },
 
+  __sort: function(a, b){
+    const sortPath = this.get('sortPath');
+    const sortType = this.get('sortType');
+    const sortOrder = this.get('sortOrder');
+
+    const pathValueA = this.__parsePath(a, sortPath);
+    const pathValueB = this.__parsePath(b, sortPath);
+
+    let valueA = pathValueA[0];
+    let valueB = pathValueB[0];
+
+    if (sortType === 'date') {
+      return (sortOrder === 'ASC') ? new Date(valueA) - new Date(valueB) : new Date(valueB) - new Date(valueA);
+    }
+
+    return (sortOrder === 'ASC') ? valueA - valueB : valueB - valueA;
+  },
+
+  __parsePath: function (obj, path) {
+    let split = path.split('.');
+    return split.reduce((o, key) => {
+      if (!o) return [];
+      this.__silly(typeof o[key], o instanceof Array); 
+      if (o instanceof Array && typeof o[key] === 'undefined') {
+        return o.reduce((res, p) => {
+          if (!p[key]) return res;
+          res.push(p[key]);
+          return res;
+        }, []);
+      }
+
+      return o[key] === null || Array.isArray(o[key]) === false ? [o[key]] : o[key];
+    }, obj);
+  },
+
   __executeQuery: function(data, field, operator, operand) {
-    const __parsePath = (obj, path) => {
-      let split = path.split('.');
-      return split.reduce((o, key) => {
-        if (!o) return [];
-        this.__silly(typeof o[key], o instanceof Array); 
-        if (o instanceof Array && typeof o[key] === 'undefined') {
-          return o.reduce((res, p) => {
-            if (!p[key]) return res;
-            res.push(p[key]);
-            return res;
-          }, []);
-        }
-
-        return o[key] === null || Array.isArray(o[key]) === false ? [o[key]] : o[key];
-      }, obj);
-    };
-
-    let fns = {
-      $not: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => val !== rhs) !== -1,
-      $eq: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => val === rhs) !== -1,
-      $gt: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => val > rhs) !== -1,
-      $lt: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => val < rhs) !== -1,
-      $gte: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => val >= rhs) !== -1,
-      $lte: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => val <= rhs) !== -1,
-      $rex: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => (new RegExp(rhs)).test(val)) !== -1,
-      $rexi: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => (new RegExp(rhs, 'i')).test(val)) !== -1,
+        let fns = {
+      $not: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val !== rhs) !== -1,
+      $eq: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val === rhs) !== -1,
+      $gt: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val > rhs) !== -1,
+      $lt: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val < rhs) !== -1,
+      $gte: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val >= rhs) !== -1,
+      $lte: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val <= rhs) !== -1,
+      $rex: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => (new RegExp(rhs)).test(val)) !== -1,
+      $rexi: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => (new RegExp(rhs, 'i')).test(val)) !== -1,
       $in: (rhs) => (lhs) => rhs.indexOf(lhs[field]) !== -1,
       $nin: (rhs) => (lhs) => rhs.indexOf(lhs[field]) === -1,
-      $exists: (rhs) => (lhs) => __parsePath(lhs, field).findIndex(val => val === undefined) === -1 === rhs,
+      $exists: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val === undefined) === -1 === rhs,
       $inProp: (rhs) => (lhs) => lhs[field].indexOf(rhs) !== -1,
-      $elMatch: (rhs) => (lhs) => this.__processQuery(rhs, __parsePath(lhs, field)).length > 0
+      $elMatch: (rhs) => (lhs) => this.__processQuery(rhs, this.__parsePath(lhs, field)).length > 0
     };
 
     if (!fns[operator]) {

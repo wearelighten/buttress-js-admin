@@ -53,7 +53,10 @@ dom-module#bjs-trackings
       num-results="{{__totalTracking}}",
       num-pages="{{__numTrackingPages}}",
       page="[[__trackingPage]]",
-      find-all="{{__tracking}}"
+      find-all="{{__tracking}}",
+      sort-path="timestamp",
+      sort-order="DESC",
+      sort-type="date"
     )
 
     .card
@@ -65,7 +68,7 @@ dom-module#bjs-trackings
           bjs-pagination(
             current="{{__trackingPage}}",
             max-steps="5",
-            last="50"
+            last="[[__numTrackingPages]]"
           )
 
     .card
