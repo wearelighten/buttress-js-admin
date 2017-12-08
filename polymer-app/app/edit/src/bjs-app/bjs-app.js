@@ -115,7 +115,8 @@ Polymer({
     let titles = {
       'orgs': 'Organisations',
       'apps': 'Applications',
-      'groups': 'Groups'
+      'groups': 'Groups',
+      'users': 'Users'
     };
     if (!page || !titles[page]) {
       return 'Admin';

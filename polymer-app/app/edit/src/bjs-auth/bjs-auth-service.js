@@ -4,6 +4,10 @@ Polymer({
     Polymer.BJSLogging
   ],
   properties: {
+    logLevel: {
+      type: Number,
+      value: 3
+    },
     status: {
       type: String,
       value: "idle",
@@ -12,27 +16,35 @@ Polymer({
     },
     auth: {
       type: Object,
-      value: {
-        user: null
-      },
       notify: true
     }
   },
+
+  listeners: {
+    'gapi-signedin': '__gapiSignedIn'
+  },
+
+  __gapiSignedIn: function(ev) {
+    this.set('auth.gapi.signedIn', ev.detail.signedIn);
+    this.set('auth.gapi.user', ev.detail.user);
+    this.__debug(this.auth.gapi);
+  },
+
   attached: function() {
   },
 
   onAjaxResponse: function(ev, detail) {
     if (!detail.response) {
-      this.status = "done";
+      this.set('status', 'done');
       return;
     }
-    this.auth.user = detail.response.user;
-    this.notifyPath('auth.user', this.auth.user);
-    this.status = "done";
+
+    this.set('auth.user', detail.response.user);
+    this.set('status', 'done');
   },
 
   onAjaxError: function() {
-    this.status = "error";
+    this.set('status', 'error');
   },
 
   _onStatusChanged: function() {
@@ -46,7 +58,7 @@ Polymer({
     this.$.authenticated.params = {
       urq: Date.now()
     };
-    this.$.authenticated.generateRequest()
+    this.$.authenticated.generateRequest();
     this.status = "working";
   }
 });

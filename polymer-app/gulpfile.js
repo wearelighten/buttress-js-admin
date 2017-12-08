@@ -1,3 +1,5 @@
+'use strict';
+
 //
 // Includes
 //
@@ -5,6 +7,7 @@
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
 const clean = require('gulp-clean');
+const replace = require('gulp-replace');
 const pug = require('gulp-pug');
 const htmlPrettify = require('gulp-html-prettify');
 const bowerFiles = require('main-bower-files');
@@ -30,11 +33,34 @@ const Globs = {
   IMAGES: [`${Paths.SOURCE}/images/**/*.png`,`${Paths.SOURCE}/images/**/*.jpg`,`${Paths.SOURCE}/images/**/*.gif`,`${Paths.SOURCE}/images/**/*.ico`]
 };
 
+let Environment = {
+  NODE_ENV: 'development',
+  BUTTRESS_ADMIN_BUTTRESS_URL: ''
+};
+
+// Replace Environment defaults with local vars
+for (const key in Environment) {
+  if (!process.env[key]) {
+    continue;
+  }
+  if (process.env[key]) {
+    Environment[key] = process.env[key];
+  }
+}
+
+const __envReplace = (stream) => {
+  Object.keys(Environment).forEach(key => {
+    stream = stream.pipe(replace(`%${key}%`, Environment[key]));
+  })
+
+  return stream;
+};
+
 //
 // Scripts
 //
 gulp.task('js', function() {
-  return gulp.src(Globs.SCRIPTS, {base: `${Paths.SOURCE}`})
+  return __envReplace(gulp.src(Globs.SCRIPTS, {base: `${Paths.SOURCE}`}))
 		.pipe(eslint())
 		.pipe(eslint.format())
 		.pipe(gulp.dest(Paths.DEST));
@@ -53,7 +79,7 @@ gulp.task('html', function() {
 });
 
 gulp.task('pug', function() {
-  return gulp.src(Globs.PUG, {base: Paths.SOURCE})
+  return __envReplace(gulp.src(Globs.PUG, {base: Paths.SOURCE}))
 		.pipe(pug())
     .pipe(htmlPrettify())
 		.pipe(gulp.dest(Paths.DEST));

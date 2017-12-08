@@ -19,6 +19,16 @@ Polymer({
       value: '',
       notify: true,
     },
+    priority: {
+      type: Number,
+      value: '99'
+    },
+    loaded: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      reflectToAttribute: true
+    },
     route: {
       type: String,
       value: ''
@@ -45,7 +55,7 @@ Polymer({
     urlPrefix: {
       type: String,
       value: function() {
-        return 'http://admin.buttressjs.example.com/api/v1';
+        return '%BUTTRESS_ADMIN_BUTTRESS_URL%';
       }
     },
     vectorBaseUrl: {
@@ -63,14 +73,7 @@ Polymer({
       }
     },
     request: {
-      type: Object,
-      value: {
-        url: this.vectorBaseUrl,
-        contentType: '',
-        response: [],
-        entityId: '',
-        body: {}
-      }
+      type: Object
     },
     rqEntityId: String,
     rqUrl: String,
@@ -83,24 +86,15 @@ Polymer({
     '__dataSplices(data.splices)',
     '__dataChanges(data.*)',
     '__metadataChanged(metadata.*)',
-    '__auth(route, auth.user)'
   ],
 
-  __auth: function() {
-    this.__silly(`data:${this.route}:${this.status}`);
-
-    if (!this.get('auth.user')) {
-      return;
-    }
-
-    if (this.status === "uninitialised") {
-      this.__generateListRequest();
-    }
+  triggerGet: function() {
+    this.__generateListRequest();
   },
 
   /**
    * Used to generate Add and Remove requests
-   * @param {Object} changeRecord - data needed to calculate what has changed
+   * @param {Object} cr - data needed to calculate what has changed
    * @private
    */
   __dataSplices: function(cr) {
@@ -111,8 +105,13 @@ Polymer({
 
     cr.indexSplices.forEach(i => {
       let o = i.object[i.index];
-      if (i.addedCount > 0 && o.__readonly__ !== true) {
-        this.__generateAddRequest(o);
+      if (i.addedCount > 0) {
+        if (!o.__readonly__) {
+          o.id = this.domHost.genObjectId(); // don't trigger a notification
+          this.__generateAddRequest(o);
+        } else {
+          delete o.__readonly__;
+        }
       }
 
       // i.object.forEach((a, idx) => {
@@ -122,6 +121,9 @@ Polymer({
       i.removed.forEach(r => {
         if (!r.__readonly__) {
           this.__generateRmRequest(r.id);
+        } else {
+          this.__silly(`Ignoring __readonly__ splice for ${r.id}`);
+          delete r.__readonly__;
         }
       });
     });
@@ -129,7 +131,7 @@ Polymer({
 
   /**
    * Used to update individual records
-   * @param {Object} changeRecord - definition of what's changed
+   * @param {Object} cr - definition of what's changed
    * @private
    */
   __dataChanges: function(cr) {
@@ -151,7 +153,7 @@ Polymer({
 
     // ignore paths with fields with __ as prefix and suffix
     if (/__(\w+)__/.test(cr.path)) {
-      this.__warn(`Ignoring internal change: ${cr.path}`);
+      this.__debug(`Ignoring internal change: ${cr.path}`);
       return;
     }
 
@@ -159,39 +161,61 @@ Polymer({
     // Is this an array mutation?
     if (/\.splices$/.test(cr.path) === true) {
       if (path.length < 4) {
-        this.__warn('Ignoring path too short:', path);
+        this.__debug('Ignoring path too short:', path);
         return;
       }
 
       let entity = this.get(path.slice(0,2));
       // let index = path[1].replace('#', '');
       // if (!cr.base[index]) {
-      //   this.__warn(`Ignoring: invalid change index: ${index}`);
+      //   this.__debug(`Ignoring: invalid change index: ${index}`);
       //   return;
       // }
       // let entity = cr.base[index];
 
       // Ignore a one-off readonly change (remove the field afterwards)
       if (entity.__readOnlyChange__) {
-        this.__warn(`Ignoring readonly change: ${cr.path}`);
+        this.__debug(`Ignoring readonly change: ${cr.path}`);
         delete entity.__readOnlyChange__;
         return;
       }
 
-      this.__warn('Child array mutation', cr);
+      this.__debug('Child array mutation', cr);
+
+      this.__silly('Key Splices: ', cr.value.indexSplices.length);
 
       cr.value.indexSplices.forEach(i => {
         let o = i.object[i.index];
         if (i.addedCount > 0) {
           path.splice(0,2);
           path.splice(-1,1);
-          // this.__warn('Update request', entity.id, path.join('.'), cr.value);
+          // this.__debug('Update request', entity.id, path.join('.'), cr.value);
+          if (typeof o === 'object') {
+            o.id = this.domHost.genObjectId();
+          }
           this.__generateUpdateRequest(entity.id, path.join('.'), o);
+        } else if (i.removed.length > 0){
+          if(i.removed.length > 1) {
+            this.__debug('Index splice removed.length > 1', i.removed);
+          } else {
+            path.splice(0, 2);
+            path.splice(-1, 1);
+            path.push(i.index);
+            path.push('__remove__');
+
+            this.__generateUpdateRequest(entity.id, path.join('.'), '');
+          }
         }
       });
 
+      if (cr.value.indexSplices.length || !cr.value.keySplices) {
+        return;
+      }
+
+      this.__silly('Key Splices: ', cr.value.keySplices.length);
+
       cr.value.keySplices.forEach((k, idx) => {
-        k.removed.forEach(k => {
+        k.removed.forEach(() => {
           let itemIndex = cr.value.indexSplices[idx].index;
           this.__debug(itemIndex);
 
@@ -206,40 +230,56 @@ Polymer({
       });
     } else {
       if (path.length < 3) {
-        // this.__warn('Ignoring path too short:', path);
+        // this.__debug('Ignoring path too short:', path);
         return;
       }
       let entity = this.get(path.slice(0,2));
 
       // let index = path[1].replace('#', '');
       if (!entity) {
-        this.__warn(`Ignoring: invalid change index: ${index}`);
+        this.__debug(`Ignoring: invalid change index: ${path.slice(0,2)}`);
         return;
       }
 
       // let entity = cr.base[index];
       // Ignore a one-off readonly change (remove the field afterwards)
       if (entity.__readOnlyChange__) {
-        this.__warn(`Ignoring readonly change: ${cr.path}`);
+        this.__debug(`Ignoring readonly change: ${cr.path}`);
         delete entity.__readOnlyChange__;
         return;
       }
 
-      let tail = path[path.length-1];
-      const rex = /#\d+$/;
-      // Is this an assignment directly into an array item?
-      if (rex.test(tail)) {
-        // Look up the item
-        let item = this.get(path);
-        // Grab the base array
-        let arr = this.get(path.slice(0,-1));
-        // Replace the 'opaque key' with the correct array index
-        path[path.length-1] = arr.indexOf(item);
-      }
+      let pathPrefix = path.splice(0, 2).join('.');
+      path.forEach((p, idx) => {
+        const rex = /^#\d+$/;
+        // Is this an assignment directly into an array item?
+        if (rex.test(p)) {
+          // Grab the base array
+          let arr = this.get(pathPrefix);
+          // Get the item
+          let item = this.get(`${pathPrefix}.${p}`);
+          // Replace the 'opaque key' with the correct array index
+          path[idx] = arr.indexOf(item);
+        }
+        pathPrefix += `.${p}`;
+      });
 
-      path.splice(0,2);
+      // path.splice(0,2);
 
-      // this.__warn('Update request', entity.id, path.join('.'), cr.value);
+      // let tail = path[path.length-1];
+      // const rex = /#\d+$/;
+      // // Is this an assignment directly into an array item?
+      // if (rex.test(tail)) {
+      //   // Look up the item
+      //   let item = this.get(path);
+      //   // Grab the base array
+      //   let arr = this.get(path.slice(0,-1));
+      //   // Replace the 'opaque key' with the correct array index
+      //   path[path.length-1] = arr.indexOf(item);
+      // }
+
+
+      // this.__debug('Update request', entity.id, path.join('.'), cr.value);
       this.__generateUpdateRequest(entity.id, path.join('.'), cr.value);
     }
   },
@@ -253,6 +293,7 @@ Polymer({
 
     if (/\.length$/.test(cr.path) === true
       || this.readOnly) {
+      this.__debug('Ignoring .length or readOnly change');
       return;
     }
 
@@ -266,12 +307,12 @@ Polymer({
     this.__debug('__metadataChange', cr);
     if (cr.base.__readOnlyChange__) {
       delete cr.base.__readOnlyChange__;
-      this.__warn(`Ignoring read only change`);
+      this.__debug(`Ignoring read only change`);
       return;
     }
 
     if (cr.value.__populate__) {
-      this.__warn(`Populating metadata for ${entityId}`);
+      this.__debug(`Populating metadata for ${entityId}`);
       delete cr.value.__populate__;
       this.__generateMetadataGetAllRequest(entityId, cr.value);
       return;
@@ -279,7 +320,7 @@ Polymer({
 
     // ignore paths with fields with __ as prefix and suffix
     if (/__(\w+)__/.test(cr.path)) {
-      this.__warn(`Ignoring internal change: ${cr.path}`);
+      this.__debug(`Ignoring internal change: ${cr.path}`);
       return;
     }
 
@@ -291,6 +332,15 @@ Polymer({
       remotePath.splice(-1,1);
       let base = this.get(remotePath);
       remotePath.splice(0,2);
+
+      cr.value.indexSplices.forEach(sp => {
+        if (!sp.addedCount) return;
+        if (typeof sp.object[sp.index] === 'object') {
+          sp.object[sp.index].id = this.domHost.genObjectId();
+        }
+      });
+      this.__debug(base);
+
       this.__assert(remotePath.length === 1); // Metadata doesn't support remote paths
       this.__generateMetadataUpdateRequest(entityId, remotePath.join('.'), base);
     } else {
@@ -351,7 +401,7 @@ Polymer({
     this.__queueRequest(request);
   },
   __generateRmRequest: function(entityId) {
-    this.__warn(`remove rq: ${entityId}`);
+    this.__debug(`remove rq: ${entityId}`);
 
     this.rqEntityId = entityId;
     let request = {
@@ -366,7 +416,7 @@ Polymer({
     this.__queueRequest(request);
   },
   __generateAddRequest: function(entity) {
-    this.__warn(`add rq: ${entity.name}`);
+    this.__debug(`add rq: ${entity.name}`);
 
     this.rqEntityId = -1;
     let request = {
@@ -380,7 +430,7 @@ Polymer({
     this.__queueRequest(request);
   },
   __generateUpdateRequest: function(entityId, path, value) {
-    this.__warn('update rq:',entityId, path, value);
+    this.__debug('update rq:',entityId, path, value);
 
     this.rqEntityId = entityId;
     let request = {
@@ -435,23 +485,27 @@ Polymer({
   __ajaxResponse: function(ev) {
     let rq = this.requestQueue.shift();
 
+    if (!rq) {
+      this.__warn('Response on an empty requestQueue!!!');
+      return;
+    }
+
     rq.response = ev.detail.response;
     switch (rq.type) {
-      default: {
-        this.__debug('Unhandled rq.type', rq.type);
-      } break;
-      case 'list': {
+      default:
+        break;
+      case 'list':
         this.__ajaxListResponse(rq);
-      } break;
-      case 'list-metadata': {
+        break;
+      case 'list-metadata':
         this.__ajaxListMetadataResponse(rq);
-      } break;
-      case 'update': {
-        this.__ajaxUpdateResponse(rq);
-      } break;
-      case 'add': {
-        this.__ajaxAddResponse(rq);
-      } break;
+        break;
+      // case 'update': {
+      //   this.__ajaxUpdateResponse(rq);
+      // } break;
+      // case 'add': {
+      //   this.__ajaxAddResponse(rq);
+      // } break;
     }
 
     this.status = 'done';
@@ -464,6 +518,8 @@ Polymer({
   __ajaxListResponse: function(rq) {
     this.__internalChange__ = true;
     this.data = this.liveData = rq.response;
+    this.fire('data-service-list', this);
+    this.set('loaded', true);
   },
   __ajaxListMetadataResponse: function(rq) {
     // this.set(['metadata',rq.entityId], rq.response);
@@ -481,12 +537,14 @@ Polymer({
   },
 
   __ajaxAddResponse: function(rq) {
-    this.data.forEach((d, idx) => {
-      if (!d.id) {
-        this.data[idx].__readOnlyChange__ = true;
-        this.set(['data', idx, 'id'], rq.response.id);
+    let data = this.data;
+    for (let x=0; x<data.length; x++) {
+      if (!data[x].id) {
+        this.data[x].__readOnlyChange__ = true;
+        this.set(['data', x, 'id'], rq.response.id);
+        break;
       }
-    })
+    }
   },
 
   __ajaxUpdateResponse: function(rq) {
@@ -494,10 +552,10 @@ Polymer({
     const responses = rq.response;
     responses.forEach(r => {
       if (!(r.value instanceof Object) || r.type !== 'vector-add' || !r.value.id) {
-        this.__warn('update early out', r.value instanceof Object)
+        this.__debug('update early out', r.value instanceof Object);
         return;
       }
-      let idx = this.get('data').findIndex(e => e.id == rq.entityId);
+      let idx = this.get('data').findIndex(e => e.id == rq.entityId); //eslint-disable-line eqeqeq
       if (idx === -1) {
         this.__warn('Invalid entity id', rq.entityId);
         return;
@@ -507,10 +565,20 @@ Polymer({
       if (base instanceof Array) {
         for (let x=0; x<base.length; x++) {
           if (!base[x].id) {
-            this.data[idx].__readOnlyChange__ = true;
-            this.__debug(['data', idx, rq.body.path, x, 'id']);
-            this.set(['data', idx, rq.body.path, x, 'id'], r.value.id);
-            break;
+            if (base[x].name !== undefined && r.value.name === base[x].name) {
+              this.__debug('Setting array item id using item name', r.value.id, r.value.name);
+              this.data[idx].__readOnlyChange__ = true;
+              this.__debug(['data', idx, rq.body.path, x, 'id']);
+              this.set(['data', idx, rq.body.path, x, 'id'], r.value.id);
+
+              break;
+            } else if (base[x].name === undefined) {
+              this.data[idx].__readOnlyChange__ = true;
+              this.__debug(['data', idx, rq.body.path, x, 'id']);
+              this.set(['data', idx, rq.body.path, x, 'id'], r.value.id);
+
+              break;
+            }
           }
         }
       }

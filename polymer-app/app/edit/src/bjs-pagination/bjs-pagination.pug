@@ -1,0 +1,17 @@
+link(rel="import", href="/bower_components/polymer/polymer.html")
+link(rel="import", href="/bower_components/paper-button/paper-button.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+dom-module#bjs-pagination
+  template
+    style.
+      :host {
+      }
+
+    //- paper-button(hidden$="[[isFirst]]", on-tap="__bumpPrev") Prev
+    template(is="dom-repeat", items="[[steps]]")
+      paper-button(on-tap="__setPage", raised$="[[item.isCurrent]]") [[item.page]]
+    //- paper-button(hidden$="[[isLast]]", on-tap="__bumpNext") Next
+
+  script(src="bjs-pagination.js")

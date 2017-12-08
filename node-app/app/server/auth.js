@@ -10,17 +10,17 @@
  *
  */
 
-var Logging = require('./logging');
-var Config = require('./config');
-var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var Buttress = require('buttress-js-api');
+const Logging = require('./logging');
+const Config = require('./config');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const Buttress = require('buttress-js-api');
 
 module.exports.init = app => {
   passport.use(new GoogleStrategy({
     clientID: Config.auth.google.clientId,
     clientSecret: Config.auth.google.clientSecret,
-    callbackURL: `${Config.app.protocol}://${Config.app.subdomain}.${Config.app.domain}/auth/google/callback`
+    callbackURL: `/auth/google/callback`
   }, (accessToken, refreshToken, profile, cb) => {
     const user = {
       app: 'google',
@@ -40,7 +40,7 @@ module.exports.init = app => {
     if (authenticated) {
       authentication = {
         authLevel: 3,
-        domains: ["http://dev.admin.buttressjs.com"],
+        domains: [`${Config.app.protocol}://${Config.app.host}`],
         permissions: [{
           route: "*",
           permission: "*"
@@ -50,11 +50,9 @@ module.exports.init = app => {
 
     Logging.logDebug(authentication);
 
-    Buttress.Auth
-      .findOrCreateUser(user, authentication)
-      .then(Logging.Promise.log("ButtressUser: "))
-      .then(buttressUser => cb(null, buttressUser))
-      .catch(Logging.Promise.logError());
+    Buttress.Auth.findOrCreateUser(user, authentication)
+    .then(buttressUser => cb(null, buttressUser))
+    .catch(err => console.log(err));
   }));
 
   passport.serializeUser((user, done) => {
@@ -75,25 +73,28 @@ module.exports.init = app => {
       return;
     }
 
-    res.json({
-      user: {
-        profiles: req.user.auth.map(function(a) {
-          return {
-            app: a.app,
-            email: a.email,
-            url: a.profileUrl,
-            images: a.images
-          };
-        }),
-        person: {
-          title: req.user.person.title,
-          forename: req.user.person.forename,
-          initials: req.user.person.initials,
-          surname: req.user.person.surname,
-          formalName: req.user.person.formalName
-        },
-        authToken: req.user.buttressAuthToken
-      }
+    Buttress.User.load(req.user.buttressId)
+    .then(user => {
+      res.json({
+        user: {
+          profiles: req.user.auth.map(function(a) {
+            return {
+              app: a.app,
+              email: a.email,
+              url: a.profileUrl,
+              images: a.images
+            };
+          }),
+          person: {
+            title: req.user.person.title,
+            forename: req.user.person.forename,
+            initials: req.user.person.initials,
+            surname: req.user.person.surname,
+            formalName: req.user.person.formalName
+          },
+          authToken: req.user.buttressAuthToken
+        }
+      });
     });
   });
 
@@ -102,9 +103,13 @@ module.exports.init = app => {
     res.redirect('/');
   });
 
+  const AUTH_SCOPE = [
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.googleapis.com/auth/userinfo.email"
+  ];
   app.get('/auth/google', passport.authenticate(
     'google', {
-      scope: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
+      scope: AUTH_SCOPE.join(' ')
     }
   ));
   app.get('/auth/google/callback', passport.authenticate('google', {successRedirect: '/', failureRedirect: '/'}));
