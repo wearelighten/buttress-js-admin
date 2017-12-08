@@ -117,6 +117,10 @@ Polymer({
     data = this.__processQuery(this.query, data);
     this.__silly(data);
 
+    if (this.get('sortPath')) {
+      data = data.sort((a, b) => this.__sort(a, b));
+    }
+
     if (this.limit > 0) {
       this.set('numPages', Math.ceil(data.length / this.limit));
       this.set('numResults', data.length);
@@ -125,10 +129,6 @@ Polymer({
       this.__silly(this.page, this.limit, this.numPages);
       data = data.splice((this.page-1) * this.limit, this.limit);
       this.__debug(data);
-    }
-
-    if (this.get('sortPath')) {
-      data = data.sort((a, b) => this.__sort(a, b));
     }
 
     this.set('findAll', data);
