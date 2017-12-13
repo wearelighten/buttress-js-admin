@@ -1,6 +1,8 @@
 link(rel="import", href="/bower_components/polymer/polymer.html")
-link(rel="import" href="bjs-data-service.html")
-link(rel="import", href="../bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/bjs-app-db/bjs-data-service.html")
 
 dom-module#bjs-app-db
   template
@@ -10,7 +12,7 @@ dom-module#bjs-app-db
       }
 
     iron-ajax#schema(
-      url="%BUTTRESS_ADMIN_BUTTRESS_URL%/app/schema",
+      url="//%BUTTRESS_ADMIN_BUTTRESS_URL%/app/schema",
       params="{{rqSchemaParams}}"
       handleAs="json",
       last-response="{{dbSchema}}"
@@ -19,7 +21,7 @@ dom-module#bjs-app-db
     bjs-data-service#org(route="org", loaded="{{db.org.loaded}}", status="{{db.org.status}}", auth="[[auth]]", data="{{db.org.data}}", priority="1")
     bjs-data-service#group(route="group", loaded="{{db.group.loaded}}", status="{{db.group.status}}", auth="[[auth]]", data="{{db.group.data}}", priority="1")
     bjs-data-service#app(route="app", loaded="{{db.app.loaded}}", status="{{db.app.status}}", auth="[[auth]]", data="{{db.app.data}}", priority="1")
-    bjs-data-service#app(route="user", loaded="{{db.user.loaded}}", status="{{db.user.status}}", auth="[[auth]]", data="{{db.user.data}}", priority="0")
-    bjs-data-service#app(route="tracking", loaded="{{db.tracking.loaded}}", status="{{db.tracking.status}}", auth="[[auth]]", data="{{db.tracking.data}}", priority="0")
+    bjs-data-service#user(route="user", loaded="{{db.user.loaded}}", status="{{db.user.status}}", auth="[[auth]]", data="{{db.user.data}}", priority="0")
+    bjs-data-service#tracking(route="tracking", loaded="{{db.tracking.loaded}}", status="{{db.tracking.status}}", auth="[[auth]]", data="{{db.tracking.data}}", priority="0")
 
   script(src="bjs-app-db.js")

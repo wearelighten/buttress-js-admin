@@ -27,7 +27,12 @@ link(rel="import" href="/bower_components/paper-icon-button/paper-icon-button.ht
 link(rel="import" href="/bower_components/paper-toast/paper-toast.html")
 
 link(rel="import", href="/src/bjs-auth/bjs-auth.html")
+
 link(rel="import", href="/src/bjs-app-db/bjs-app-db.html")
+link(rel="import", href="/src/bjs-app-db/bjs-realtime-db-behaviors.html")
+
+link(rel="import", href="/src/bjs-socket-io/bjs-socket-io.html")
+
 link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 
 link(rel="import" href="/src/my-icons.html")
@@ -154,18 +159,41 @@ dom-module#bjs-app
         font-weight: bold;
       }
 
+    //- Routes
     app-location(route="{{route}}")
     app-route(
-        route="{{route}}",
-        pattern="/:page",
-        data="{{routeData}}",
-        tail="{{subroute}}")
+      route="{{route}}",
+      pattern="/:page",
+      data="{{routeData}}",
+      tail="{{subroute}}"
+    )
     app-route(
-        route="{{subroute}}",
-        pattern="/:id",
-        data="{{subrouteData}}")
-    bjs-auth-service#authService(status="{{authStatus}}", auth="{{auth}}", login-details="[[loginDetails]]")
-    bjs-app-db#db(status="{{dbStatus}}", auth="[[auth]]", db="{{db}}", on-error="__dataServiceError")
+      route="{{subroute}}",
+      pattern="/:id",
+      data="{{subrouteData}}"
+    )
+    
+    //- Auth & Data 
+    bjs-auth-service#authService(
+      status="{{authStatus}}",
+      auth="{{auth}}", 
+      login-details="[[loginDetails]]"
+    )
+    bjs-app-db#db(
+      status="{{dbStatus}}",
+      auth="[[auth]]",
+      db="{{db}}",
+      on-error="__dataServiceError"
+    )
+    bjs-socket-io#iodb(
+      auth="[[auth]]",
+      endpoint="{{iodb.endpoint}}",
+      connected="{{iodb.connected}}",
+      rx-events="{{iodb.rxEvents}}",
+      rx="{{iodb.rx}}",
+      on-rx-event="__dbRxEvent"
+    )
+    
     paper-toast#toast()
 
     iron-pages(attr-for-selected="name", selected="{{mode}}")

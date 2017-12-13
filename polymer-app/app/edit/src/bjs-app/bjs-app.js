@@ -1,17 +1,54 @@
 Polymer({
   is: 'bjs-app',
   behaviors: [
-    Polymer.BJSLogging
+    Polymer.BJSLogging,
+    Polymer.BJSRealtimeDbMsgHandler
   ],
   properties: {
+    logLevel: {
+      type: Number,
+      value: 4
+    },
+
     mode: {
       type: String,
       value: "authenticating"
+    },
+    auth: {
+      type: Object,
+      notify: true,
+      value: function() {
+        return {
+          user: null,
+          gapi: {
+            signedIn: false,
+            user: null
+          }
+        }
+      },
     },
     authStatus: {
       type: String,
       value: "idle",
     },
+
+    db: {
+      type: Object
+    },
+    iodb: {
+      type: Object,
+      value: function() {
+        return {
+          endpoint: '//%BUTTRESS_ADMIN_BUTTRESS_URL%',
+          connected: false,
+          rxEvents: [
+            'db-activity'
+          ],
+          rx: []
+        };
+      }
+    },
+
     context: {
       type: Object,
       value: function() {
@@ -27,28 +64,19 @@ Polymer({
         };
       }
     },
-    auth: {
-      type: Object,
-      value: {
-        user: null,
-      },
-      notify: true
-    },
-    db: {
-      type: Object
-    },
     page: {
       type: String,
       reflectToAttribute: true,
       observer: '__pageChanged'
     },
-    subPageTitle: {
-      type: String
-    },
     mainTitle: {
       type: String,
       computed: '__computeMainTitle(page, subPageTitle)'
     },
+    subPageTitle: {
+      type: String
+    },
+
     __hideMenuButton: {
       type: Boolean,
       computed: '__computeHideMenuButton(subroute.path)'
@@ -61,6 +89,7 @@ Polymer({
 
   observers: [
     '__routePageChanged(routeData.page)',
+    '__dbConnected(iodb.connected)',
     '__authChanged(authStatus)'
   ],
 
@@ -86,7 +115,6 @@ Polymer({
     if ( this.authStatus !== "done") {
       return;
     }
-    this.__debug(this.auth.user);
     if (this.auth.user) {
       this.mode = "application";
     } else {
@@ -98,6 +126,20 @@ Polymer({
 
     this.$.toast.text = ev.detail.error.message;
     this.$.toast.open();
+  },
+
+  __dbConnected: function(connected) {
+    this.__debug(`db: connected: ${connected}`);
+  },
+  __dbRxEvent: function(ev) {
+    this.__debug('__dbRxEvent', ev);
+
+    let authUser = this.get('auth.user');
+    if (!authUser) {
+      return;
+    }
+
+    this.__handleRxEvent(ev, authUser);
   },
 
   __showPage404: function() {

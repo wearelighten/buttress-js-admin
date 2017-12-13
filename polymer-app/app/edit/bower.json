@@ -32,7 +32,8 @@
     "paper-toast": "^1.3.0",
     "paper-spinner": "^1.2.1",
     "fingerprintjs2": "^1.5.1",
-    "iron-data-table": "Saulis/iron-data-table#^1.0.7"
+    "iron-data-table": "Saulis/iron-data-table#^1.0.7",
+    "socket.io-client": "^1.7.4"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
@@ -113,6 +114,12 @@
     },
     "paper-item": {
       "main": "./**/*.html"
+    },
+    "socket.io-client": {
+      "main": [
+        "./dist/*.map",
+        "./dist/*.js"
+      ]
     },
     "fingerprintjs2": {
       "main": [
