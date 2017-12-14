@@ -40,9 +40,11 @@ const __recurseVars = (env, root) => {
     } else if (root[variable] instanceof Array) {
       __recurseVars(env, root[variable]);
     } else if (typeof root[variable] === 'string') {
-      const match = _regEx.exec(root[variable]);
-      if (match) {
-        root[variable] = root[variable].replace(`%${match[1]}%`, env[match[1]]);
+      while (_regEx.exec(root[variable])) {
+        let match = _regEx.exec(root[variable]);
+        if (match) {
+          root[variable] = root[variable].replace(`%${match[1]}%`, env[match[1]]);
+        }
       }
     }
   }

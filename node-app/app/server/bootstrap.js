@@ -16,7 +16,7 @@ const Auth = require('./auth');
 
 var _installApp = app => {
   Buttress.init({
-    buttressUrl: Config.auth.buttress.url,
+    buttressUrl: `${Config.auth.buttress.prefix}${Config.auth.buttress.url}`,
     appToken: Config.auth.buttress.appToken
   });
   Auth.init(app);

@@ -35,7 +35,9 @@ const Globs = {
 
 let Environment = {
   NODE_ENV: 'development',
-  BUTTRESS_ADMIN_BUTTRESS_URL: ''
+  BUTTRESS_ADMIN_BUTTRESS_HOST: '',
+  BUTTRESS_ADMIN_BUTTRESS_API: '',
+  BUTTRESS_ADMIN_BUTTRESS_URL: '',
 };
 
 // Replace Environment defaults with local vars

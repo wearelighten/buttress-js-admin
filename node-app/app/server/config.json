@@ -10,7 +10,9 @@
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_ID": "",
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET": "",
     "BUTTRESS_ADMIN_APP_TOKEN": "",
-    "BUTTRESS_ADMIN_BUTTRESS_URL": "http://buttressjs.example.com/api/v1",
+    "BUTTRESS_ADMIN_BUTTRESS_PROTOCOL": "http://",
+    "BUTTRESS_ADMIN_BUTTRESS_HOST": "buttressjs.example.com",
+    "BUTTRESS_ADMIN_BUTTRESS_API": "/api/v1",
     "BUTTRESS_ADMIN_APP_PATH": "./",
     "BUTTRESS_ADMIN_AUTH_USER": "chris@evansfinch.co.uk"
   },
@@ -29,7 +31,10 @@
         "%BUTTRESS_ADMIN_AUTH_USER%"
       ],
       "buttress": {
-        "url": "%BUTTRESS_ADMIN_BUTTRESS_URL%",
+        "prefix": "%BUTTRESS_ADMIN_BUTTRESS_PROTOCOL%",   
+        "host": "%BUTTRESS_ADMIN_BUTTRESS_HOST%",
+        "api": "%BUTTRESS_ADMIN_BUTTRESS_API%",
+        "url": "%BUTTRESS_ADMIN_BUTTRESS_HOST%%BUTTRESS_ADMIN_BUTTRESS_API%",
         "appToken": "%BUTTRESS_ADMIN_APP_TOKEN%"
       },
       "google": {
