@@ -39,7 +39,7 @@ Polymer({
       type: Object,
       value: function() {
         return {
-          endpoint: '//%BUTTRESS_ADMIN_BUTTRESS_URL%',
+          endpoint: '//%BUTTRESS_ADMIN_BUTTRESS_HOST%',
           connected: false,
           rxEvents: [
             'db-activity'

@@ -7,23 +7,12 @@ Polymer.BJSRealtimeDbMsgHandler = {
   },
 
   __handleRxEvent: function(ev, authUser) {
-    this.__silly(ev.detail);
+    this.__silly('__handleRxEvent', authUser, ev.detail);
     let type = ev.detail.type;
     if (type !== 'db-activity') {
       return;
     }
     let payload = ev.detail.payload;
-    // let user = this.get('db.user.data').find(u => u.id === payload.user);
-
-    // if (payload.visibility != 'private') {
-    //   this.push('db.activity.data', {
-    //     timestamp: payload.timestamp,
-    //     title: payload.title,
-    //     description: payload.description,
-    //     user: payload.user,
-    //     path: payload.path
-    //   });
-    // }
 
     if (authUser.id !== payload.user) {
       this.__parsePayload(payload);

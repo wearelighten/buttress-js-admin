@@ -50,6 +50,8 @@ for (const key in Environment) {
   }
 }
 
+Environment.BUTTRESS_ADMIN_BUTTRESS_URL = `${Environment.BUTTRESS_ADMIN_BUTTRESS_HOST}${Environment.BUTTRESS_ADMIN_BUTTRESS_API}`;
+
 const __envReplace = (stream) => {
   Object.keys(Environment).forEach(key => {
     stream = stream.pipe(replace(`%${key}%`, Environment[key]));
