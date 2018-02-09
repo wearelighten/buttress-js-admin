@@ -14,6 +14,14 @@ Polymer({
       type: String,
       value: "authenticating"
     },
+    app: {
+      type: Object,
+      value: function() {
+        return {
+          publicId: '%BUTTRESS_ADMIN_APP_PUBLIC_ID%'
+        };
+      }
+    },
     auth: {
       type: Object,
       notify: true,

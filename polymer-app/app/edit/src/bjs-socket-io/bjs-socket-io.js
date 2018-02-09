@@ -58,9 +58,10 @@ Polymer({
   },
 
   connect: function() {
-    this.__debug('Attempting Socket connection', this.endpoint);
+    const app = this.get('app');
+    this.__debug('Attempting Socket connection', `${this.endpoint}/${app.publicId}`);
     try {
-      this.socket = io.connect(this.endpoint);
+      this.socket = io.connect(`${this.endpoint}/${app.publicId}`);
       this.socket.on('connect',() => {
         this.connected = true;
         this.__debug('Connected');

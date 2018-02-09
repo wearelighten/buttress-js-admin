@@ -35,17 +35,17 @@ const Globs = {
 
 let Environment = {
   NODE_ENV: 'development',
+  BUTTRESS_ADMIN_APP_PUBLIC_ID: '',
   BUTTRESS_ADMIN_BUTTRESS_HOST: '',
   BUTTRESS_ADMIN_BUTTRESS_API: '',
   BUTTRESS_ADMIN_BUTTRESS_URL: '',
 };
 
 // Replace Environment defaults with local vars
-for (const key in Environment) {
+for (let key in Environment) {
   if (!process.env[key]) {
-    continue;
-  }
-  if (process.env[key]) {
+    console.log('WARNING', `You must specify the ${key} environment variable`);
+  } else {
     Environment[key] = process.env[key];
   }
 }

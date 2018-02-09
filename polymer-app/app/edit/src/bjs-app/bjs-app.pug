@@ -188,6 +188,7 @@ dom-module#bjs-app
       on-error="__dataServiceError"
     )
     bjs-socket-io#iodb(
+      app="[[app]]",
       auth="[[auth]]",
       endpoint="{{iodb.endpoint}}",
       connected="{{iodb.connected}}",
