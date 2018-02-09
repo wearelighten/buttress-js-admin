@@ -12,7 +12,7 @@
     "globals": {
         "Polymer": true,
         "Fingerprint2": true,
-        "Sugar": true,
+        "Sugar": true
     },
     "rules": {
         "no-this-before-super": "warn",
