@@ -3,20 +3,47 @@
  */
 Polymer.BJSRealtimeDbMsgHandler = {
   properties: {
-
+    lastSequence: {
+      type: Number,
+      value: null
+    }
   },
 
   __handleRxEvent: function(ev, authUser) {
-    this.__silly('__handleRxEvent', authUser, ev.detail);
-    let type = ev.detail.type;
+    const lastSequence = this.get('lastSequence');
+    const type = ev.detail.type;
+
+    this.__silly('__handleRxEvent', ev.detail);
+
     if (type !== 'db-activity') {
       return;
     }
-    let payload = ev.detail.payload;
+    
+    const sequence = ev.detail.payload.sequence;
+    const data = ev.detail.payload.data;
 
-    if (authUser.id !== payload.user) {
-      this.__parsePayload(payload);
+    if (lastSequence !== null) {
+      if (lastSequence === sequence) {
+        this.__warn('Payload duplicate discarding', sequence, lastSequence);
+        return;
+      }
+      if (lastSequence + 1 !== sequence) {
+        this.fire('create-action-toast', {
+          label: 'Reload',
+          text: 'New version available, Please reload to update.',
+          onAction: () => location.reload(0),
+          duration: 0
+        });
+        this.__warn('Payload mismatch', sequence, lastSequence);
+        return;
+      }
     }
+
+    if (authUser.id !== data.user) {
+      this.__parsePayload(data);
+    }
+    
+    this.set('lastSequence', sequence);
   },
 
   __parsePayload: function(payload) {

@@ -59,9 +59,14 @@ Polymer({
 
   connect: function() {
     const app = this.get('app');
+    const user = this.get('auth.user');
     this.__debug('Attempting Socket connection', `${this.endpoint}/${app.publicId}`);
     try {
-      this.socket = io.connect(`${this.endpoint}/${app.publicId}`);
+      this.socket = io.connect(`${this.endpoint}/${app.publicId}`, {
+        query: {
+          token: user.authToken
+        }
+      });
       this.socket.on('connect',() => {
         this.connected = true;
         this.__debug('Connected');
