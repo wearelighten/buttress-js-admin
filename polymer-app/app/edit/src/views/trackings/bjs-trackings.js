@@ -30,7 +30,7 @@ Polymer({
     __trackingUnpaged: Array,
     __trackingQuery: {
       type: Object,
-      computed: '__computeTrackingQuery(db.tracking.data)'
+      computed: '__computeTrackingQuery(db.tracking.data.length)'
     },
     __trackingPage: {
       type: Number,
@@ -60,7 +60,7 @@ Polymer({
     
     __trackingExpanded: {
       type: Array,
-      computed: '__computeTrackingExpanded(__tracking)'
+      computed: '__computeTrackingExpanded(__tracking, __tracking.length)'
     },
   },
 
