@@ -373,6 +373,11 @@ Polymer({
             status: 'uninitialised',
             data: [],
             metadata: {}
+          },
+          activity: {
+            status: 'uninitialised',
+            data: [],
+            metadata: {}
           }
         }
       },

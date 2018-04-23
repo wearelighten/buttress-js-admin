@@ -1,5 +1,5 @@
 Polymer({
-  is: 'bjs-tracking-detail',
+  is: 'bjs-activity-detail',
   behaviors: [
     BJSBehaviors.Logging,
     BJSBehaviors.Helpers

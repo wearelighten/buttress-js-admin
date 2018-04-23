@@ -1,0 +1,163 @@
+link(rel="import", href="/bower_components/polymer/polymer.html")
+link(rel="import", href="/bower_components/iron-data-table/iron-data-table.html")
+
+link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+dom-module#bjs-activity-table
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        --paper-tab-ink: var(--paper-menu-color);
+
+        --paper-tabs-selection-bar-color: var(--paper-menu-color);
+      }
+
+      #DataTable {
+        height: 700px;
+      }
+      #DataTable .detail {
+        width: 100%;
+      }
+      #DataTable .detail pre {
+        background: #333;
+        color: #FFF;
+        overflow-x: auto;
+      }
+
+    bjs-app-db-query(log-label="tracking-table-users", db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
+    bjs-app-db-query(log-label="tracking-table-apps", db="[[db]]", doc="[[db.app]]", query="[[__appsQuery]]", find-all="{{__apps}}", limit="0")
+
+    .card
+      .layout.horizontal
+        .layout.horizontal.wrap
+          p Page [[currentPage]] of [[totalPages]]
+        .flex
+        .layout.horizontal.wrap
+          bjs-pagination(
+            current="{{currentPage}}",
+            max-steps="5",
+            last="[[totalPages]]"
+          )
+
+    .card
+      iron-data-table#DataTable(
+        items="[[__dataExpanded]]",
+        page-size="12",
+        details-enabled
+      )
+        template(is="row-detail")
+          div.detail
+            pre [[item.json]]
+        data-table-column(name="Path")
+          template [[item.path]]
+        data-table-column(name="Type")
+          template [[item.permissions]]
+        data-table-column(name="Description")
+          template [[item.description]]
+        data-table-column(name="Date")
+          template [[item.dateTime]]
+        data-table-column(name="", align-right)
+          template
+            paper-button(on-tap="__viewTrackingItem") View
+
+  script.
+    Polymer({
+      is: 'bjs-activity-table',
+      behaviors: [
+        BJSBehaviors.Logging,
+        BJSBehaviors.Helpers
+      ],
+      properties: {
+        logLevel: {
+          type: Number,
+          value: 3
+        },
+        db: {
+          type: Object,
+          notify: true
+        },
+        data: {
+          type: Array
+        },
+        currentPage: {
+          type: Number,
+          notify: true,
+          value: 0
+        },
+        totalPages: {
+          type: Number,
+          value: 0
+        },
+
+        __users: Array,
+        __usersQuery: {
+          type: Object,
+          computed: '__computeUsersQuery(db.user.data)'
+        },
+
+        __apps: Array,
+        __appsQuery: {
+          type: Object,
+          computed: '__computeAppsQuery(db.app.data)'
+        },
+
+        __dataExpanded: {
+          type: Array,
+          computed: '__computeDataExpanded(data, __apps)'
+        },
+      },
+      observers: [
+        '__checkCurrentPageOutBounds(totalPages)'
+      ],
+
+      __viewTrackingItem: function(ev) {
+        const item = ev.model.get('item');
+        this.__debug('__viewTrackingItem', item);
+        this.fire('view-path', `activities/${item.id}`);
+      },
+
+      __computeDataExpanded: function(activities) {
+        const apps = this.get('__apps');
+        const users = this.get('__users');
+        return activities.map(activity => {
+          //- const user = users.find(u => u.id === track.userId);
+          //- let email = (user) ? user.auth[0].email : '-';
+
+          //- const app = apps.find(a => a.id === track.appId);
+          //- let appName = (app) ? app.name : '-';
+
+          return {
+            id: activity.id,
+            path: activity.path,
+            permissions: activity.permissions,
+            description: activity.description,
+            dateTime: this.timestampToStringFormatted(activity.timestamp),
+            json: JSON.stringify(activity, null, 2)
+          }
+        });
+      },
+
+      __checkCurrentPageOutBounds: function(total) {
+        const current = this.get('currentPage');
+
+        if (current > total) {
+          this.set('currentPage', total);
+        }
+      },
+
+      __computeUsersQuery: function() {
+        return {
+          // All
+        }
+      },
+      __computeAppsQuery: function() {
+        return {
+          // All
+        }
+      }
+    });

@@ -21,12 +21,12 @@ link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
 
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
-link(rel="import", href="/src/views/trackings/bjs-tracking-table.html")
-link(rel="import", href="/src/views/trackings/bjs-tracking-detail.html")
+link(rel="import", href="/src/views/activities/bjs-activity-table.html")
+link(rel="import", href="/src/views/activities/bjs-activity-detail.html")
 
 link(rel="import", href="/src/shared-styles.html")
 
-dom-module#bjs-trackings
+dom-module#bjs-activities
   template
     style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
     style(include="shared-styles").
@@ -38,7 +38,7 @@ dom-module#bjs-trackings
       .text-center{
         text-align: center;
       }
-      
+ 
     iron-pages(
       selected='[[__loadMode]]',
       attr-for-selected='name',
@@ -49,15 +49,15 @@ dom-module#bjs-trackings
 
       div(name="loaded")
         bjs-app-db-query(
-          log-label="listing-tracking",
+          log-label="listing-activites",
           db="[[db]]",
-          doc="[[db.tracking]]",
-          query="[[__trackingQuery]]",
-          num-results="{{__totalTracking}}",
-          num-pages="{{__numTrackingPages}}",
-          page="[[__trackingPage]]",
-          find-all="{{__tracking}}",
-          find-all-unpaged="{{__trackingUnpaged}}",
+          doc="[[db.activity]]",
+          query="[[__activitiesQuery]]",
+          num-results="{{__activitiesTotal}}",
+          num-pages="{{__activitiesNumPages}}",
+          page="[[__activitiesPage]]",
+          find-all="{{__activities}}",
+          find-all-unpaged="{{__activitiesUnpaged}}",
           sort-path="timestamp",
           sort-order="DESC",
           sort-type="date"
@@ -80,19 +80,14 @@ dom-module#bjs-trackings
                 h1 Logging
                 p [[__trackingLoggingCount]]
 
-            bjs-tracking-table(
+            bjs-activity-table(
               db="[[db]]",
-              data="[[__tracking]]",
-              current-page="{{__trackingPage}}",
-              total-pages="[[__numTrackingPages]]",
+              data="[[__activities]]",
+              current-page="{{__activitiesPage}}",
+              total-pages="[[__activitiesNumPages]]",
             )
 
           div(name="detail")
-            bjs-tracking-detail(
-              db="{{db}}",
-              item="[[__selectedItem]]",
-              route="{{route}}",
-              route-data="{{routeData}}"
-            )
+            h1 You Must Construct Additional Pylons!
 
-  script(src="bjs-trackings.js")
+  script(src="bjs-activities.js")

@@ -228,6 +228,7 @@ dom-module#bjs-app
             a(name="apps", href="/apps") Applications
             a(name="users", href="/users") Users
             a(name="users", href="/trackings") Tracking
+            a(name="users", href="/activities") Activites
 
         //-sample-content(size="100")
         iron-pages#viewPages(
@@ -286,6 +287,18 @@ dom-module#bjs-app
             doc="{{db.tracking}}",
             auth="[[auth]]",
             title="Tracking",
+            route="{{route}}",
+            route-data="{{routeData}}",
+            sub-page-title="{{subPageTitle}}",
+            subroute="{{subroute}}",
+            subroute-data="{{subrouteData}}",
+          )
+          bjs-activities(
+            name="activities",
+            db="{{db}}",
+            doc="{{db.activity}}",
+            auth="[[auth]]",
+            title="Activity",
             route="{{route}}",
             route-data="{{routeData}}",
             sub-page-title="{{subPageTitle}}",

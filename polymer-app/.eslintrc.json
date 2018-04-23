@@ -11,8 +11,10 @@
     },
     "globals": {
         "Polymer": true,
+        "BJSBehaviors": true,
         "Fingerprint2": true,
-        "Sugar": true
+        "Sugar": true,
+        "io": true
     },
     "rules": {
         "no-this-before-super": "warn",
