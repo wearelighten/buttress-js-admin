@@ -13,6 +13,9 @@ link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
 link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
 link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
 link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+link(rel="import" href="/bower_components/paper-styles/typography.html")
+link(rel="import" href="/bower_components/paper-tabs/paper-tab.html")
+link(rel="import" href="/bower_components/paper-tabs/paper-tabs.html")
 
 link(rel="import" href="/src/bjs-app-db/bjs-app-db-query.html")
 link(rel="import" href="/src/bjs-app/bjs-behaviors.html")
@@ -26,16 +29,85 @@ dom-module#bjs-tracking-detail
     style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
     style(include="shared-styles").
       :host {
+        --paper-tab-ink: var(--paper-menu-color);
 
+        --paper-tabs-selection-bar-color: var(--paper-menu-color);
       }
 
-    .card
-      .layout.vertical
-        h2 [[item.type]]
-        p [[item.name]]
+    bjs-app-db-query(
+      log-level="4",
+      log-label="detail-app-tracking",
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__appTrackingQuery]]",
+      num-results="{{__appTrackingTotal}}",
+      num-pages="{{__appTrackingNumPages}}",
+      page="[[__appTrackingPage]]",
+      find-all="{{__appTracking}}",
+      find-all-unpaged="{{__appTrackingUnpaged}}",
+      sort-path="timestamp",
+      sort-order="DESC",
+      sort-type="date"
+    )
+    bjs-app-db-query(
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__userTrackingQuery]]",
+      num-results="{{__userTrackingTotal}}",
+      num-pages="{{__userTrackingNumPages}}",
+      page="[[__userTrackingPage]]",
+      find-all="{{__userTracking}}",
+      find-all-unpaged="{{__appTrackingUnpaged}}",
+      sort-path="timestamp",
+      sort-order="DESC",
+      sort-type="date"
+    )
 
     .card
       .layout.vertical
-        pre.code [[jsonDebug]]
+        .layout.horizontal
+          div.flex
+            h2 [[item.type]]
+          div.flex.text-right
+            h2 [[itemTimestampFormatted]]
+        .layout.horizontal
+          p [[item.name]]
+
+    .card
+      paper-tabs(
+        selected="{{trackingView}}",
+        scrollable,
+        fit-container
+      )
+        paper-tab(name="overview") JSON Object
+        paper-tab(name="appTracking") Last App Tracking
+        paper-tab(name="appActivity") Last App Activity
+        paper-tab(name="userTracking") Last User Tracking
+        paper-tab(name="userActivity") Last User Activity
+
+    iron-pages(
+      selected="[[trackingView]]"
+    )
+      div(name="overview")
+        .card
+          pre.code [[jsonDebug]]
+      div(name="appTracking")
+        bjs-tracking-table(
+          db="[[db]]",
+          data="[[__appTracking]]",
+          current-page="{{__appTrackingPage}}",
+          total-pages="[[__appTrackingNumPages]]",
+        )
+      div(name="appActivity")
+
+      div(name="userTracking")
+        bjs-tracking-table(
+          db="[[db]]",
+          data="[[__userTracking]]",
+          current-page="{{__userTrackingPage}}",
+          total-pages="[[__userTrackingNumPages]]",
+        )
+      div(name="userActivity")
+      
 
   script(src="bjs-tracking-detail.js")

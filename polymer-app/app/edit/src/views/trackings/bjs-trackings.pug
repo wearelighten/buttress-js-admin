@@ -14,7 +14,6 @@ link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
 link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
 link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
 link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
-link(rel="import" href="/bower_components/iron-data-table/iron-data-table.html")
 
 link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
 link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
@@ -22,6 +21,7 @@ link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
 
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+link(rel="import", href="/src/views/trackings/bjs-tracking-table.html")
 link(rel="import", href="/src/views/trackings/bjs-tracking-detail.html")
 
 link(rel="import", href="/src/shared-styles.html")
@@ -38,18 +38,6 @@ dom-module#bjs-trackings
       .text-center{
         text-align: center;
       }
-
-      #DataTable {
-        height: 700px;
-      }
-      #DataTable .detail {
-        width: 100%;
-      }
-      #DataTable .detail pre {
-        background: #333;
-        color: #FFF;
-        overflow-x: auto;
-      }
       
     iron-pages(
       selected='[[__loadMode]]',
@@ -61,6 +49,8 @@ dom-module#bjs-trackings
 
       div(name="loaded")
         bjs-app-db-query(
+          log-level="4",
+          log-label="listing-tracking",
           db="[[db]]",
           doc="[[db.tracking]]",
           query="[[__trackingQuery]]",
@@ -73,9 +63,6 @@ dom-module#bjs-trackings
           sort-order="DESC",
           sort-type="date"
         )
-
-        bjs-app-db-query(db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
-        bjs-app-db-query(db="[[db]]", doc="[[db.app]]", query="[[__appsQuery]]", find-all="{{__apps}}", limit="0")
 
         iron-pages(
           selected='[[__pageMode]]',
@@ -94,40 +81,12 @@ dom-module#bjs-trackings
                 h1 Logging
                 p [[__trackingLoggingCount]]
 
-            .card
-              .layout.horizontal
-                .layout.horizontal.wrap
-                  p Page [[__trackingPage]] of [[__numTrackingPages]]
-                .flex
-                .layout.horizontal.wrap
-                  bjs-pagination(
-                    current="{{__trackingPage}}",
-                    max-steps="5",
-                    last="[[__numTrackingPages]]"
-                  )
-
-            .card
-              iron-data-table#DataTable(
-                items="[[__trackingExpanded]]",
-                page-size="50",
-                details-enabled
-              )
-                template(is="row-detail")
-                  div.detail
-                    pre [[item.json]]
-                data-table-column(name="Type")
-                  template [[item.type]]
-                data-table-column(name="App")
-                  template [[item.appName]]
-                data-table-column(name="Name")
-                  template [[item.name]]
-                data-table-column(name="User")
-                  template [[item.user]]
-                data-table-column(name="Timestamp")
-                  template [[item.timestamp]]
-                data-table-column(name="", align-right)
-                  template
-                    paper-button(on-tap="__viewTrackingItem") View
+            bjs-tracking-table(
+              db="[[db]]",
+              data="[[__tracking]]",
+              current-page="{{__trackingPage}}",
+              total-pages="[[__numTrackingPages]]",
+            )
 
           div(name="detail")
             bjs-tracking-detail(
