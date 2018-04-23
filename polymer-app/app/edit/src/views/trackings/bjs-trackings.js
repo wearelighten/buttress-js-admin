@@ -14,6 +14,11 @@ Polymer({
       type: Object
     },
 
+    subPageTitle: {
+      type: String,
+      value: 'Tracking'
+    },
+
     __users: Array,
     __usersQuery: {
       type: Object,
@@ -60,8 +65,22 @@ Polymer({
     
     __trackingExpanded: {
       type: Array,
-      computed: '__computeTrackingExpanded(__tracking, __tracking.length)'
+      computed: '__computeTrackingExpanded(__tracking, __apps, __users, __tracking.length)'
     },
+  },
+
+  /**
+   * Set the page header title
+   * @override Polymer.BJSListView
+   */
+  __computeSubPageTitle: function(){
+    return 'Tracking';
+  },
+
+  __viewTrackingItem: function(ev) {
+    const item = ev.model.get('item');
+    this.__debug('__viewTrackingItem', item);
+    this.fire('view-path', `trackings/${item.id}`);
   },
 
   __computeTrackingExpanded: function(tracking) {
@@ -71,10 +90,11 @@ Polymer({
       const user = users.find(u => u.id === track.userId);
       let email = (user) ? user.auth[0].email : '-';
 
-      const app = users.find(a => a.id === track.appId);
+      const app = apps.find(a => a.id === track.appId);
       let appName = (app) ? app.name : '-';
 
       return {
+        id: track.id,
         type: track.type,
         name: track.name,
         app: appName,

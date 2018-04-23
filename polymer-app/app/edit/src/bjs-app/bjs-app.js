@@ -94,12 +94,14 @@ Polymer({
       computed: '__computeHideBackButton(subroute.path)'
     }
   },
-
   observers: [
     '__routePageChanged(routeData.page)',
     '__dbConnected(iodb.connected)',
     '__authChanged(authStatus)'
   ],
+  listeners: {
+    'view-path': '__viewPath',
+  },
 
   attached: function() {
     this.authStatus = "begin";
@@ -117,6 +119,16 @@ Polymer({
     // Load page import on demand. Show 404 page if fails
     var resolvedPageUrl = this.resolveUrl(`../views/${page}/bjs-${page}.html`);
     this.importHref(resolvedPageUrl, null, this.__showPage404, true);
+  },
+
+  __viewPath: function(ev) {
+    const path = ev.detail;
+    if (!path) {
+      this.__warn('__viewPath', 'Called with no path specified', path);
+      return;
+    }
+    this.__debug('__viewPath', path);
+    this.set('route.path', `/${path}`);
   },
 
   __authChanged: function() {
