@@ -1,10 +1,11 @@
 link(rel="import" href="/bower_components/polymer/polymer.html")
 
 script.
+  window.BJSBehaviors = window.BJSBehaviors || {};
   /**
-   * @polymerBehavior Polymer.BJSLogging
+   * @polymerBehavior BJSBehaviors.Logging
    */
-  Polymer.BJSLogging = {
+  BJSBehaviors.Logging = {
     properties: {
       LogLevel: {
         type: Object,
@@ -78,4 +79,18 @@ script.
         console.log.apply(console, args);
       }
     }
+  }
+
+  /**
+   * @polymerBehavior Polymer.CRMShared
+   */
+  BJSBehaviors.Helpers = {
+    timestampToStringFormatted: function(timestamp) {
+      if (!timestamp) return 'No timestamp';
+
+      const dateTime = Sugar.Date.create(timestamp);
+      if (!Sugar.Date.isValid(dateTime)) return 'Invalid Timestamp';
+
+      return Sugar.Date.format(dateTime, '{dd}/{MM}/{yyyy} {HH}:{mm}');
+    },
   }

@@ -1,7 +1,7 @@
 Polymer({
   is: 'bjs-trackings',
   behaviors: [
-    Polymer.BJSLogging,
+    BJSBehaviors.Logging,
     Polymer.BJSListView
   ],
   properties: {

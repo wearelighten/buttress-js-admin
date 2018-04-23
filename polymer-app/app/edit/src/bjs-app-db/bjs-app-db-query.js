@@ -1,7 +1,7 @@
 Polymer({
   is: 'bjs-app-db-query',
   behaviors: [
-    Polymer.BJSLogging
+    BJSBehaviors.Logging
   ],
   properties: {
     logLevel: {

@@ -319,7 +319,7 @@ const AppDb = {
 
 Polymer({
   is: 'bjs-app-db',
-  behaviors: [Polymer.BJSLogging],
+  behaviors: [BJSBehaviors.Logging],
   properties: {
     logLevel: {
       type: Number,

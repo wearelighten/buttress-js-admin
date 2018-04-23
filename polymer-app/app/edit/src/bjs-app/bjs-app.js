@@ -1,7 +1,7 @@
 Polymer({
   is: 'bjs-app',
   behaviors: [
-    Polymer.BJSLogging,
+    BJSBehaviors.Logging,
     Polymer.BJSRealtimeDbMsgHandler
   ],
   properties: {

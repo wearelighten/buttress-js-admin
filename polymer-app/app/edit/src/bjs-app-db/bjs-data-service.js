@@ -1,7 +1,7 @@
 Polymer({
   is: "bjs-data-service",
   behaviors: [
-    Polymer.BJSLogging
+    BJSBehaviors.Logging
   ],
   properties: {
     logLevel: {

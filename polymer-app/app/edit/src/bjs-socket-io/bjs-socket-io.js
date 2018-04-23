@@ -1,7 +1,7 @@
 Polymer({
   is: 'bjs-socket-io',
   behaviors: [
-    Polymer.BJSLogging
+    BJSBehaviors.Logging
   ],
   properties: {
     logLevel: {

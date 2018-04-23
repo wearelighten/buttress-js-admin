@@ -1,7 +1,7 @@
 Polymer({
   is: 'bjs-users',
   behaviors: [
-    Polymer.BJSLogging,
+    BJSBehaviors.Logging,
     Polymer.BJSListView
   ],
   properties: {
