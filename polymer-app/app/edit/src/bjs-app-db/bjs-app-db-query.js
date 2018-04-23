@@ -9,7 +9,7 @@ Polymer({
       value: 3
     },
     logLabel: {
-      type: Number,
+      type: String,
       value: 'db-query'
     },
     db: {
@@ -35,7 +35,7 @@ Polymer({
     },
     limit: {
       type: Number,
-      value: 50
+      value: 12
     },
     findOne: {
       type: Object,
@@ -98,13 +98,15 @@ Polymer({
     }
   },
   __query: function() {
-    this.__debug('__query', this.query);
+    const logLabel = this.get('logLabel');
+
+    this.__debug(logLabel, '__query', this.query);
     if (!this.query) {
       this.__silly('__query', 'no query');
       return;
     }
     if (!this.doc || !this.doc.loaded) {
-      this.__debug('__query', 'no doc');
+      this.__debug(logLabel, '__query', 'no doc');
       return;
     }
     if (this.get('paused') === true) {
@@ -114,7 +116,13 @@ Polymer({
 
     let data = this.doc.data;
     this.__silly(data);
-    data = this.__processQuery(this.query, data);
+    try {
+      data = this.__processQuery(this.query, data);
+    } catch (err) {
+      this.__err(err);
+      this.__err('Query was:', this.query);
+      return;
+    }
     this.__silly(data);
 
     if (this.get('sortPath')) {
@@ -128,7 +136,7 @@ Polymer({
 
       this.__silly(this.page, this.limit, this.numPages);
       data = data.splice((this.page-1) * this.limit, this.limit);
-      this.__debug(data);
+      this.__debug(logLabel, '__query', data);
     }
 
     this.set('findAll', data);
@@ -203,21 +211,29 @@ Polymer({
     let valueA = pathValueA[0];
     let valueB = pathValueB[0];
 
+    if (sortType === 'string') {
+      valueA = (valueA) ? valueA.toLowerCase(): '';
+      valueB = (valueB) ? valueB.toLowerCase(): '';
+    }
     if (sortType === 'date') {
       return (sortOrder === 'ASC') ? new Date(valueA) - new Date(valueB) : new Date(valueB) - new Date(valueA);
     }
 
-    return (sortOrder === 'ASC') ? valueA - valueB : valueB - valueA;
+    if (sortOrder === 'ASC') {
+      return valueA.localeCompare(valueB);
+    }
+
+    return valueB.localeCompare(valueA);
   },
 
-  __parsePath: function (obj, path) {
+  __parsePath: function(obj, path) {
     let split = path.split('.');
     return split.reduce((o, key) => {
-      if (!o) return [];
+      if (o === undefined) return [];
       this.__silly(typeof o[key], o instanceof Array); 
       if (o instanceof Array && typeof o[key] === 'undefined') {
         return o.reduce((res, p) => {
-          if (!p[key]) return res;
+          if (p === undefined ||p[key] === undefined) return res;
           res.push(p[key]);
           return res;
         }, []);
@@ -228,7 +244,9 @@ Polymer({
   },
 
   __executeQuery: function(data, field, operator, operand) {
-        let fns = {
+    const logLabel = this.get('logLabel');
+
+    let fns = {
       $not: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val !== rhs) !== -1,
       $eq: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val === rhs) !== -1,
       $gt: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val > rhs) !== -1,
@@ -241,7 +259,43 @@ Polymer({
       $nin: (rhs) => (lhs) => rhs.indexOf(lhs[field]) === -1,
       $exists: (rhs) => (lhs) => this.__parsePath(lhs, field).findIndex(val => val === undefined) === -1 === rhs,
       $inProp: (rhs) => (lhs) => lhs[field].indexOf(rhs) !== -1,
-      $elMatch: (rhs) => (lhs) => this.__processQuery(rhs, this.__parsePath(lhs, field)).length > 0
+      $elMatch: (rhs) => (lhs) => this.__processQuery(rhs, this.__parsePath(lhs, field)).length > 0,
+      $gtDate: (rhs) => {
+        if (rhs === null) return false;
+        const rhsDate = Sugar.Date.create(rhs);
+
+        return (lhs) => this.__parsePath(lhs, field).findIndex(val => {
+          if (val === null) return false; // Dont compare against null value
+          return Sugar.Date.isBefore(rhsDate, val);
+        }) !== -1;
+      },
+      $ltDate: (rhs) => {
+        if (rhs === null) return false;
+        const rhsDate = Sugar.Date.create(rhs);
+
+        return (lhs) => this.__parsePath(lhs, field).findIndex(val => {
+          if (val === null) return false; // Dont compare against null value
+          return Sugar.Date.isAfter(rhsDate, val);
+        }) !== -1;
+      },
+      $gteDate: (rhs) => {
+        if (rhs === null) return false;
+        const rhsDate = Sugar.Date.create(rhs);
+
+        return (lhs) => this.__parsePath(lhs, field).findIndex(val => {
+          if (val === null) return false; // Dont compare against null value
+          return Sugar.Date.isBefore(rhsDate, val) || Sugar.Date.is(rhsDate, val);
+        }) !== -1;
+      },
+      $lteDate: (rhs) => {
+        if (rhs === null) return false;
+        const rhsDate = Sugar.Date.create(rhs);
+
+        return (lhs) => this.__parsePath(lhs, field).findIndex(val => {
+          if (val === null) return false; // Dont compare against null value
+          return Sugar.Date.isAfter(rhsDate, val) || Sugar.Date.is(rhsDate, val);
+        }) !== -1;
+      }
     };
 
     if (!fns[operator]) {
@@ -250,7 +304,8 @@ Polymer({
     }
 
     let results = data.filter(fns[operator](operand));
-    this.__debug('__executeQuery', field, operator, operand, data.length, results.length);
+
+    this.__debug(logLabel, '__executeQuery', field, operator, operand, data.length, results.length);
 
     return results;
   }
