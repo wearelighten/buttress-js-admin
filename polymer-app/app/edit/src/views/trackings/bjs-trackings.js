@@ -2,6 +2,7 @@ Polymer({
   is: 'bjs-trackings',
   behaviors: [
     BJSBehaviors.Logging,
+    BJSBehaviors.TrackingsFilterBehaviour,
     Polymer.BJSListView
   ],
   properties: {
@@ -23,7 +24,7 @@ Polymer({
     __trackingUnpaged: Array,
     __trackingQuery: {
       type: Object,
-      computed: '__computeTrackingQuery(db.tracking.data.length)'
+      computed: '__computeTrackingQuery(db.tracking.data.length, __filters.*)'
     },
     __trackingPage: {
       type: Number,
@@ -36,7 +37,7 @@ Polymer({
     __totalTracking: {
       type: Number,
       value: 0
-    }, 
+    },
 
     __trackingInteractionCount: {
       type: Number,
@@ -61,8 +62,32 @@ Polymer({
   },
 
   __computeTrackingQuery: function() {
-    return {
-      // All
+    const orGroups = [];
+    const query = {
+      $and: []
+    };
+
+    let filters = this.get('__filters');
+    filters.forEach(f => {
+      if (!f.value) return;
+
+      let split = f.value.split(',').filter(s => s.trim().length > 0);
+      if (!split.length) return;
+
+      orGroups.push(split.map(s => {
+        return {[f.name]: {$rexi: s}};
+      }));
+    });
+    if (orGroups.length) {
+      query.$and = query.$and.concat(orGroups.map(o => ({$or: o})));
+    }
+
+    return query;
+  },
+
+  __computeUsersQuery: function() {
+    return { 
+      // Fetch all
     }
   },
 

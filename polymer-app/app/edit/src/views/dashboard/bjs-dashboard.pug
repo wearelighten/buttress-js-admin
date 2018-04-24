@@ -21,13 +21,10 @@ link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
 
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
-link(rel="import", href="/src/views/activities/bjs-activities-filter-behavior.html")
-link(rel="import", href="/src/views/activities/bjs-activity-table.html")
-link(rel="import", href="/src/views/activities/bjs-activity-detail.html")
 
 link(rel="import", href="/src/shared-styles.html")
 
-dom-module#bjs-activities
+dom-module#bjs-dashboard
   template
     style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
     style(include="shared-styles").
@@ -39,48 +36,32 @@ dom-module#bjs-activities
       .text-center{
         text-align: center;
       }
- 
-    iron-pages(
-      selected='[[__loadMode]]',
-      attr-for-selected='name',
-      role='loading'
-    )
-      .layout.horizontal.center.center-justified.auth-container(name="loading", style="height: 90vh;")
-        paper-spinner(active, alt="Loading organisations data...", style="width: 64px; height: 64px;")
 
-      div(name="loaded")
-        bjs-app-db-query(
-          log-label="listing-activites",
-          db="[[db]]",
-          doc="[[db.activity]]",
-          query="[[__activitiesQuery]]",
-          num-results="{{__activitiesTotal}}",
-          num-pages="{{__activitiesNumPages}}",
-          page="[[__activitiesPage]]",
-          find-all="{{__activities}}",
-          find-all-unpaged="{{__activitiesUnpaged}}",
-          sort-path="timestamp",
-          sort-order="DESC",
-          sort-type="date"
-        )
+    .card
+      .layout.horizontal.text-center
+        .flex
+          .layout.vertical
+            h2 Organisations
+            p [[db.org.data.length]]
+        .flex
+          .layout.vertical
+            h2 Groups
+            p [[db.group.data.length]]
+        .flex
+          .layout.vertical
+            h2 Apps
+            p [[db.app.data.length]]
+        .flex
+          .layout.vertical
+            h2 Users
+            p [[db.user.data.length]]
+        .flex
+          .layout.vertical
+            h2 Tracking
+            p [[db.tracking.data.length]]
+        .flex
+          .layout.vertical
+            h2 Activites
+            p [[db.activity.data.length]]
 
-        iron-pages(
-          selected='[[__pageMode]]',
-          attr-for-selected='name',
-          role='loaded'
-        )
-          div(name="list")
-            bjs-activity-table(
-              db="[[db]]",
-              data="[[__activities]]",
-              current-page="{{__activitiesPage}}",
-              total-pages="[[__activitiesNumPages]]",
-              total-results="[[__activitiesTotal]]",
-              filters="{{__filters}}",
-              filter-spec="[[__filterSpec]]"
-            )
-
-          div(name="detail")
-            h1 You Must Construct Additional Pylons!
-
-  script(src="bjs-activities.js")
+  script(src="bjs-dashboard.js")

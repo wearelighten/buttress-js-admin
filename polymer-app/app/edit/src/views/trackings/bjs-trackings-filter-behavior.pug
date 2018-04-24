@@ -1,0 +1,58 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+
+script.
+  window.BJSBehaviors = window.BJSBehaviors || {};
+
+  /**
+   * @polymerBehavior BJSBehaviors.TrackingsFilterBehaviour
+   */
+  BJSBehaviors.TrackingsFilterBehaviour = {
+    properties: {
+      __filters: {
+        type: Array,
+        value: function () {
+          return [{
+            editing: true,
+            name: 'name',
+            value: ''
+          }];
+        },
+        notify: true
+      },
+      __filterSpec: {
+        type: Array,
+        computed: '__computeFilterSpec(__users, __users.length)'
+      },
+
+      __users: Array,
+      __usersQuery: {
+        type: Object,
+        computed: '__computeUsersQuery(db.user.data, db.user.data.length)'
+      },
+    },
+
+    __computeFilterSpec: function(users) {
+      return [{
+        name: 'type',
+        title: 'Type',
+        type: 'text',
+        icon: 'social:person'
+      }, {
+        name: 'name',
+        title: 'Name',
+        type: 'text',
+        icon: 'social:person'
+      },{
+        name: 'userId',
+        title: 'User',
+        type: 'dropdown',
+        icon: 'social:person',
+        values: users.map(u => {
+          return {
+            label: u.person.formalName,
+            value: u.id
+          }
+        })
+      }];
+    },
+  }

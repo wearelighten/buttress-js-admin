@@ -81,15 +81,12 @@ dom-module#bjs-app
       }
 
       app-drawer#drawer {
-        z-index: 1;
+        z-index: 9001; // It's Over 9000
       }
 
       #drawer > app-header {
         color: var(--text-primary-color);
         background-color: var(--default-primary-color);
-      }
-
-      #drawer > app-toolbar {
       }
 
       app-header#app {
@@ -105,42 +102,20 @@ dom-module#bjs-app
         --paper-icon-button-ink-color: white;
       }
 
-      #app > app-toolbar.middle {
-        height: 120px;
-      }
-
-      #app > app-toolbar.bottom {
-        height: 92px;
-      }
-
       #app > [main-title] {
         margin-left: 64px;
         font-size: 32px;
         font-weight: 300;
       }
 
-      #app > [condensed-title] {
-        margin-left: 20px;
-        font-weight: 300;
-      }
-
-      sample-content {
-        padding-top: 276px;
-      }
-
       .drawer-list {
         margin: 0 20px;
       }
-
       .drawer-list a {
         display: block;
-
         padding: 0 16px;
-
         text-decoration: none;
-
         color: var(--app-secondary-color);
-
         line-height: 40px;
       }
       iron-image {
@@ -154,7 +129,7 @@ dom-module#bjs-app
       }
 
       #viewPages {
-        padding-top: 276px;
+        padding-top: 64px;
       }
 
       .drawer-list a.iron-selected {
@@ -207,22 +182,23 @@ dom-module#bjs-app
         .layout.horizontal.center.center-justified.auth-container(style="height: 100vh;")
           bjs-auth(auth="[[auth]]")
       section(name="application")
-        app-header#app(effects="waterfall resize-title blend-background parallax-background", condenses, reveals)
+        app-header#app(effects="waterfall blend-background parallax-background", fixed)
           app-toolbar
             paper-icon-button(icon="menu", hidden$="{{__hideMenuButton}}", on-click="__toggleDrawer")
             paper-icon-button(icon="arrow-back", hidden$="{{__hideBackButton}}", on-click="__backButton")
-            div(condensed-title) {{mainTitle}}
-            paper-icon-button(icon="communication:chat")
-            paper-icon-button(icon="social:notifications-none")
+            div(main-title) {{mainTitle}}
+            //- paper-icon-button(icon="communication:chat")
+            //- paper-icon-button(icon="social:notifications-none")
             img(src="{{auth.user.profiles.0.images.profile}}", width=32,height=32, style="width: 32px; height; 32px; border-radius:50%;")
-          app-toolbar.middle
-          app-toolbar(main-title).bottom {{mainTitle}}
+          //- app-toolbar.middle
+          //- app-toolbar(main-title).bottom {{mainTitle}}
 
         app-drawer#drawer(swipe-open)
-          app-header
+          app-header(fixed)
             app-toolbar
               div(main-title) ButtressJS
           iron-selector(selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation")
+            a(name="dashboard", href="/dashboard") Dashboard
             a(name="orgs", href="/orgs") Organisations
             a(name="groups", href="/groups") Groups
             a(name="apps", href="/apps") Applications
@@ -236,6 +212,16 @@ dom-module#bjs-app
           attr-for-selected="name",
           fallback-selection="view404",
           role="main")
+          bjs-dashboard(
+            name="dashboard",
+            title="Dashboard",
+            sub-page-title="{{subPageTitle}}",
+            route="{{route}}",
+            route-data="{{routeData}}",
+            subroute="{{subroute}}",
+            subroute-data="{{subrouteData}}",
+            auth="[[auth]]",
+            db="{{db}}")
           bjs-orgs(
             name="orgs",
             title="Organisation",

@@ -21,6 +21,7 @@ link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
 
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+link(rel="import", href="/src/views/trackings/bjs-trackings-filter-behavior.html")
 link(rel="import", href="/src/views/trackings/bjs-tracking-table.html")
 link(rel="import", href="/src/views/trackings/bjs-tracking-detail.html")
 
@@ -34,10 +35,6 @@ dom-module#bjs-trackings
         display: block;
         padding: 10px;
       }
-
-      .text-center{
-        text-align: center;
-      }
       
     iron-pages(
       selected='[[__loadMode]]',
@@ -48,6 +45,7 @@ dom-module#bjs-trackings
         paper-spinner(active, alt="Loading organisations data...", style="width: 64px; height: 64px;")
 
       div(name="loaded")
+        bjs-app-db-query(log-level="4", log-label="listing-tracking-users", db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
         bjs-app-db-query(
           log-label="listing-tracking",
           db="[[db]]",
@@ -69,22 +67,29 @@ dom-module#bjs-trackings
           role='loaded'
         )
           div(name="list")
-            .layout.horizontal
-              .card.flex.text-center
-                h1 Interaction
-                p [[__trackingInteractionCount]]
-              .card.flex.text-center
-                h1 Error
-                p [[__trackingErrorCount]]
-              .card.flex.text-center
-                h1 Logging
-                p [[__trackingLoggingCount]]
+            .card
+              .layout.horizontal.text-center
+                .flex
+                  .layout.vertical
+                    h1 Interaction
+                    p [[__trackingInteractionCount]]
+                .flex
+                  .layout.vertical
+                    h2 Error
+                    p [[__trackingErrorCount]]
+                .flex
+                  .layout.vertical
+                    h2 Logging
+                    p [[__trackingLoggingCount]]
 
             bjs-tracking-table(
               db="[[db]]",
               data="[[__tracking]]",
               current-page="{{__trackingPage}}",
               total-pages="[[__numTrackingPages]]",
+              total-results="[[__totalTracking]]",
+              filters="{{__filters}}",
+              filter-spec="[[__filterSpec]]"
             )
 
           div(name="detail")

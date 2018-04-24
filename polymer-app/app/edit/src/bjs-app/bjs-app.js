@@ -112,7 +112,7 @@ Polymer({
   },
 
   __routePageChanged: function(page) {
-    this.page = page || 'orgs';
+    this.page = page || 'dashboard';
   },
 
   __pageChanged: function(page) {

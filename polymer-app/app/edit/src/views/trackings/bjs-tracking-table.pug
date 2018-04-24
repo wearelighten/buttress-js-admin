@@ -17,16 +17,9 @@ dom-module#bjs-tracking-table
         --paper-tabs-selection-bar-color: var(--paper-menu-color);
       }
 
-      #DataTable {
-        height: 700px;
-      }
-      #DataTable .detail {
-        width: 100%;
-      }
-      #DataTable .detail pre {
-        background: #333;
-        color: #FFF;
-        overflow-x: auto;
+      p.label {
+        font-weight: bold;
+        margin-right: 10px;
       }
 
     bjs-app-db-query(log-label="tracking-table-users", db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
@@ -34,8 +27,15 @@ dom-module#bjs-tracking-table
 
     .card
       .layout.horizontal
+        bjs-filter(
+          filters="{{filters}}",
+          filter-spec="[[filterSpec]]"
+        )
+
+    .card
+      .layout.horizontal
         .layout.horizontal.wrap
-          p Page [[currentPage]] of [[totalPages]]
+          p Page [[currentPage]] of [[totalPages]] Results: [[totalResults]]
         .flex
         .layout.horizontal.wrap
           bjs-pagination(
@@ -52,7 +52,17 @@ dom-module#bjs-tracking-table
       )
         template(is="row-detail")
           div.detail
+            .layout.horizontal
+              .flex
+                .layout.horizontal.wrap
+                  p.label Name
+                  p.flex [[item.name]] [[item.name]] [[item.name]] [[item.name]]
+              .flex
+                .layout.horizontal.wrap
+                  p.label Date
+                  p.flex [[item.dateTime]]
             pre [[item.json]]
+
         data-table-column(name="Type")
           template [[item.type]]
         data-table-column(name="App")
@@ -62,7 +72,7 @@ dom-module#bjs-tracking-table
         data-table-column(name="User")
           template [[item.user]]
         data-table-column(name="Timestamp")
-          template [[item.timestamp]]
+          template [[item.dateTime]]
         data-table-column(name="", align-right)
           template
             paper-button(on-tap="__viewTrackingItem") View
@@ -71,7 +81,8 @@ dom-module#bjs-tracking-table
     Polymer({
       is: 'bjs-tracking-table',
       behaviors: [
-        BJSBehaviors.Logging
+        BJSBehaviors.Logging,
+        BJSBehaviors.Helpers
       ],
       properties: {
         logLevel: {
@@ -94,6 +105,10 @@ dom-module#bjs-tracking-table
           type: Number,
           value: 0
         },
+        totalResults: {
+          type: Number,
+          value: 0
+        },
 
         __users: Array,
         __usersQuery: {
@@ -105,6 +120,15 @@ dom-module#bjs-tracking-table
         __appsQuery: {
           type: Object,
           computed: '__computeAppsQuery(db.app.data)'
+        },
+
+        filters: {
+          type: Array,
+          notify: true
+        },
+        filterSpec: {
+          type: Array,
+          notify: true
         },
 
         __dataExpanded: {
@@ -127,10 +151,10 @@ dom-module#bjs-tracking-table
         const users = this.get('__users');
         return tracking.map(track => {
           const user = users.find(u => u.id === track.userId);
-          let email = (user) ? user.auth[0].email : '-';
+          let email = (user) ? user.person.formalName : '';
 
           const app = apps.find(a => a.id === track.appId);
-          let appName = (app) ? app.name : '-';
+          let appName = (app) ? app.name : '';
 
           return {
             id: track.id,
@@ -138,7 +162,7 @@ dom-module#bjs-tracking-table
             name: track.name,
             app: appName,
             user: email,
-            timestamp: track.timestamp,
+            dateTime:  this.timestampToStringFormatted(track.timestamp),
             json: JSON.stringify(track, null, 2)
           }
         });

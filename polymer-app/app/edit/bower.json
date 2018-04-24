@@ -113,6 +113,9 @@
     "paper-menu-button": {
       "main": "./**/*.html"
     },
+    "paper-icon-button": {
+      "main": "./**/*.html"
+    },
     "paper-item": {
       "main": "./**/*.html"
     },

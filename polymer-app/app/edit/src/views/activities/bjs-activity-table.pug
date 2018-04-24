@@ -3,6 +3,8 @@ link(rel="import", href="/bower_components/iron-data-table/iron-data-table.html"
 
 link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
 link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+link(rel="import", href="/src/bjs-filter/bjs-filter.html")
+
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
 
 link(rel="import", href="/src/shared-styles.html")
@@ -17,25 +19,20 @@ dom-module#bjs-activity-table
         --paper-tabs-selection-bar-color: var(--paper-menu-color);
       }
 
-      #DataTable {
-        height: 700px;
-      }
-      #DataTable .detail {
-        width: 100%;
-      }
-      #DataTable .detail pre {
-        background: #333;
-        color: #FFF;
-        overflow-x: auto;
-      }
-
     bjs-app-db-query(log-label="tracking-table-users", db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
     bjs-app-db-query(log-label="tracking-table-apps", db="[[db]]", doc="[[db.app]]", query="[[__appsQuery]]", find-all="{{__apps}}", limit="0")
 
     .card
       .layout.horizontal
+        bjs-filter(
+          filters="{{filters}}",
+          filter-spec="[[filterSpec]]"
+        )
+
+    .card
+      .layout.horizontal
         .layout.horizontal.wrap
-          p Page [[currentPage]] of [[totalPages]]
+          p Page [[currentPage]] of [[totalPages]] Results: [[totalResults]]
         .flex
         .layout.horizontal.wrap
           bjs-pagination(
@@ -93,6 +90,10 @@ dom-module#bjs-activity-table
           type: Number,
           value: 0
         },
+        totalResults: {
+          type: Number,
+          value: 0
+        },
 
         __users: Array,
         __usersQuery: {
@@ -104,6 +105,15 @@ dom-module#bjs-activity-table
         __appsQuery: {
           type: Object,
           computed: '__computeAppsQuery(db.app.data)'
+        },
+
+        filters: {
+          type: Array,
+          notify: true
+        },
+        filterSpec: {
+          type: Array,
+          notify: true
         },
 
         __dataExpanded: {

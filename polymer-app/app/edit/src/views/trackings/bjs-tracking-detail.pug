@@ -122,6 +122,9 @@ dom-module#bjs-tracking-detail
           data="[[__appTracking]]",
           current-page="{{__appTrackingPage}}",
           total-pages="[[__appTrackingNumPages]]",
+          total-results="[[__appTrackingTotal]]",
+          filters="{{__filters}}",
+          filter-spec="[[__filterSpec]]"
         )
       div(name="appActivity")
         bjs-activity-table(
@@ -129,6 +132,9 @@ dom-module#bjs-tracking-detail
           data="[[__appActivity]]",
           current-page="{{__appActivityPage}}",
           total-pages="[[__appActivityNumPages]]",
+          total-results="[[__appActivityTotal]]",
+          filters="{{__filters}}",
+          filter-spec="[[__filterSpec]]"
         )
       div(name="userTracking")
         bjs-tracking-table(
@@ -136,6 +142,9 @@ dom-module#bjs-tracking-detail
           data="[[__userTracking]]",
           current-page="{{__userTrackingPage}}",
           total-pages="[[__userTrackingNumPages]]",
+          total-results="[[__userTrackingTotal]]",
+          filters="{{__filters}}",
+          filter-spec="[[__filterSpec]]"
         )
       div(name="userActivity")
         bjs-activity-table(
@@ -143,6 +152,9 @@ dom-module#bjs-tracking-detail
           data="[[__userActivity]]",
           current-page="{{__userActivityPage}}",
           total-pages="[[__userActivityNumPages]]",
+          total-results="[[__userActivityTotal]]",
+          filters="{{__filters}}",
+          filter-spec="[[__filterSpec]]"
         )
       
 

@@ -86,14 +86,24 @@ Polymer({
     }
   },
 
-  __computeAppActivityQuery: function(appId) {
+  __computeAppActivityQuery: function(appId, timestamp) {
     return {
-
+      appId: {
+        $eq: appId
+      },
+      timestamp: {
+        $lteDate: timestamp
+      }
     }
   },
-  __computeUserActivityQuery: function(appId) {
+  __computeUserActivityQuery: function(appId, timestamp) {
     return {
-
+      appId: {
+        $eq: appId
+      },
+      timestamp: {
+        $lteDate: timestamp
+      }
     }
   }
 });

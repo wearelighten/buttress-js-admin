@@ -1,0 +1,48 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
+link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
+link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import" href="/bower_components/iron-icons/maps-icons.html")
+link(rel="import" href="/bower_components/iron-icons/social-icons.html")
+
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+dom-module#bjs-filter-lozenge
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        border-radius: 18px;
+        padding: 2px;
+        font-size: 14px;
+        color: var(--text-primary-color);
+        background-color: var(--default-primary-color);
+        margin: 10px 5px;
+        display: block;
+      }
+
+      span {
+        margin-right: 10px;
+      }
+      iron-icon {
+        width: 12px;
+        height: 12px;
+      }
+      iron-icon:first-of-type {
+        margin: 5px;
+      }
+      iron-icon:last-of-type {
+        margin: 5px;
+        cursor: pointer;
+      }
+
+    .layout.horizontal.center
+      .flex-none
+        iron-icon(icon="[[filterIcon]]")
+        span {{filter.value}}
+        iron-icon(icon="icons:close", hidden$="{{hideRmButton}}", on-click="__rmFilter")
+
+  script(src="bjs-filter-lozenge.js")

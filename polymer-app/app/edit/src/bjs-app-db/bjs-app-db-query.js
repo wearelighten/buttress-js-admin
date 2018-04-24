@@ -130,16 +130,19 @@ Polymer({
     }
 
     if (this.limit > 0) {
+      this.__debug(logLabel, '__query', 'limit', this.limit);
       this.set('numPages', Math.ceil(data.length / this.limit));
       this.set('numResults', data.length);
       this.set('findAllUnpaged', data.concat([]));
 
       this.__silly(this.page, this.limit, this.numPages);
       data = data.splice((this.page-1) * this.limit, this.limit);
-      this.__debug(logLabel, '__query', data);
+      this.__debug(logLabel, '__query', 'findAll', data.length);
+      this.__debug(logLabel, '__query', 'findAllUnpaged', data.length);
     }
 
     this.set('findAll', data);
+    this.__debug(logLabel, '__query', 'findAll', data.length);
     data.forEach((d, idx) => {
       let dataIndex = this.doc.data.indexOf(d);
 

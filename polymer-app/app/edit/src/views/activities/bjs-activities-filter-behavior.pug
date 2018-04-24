@@ -1,0 +1,39 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+
+script.
+  window.BJSBehaviors = window.BJSBehaviors || {};
+
+  /**
+   * @polymerBehavior BJSBehaviors.ActivitiesFilterBehaviour
+   */
+  BJSBehaviors.ActivitiesFilterBehaviour = {
+    properties: {
+      __filters: {
+        type: Array,
+        value: function () {
+          return [{
+            editing: true,
+            name: 'name',
+            value: ''
+          }];
+        },
+        notify: true
+      },
+      __filterSpec: {
+        type: Array,
+        value: function () {
+          return [{
+            name: 'path',
+            title: 'Path',
+            type: 'text',
+            icon: 'social:person'
+          }, {
+            name: 'permissions',
+            title: 'Type',
+            type: 'text',
+            icon: 'social:person'
+          }];
+        }
+      },
+    }
+  }

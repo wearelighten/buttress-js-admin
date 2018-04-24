@@ -1,0 +1,81 @@
+link(rel="import", href="/bower_components/polymer/polymer.html")
+link(rel="import", href="/bower_components/iron-flex-layout/iron-flex-layout.html")
+link(rel="import", href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
+link(rel="import", href="/bower_components/iron-form/iron-form.html")
+link(rel="import", href="/bower_components/paper-button/paper-button.html")
+link(rel="import", href="/bower_components/paper-input/paper-input.html")
+link(rel="import", href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html")
+link(rel="import", href="/bower_components/paper-item/paper-icon-item.html")
+link(rel="import", href="/bower_components/paper-icon-button/paper-icon-button.html")
+link(rel="import", href="/bower_components/iron-icon/iron-icon.html")
+link(rel="import", href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import", href="/bower_components/iron-icons/maps-icons.html")
+link(rel="import", href="/bower_components/iron-icons/social-icons.html")
+
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/bjs-filter/bjs-filter-lozenge.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+
+dom-module#bjs-filter
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+
+      }
+
+      paper-dropdown-menu {
+        margin-right: 10px;
+        --paper-input-container-underline: {
+          border-color: var(--default-primary-color);
+        };
+      }
+
+      paper-item, paper-icon-item {
+        cursor: pointer;
+      }
+
+      paper-input {
+        --paper-input-container-underline: {
+          border-color: var(--default-primary-color);
+        };
+      }
+      paper-input paper-icon-button{
+        color: var(--default-primary-color);
+      }
+
+    form#form(
+      is="iron-form",
+      on-iron-form-presubmit="__formPresubmit",
+      method=""
+    )
+      .layout.horizontal.end
+        paper-dropdown-menu(name="name", label="Type", vertical-align="top", no-label-float)
+          paper-menu.dropdown-content(attr-for-selected="filter-id", selected="{{__selectedFilter}}")
+            template(is="dom-repeat", items="[[filterSpec]]")
+              template(is="dom-if", if="[[!item.icon]]")
+                paper-item(label="[[item.title]]", filter-id="[[item]]") {{item.title}}
+              template(is="dom-if", if="[[item.icon]]")
+                paper-icon-item(label="[[item.title]]", filter-id="[[item]]")
+                  iron-icon(icon="[[item.icon]]", item-icon)
+                  paper-item-body
+                    span {{item.title}}
+
+        template(is="dom-if", if="[[isText]]")
+          paper-input(name="filter", label="Filter", value="{{__editing.value}}", no-label-float)
+            paper-icon-button(icon="icons:add", on-click="__addFilter", suffix)
+        
+        template(is="dom-if", if="[[isDropdown]]")
+          paper-dropdown-menu(name="name", label="[[__selectedFilter.title]]", vertical-align="top", no-label-float)
+            paper-menu.dropdown-content(attr-for-selected="dropdown-id", selected="{{__editing.value}}")
+              template(is="dom-repeat", items="[[__selectedFilter.values]]")
+                paper-item(label="[[item.label]]", dropdown-id="[[item.value]]") {{item.label}}
+
+    .layout.horizontal
+      template(is="dom-repeat", items="{{filters}}", filter="__ignoreEditing", observe="editing")
+        bjs-filter-lozenge(filter="[[item]]", on-rm-filter="__rmFilter")
+
+  script(src="bjs-filter.js")
