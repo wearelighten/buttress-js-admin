@@ -114,6 +114,9 @@ Polymer.BJSRealtimeDbMsgHandler = {
     if (path.length !== 1) {
       return;
     }
+    if (!this.get(['db', path[0], 'data'])) {
+      return; // Early out if data source doesn't exist
+    }
     this.push(['db', path[0], 'data'], payload.response);
   },
 

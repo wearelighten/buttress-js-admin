@@ -152,7 +152,7 @@ Polymer({
     this.__debug(`db: connected: ${connected}`);
   },
   __dbRxEvent: function(ev) {
-    this.__debug('__dbRxEvent', ev);
+    this.__silly('__dbRxEvent', ev);
 
     let authUser = this.get('auth.user');
     if (!authUser) {
