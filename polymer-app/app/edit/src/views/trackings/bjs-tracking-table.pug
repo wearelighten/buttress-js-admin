@@ -1,4 +1,5 @@
 link(rel="import", href="/bower_components/polymer/polymer.html")
+link(rel="import", href="/bower_components/iron-image/iron-image.html")
 link(rel="import", href="/bower_components/iron-data-table/iron-data-table.html")
 
 link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
@@ -133,12 +134,18 @@ dom-module#bjs-tracking-table
 
         __dataExpanded: {
           type: Array,
+          notify: true,
           computed: '__computeDataExpanded(data, __apps)'
         },
       },
       observers: [
         '__checkCurrentPageOutBounds(totalPages)'
       ],
+
+      __testRender: function() {
+        this.__warn(this.$.DataTable);
+        this.$.DataTable.clearCache();
+      },
 
       __viewTrackingItem: function(ev) {
         const item = ev.model.get('item');
@@ -149,9 +156,11 @@ dom-module#bjs-tracking-table
       __computeDataExpanded: function(tracking) {
         const apps = this.get('__apps');
         const users = this.get('__users');
+
         return tracking.map(track => {
           const user = users.find(u => u.id === track.userId);
           let email = (user) ? user.person.formalName : '';
+          let userImage = (user) ? user.auth[0].images.profile : '';
 
           const app = apps.find(a => a.id === track.appId);
           let appName = (app) ? app.name : '';
@@ -160,8 +169,9 @@ dom-module#bjs-tracking-table
             id: track.id,
             type: track.type,
             name: track.name,
-            app: appName,
+            appName: appName,
             user: email,
+            userImage: userImage,
             dateTime:  this.timestampToStringFormatted(track.timestamp),
             json: JSON.stringify(track, null, 2)
           }

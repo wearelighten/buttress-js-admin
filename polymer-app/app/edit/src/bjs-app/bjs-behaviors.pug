@@ -93,4 +93,12 @@ script.
 
       return Sugar.Date.format(dateTime, '{dd}/{MM}/{yyyy} {HH}:{mm}:{ss}');
     },
+
+    stringComparison(strA, strB) {
+      return strA === strB;
+    },
+
+    jsonStringify(object) {
+      return JSON.stringify(object, null, 2);
+    }
   }

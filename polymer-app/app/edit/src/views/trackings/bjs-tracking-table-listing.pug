@@ -21,45 +21,42 @@ link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
 
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
-link(rel="import", href="/src/views/activities/bjs-activity-table-listing.html")
-link(rel="import", href="/src/views/activities/bjs-activity-detail.html")
+link(rel="import", href="/src/views/trackings/bjs-trackings-filter-behavior.html")
+link(rel="import", href="/src/views/trackings/bjs-tracking-table.html")
 
 link(rel="import", href="/src/shared-styles.html")
 
-dom-module#bjs-activities
+dom-module#bjs-tracking-table-listing
   template
     style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
     style(include="shared-styles").
       :host {
         display: block;
-        padding: 10px;
       }
-
-      .text-center{
-        text-align: center;
-      }
- 
-    iron-pages(
-      selected='[[__loadMode]]',
-      attr-for-selected='name',
-      role='loading'
+      
+    bjs-app-db-query(log-label="tracking-table-listing-users", db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
+    bjs-app-db-query(
+      log-label="tracking-table-listing-tracking",
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__trackingQuery]]",
+      num-results="{{__trackingTotal}}",
+      num-pages="{{__trackingNumPages}}",
+      page="[[__trackingPage]]",
+      find-all="{{__tracking}}",
+      sort-path="timestamp",
+      sort-order="DESC",
+      sort-type="date"
     )
-      .layout.horizontal.center.center-justified.auth-container(name="loading", style="height: 90vh;")
-        paper-spinner(active, alt="Loading organisations data...", style="width: 64px; height: 64px;")
 
-      div(name="loaded")
-        iron-pages(
-          selected='[[__pageMode]]',
-          attr-for-selected='name',
-          role='loaded'
-        )
-          div(name="list")
-            bjs-activity-table-listing(
-              db="[[db]]",
-              base-query="[[__activitiesQuery]]"
-            )
+    bjs-tracking-table(
+      db="[[db]]",
+      data="[[__tracking]]",
+      current-page="{{__trackingPage}}",
+      total-pages="[[__trackingNumPages]]",
+      total-results="[[__trackingTotal]]",
+      filters="{{__filters}}",
+      filter-spec="[[__filterSpec]]"
+    )
 
-          div(name="detail")
-            h1 You Must Construct Additional Pylons!
-
-  script(src="bjs-activities.js")
+  script(src="bjs-tracking-table-listing.js")
