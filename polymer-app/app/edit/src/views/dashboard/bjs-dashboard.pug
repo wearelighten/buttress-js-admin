@@ -33,35 +33,97 @@ dom-module#bjs-dashboard
         padding: 10px;
       }
 
+      .seperator-right {
+        border-right: 1px solid #d3d3d3;
+      }
+
       .text-center{
         text-align: center;
       }
 
+    bjs-app-db-query(
+      log-label="dashboard-activites",
+      db="[[db]]",
+      doc="[[db.activity]]",
+      query="[[__activitiesQuery]]",
+      num-results="{{__activitiesTotal}}",
+      num-pages="{{__activitiesNumPages}}",
+      page="[[__activitiesPage]]",
+      find-all="{{__activities}}",
+      find-all-unpaged="{{__activitiesUnpaged}}"
+    )
+    bjs-app-db-query(
+      log-label="dashboard-tracking",
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__trackingQuery]]",
+      num-results="{{__trackingTotal}}",
+      num-pages="{{__trackingNumPages}}",
+      page="[[__trackingPage]]",
+      find-all="{{__tracking}}",
+      find-all-unpaged="{{__trackingUnpaged}}"
+    )
+
     .card
       .layout.horizontal.text-center
         .flex
+          .layout.vertical.seperator-right
+            h2 Tracking
+            p [[db.tracking.data.length]]
+        .flex
           .layout.vertical
+            h2 Interaction
+            p [[__trackingTypesCounts.INTERACTION]]
+        .flex
+          .layout.vertical
+            h2 Error
+            p [[__trackingTypesCounts.ERROR]]
+        .flex
+          .layout.vertical
+            h2 Logging
+            p [[__trackingTypesCounts.LOGGING]]
+        .flex
+
+    .card
+      .layout.horizontal.text-center
+        .flex
+          .layout.vertical.seperator-right
+            h2 Activites
+            p [[db.activity.data.length]]
+        .flex
+          .layout.vertical
+            h2 GET
+            p [[__activitiesVerbsCounts.GET]]
+        .flex
+          .layout.vertical
+            h2 POST
+            p [[__activitiesVerbsCounts.POST]]
+        .flex
+          .layout.vertical
+            h2 PUT
+            p [[__activitiesVerbsCounts.PUT]]
+        .flex
+          .layout.vertical
+            h2 DEL
+            p [[__activitiesVerbsCounts.DEL]]
+
+    .card
+      .layout.horizontal.text-center
+        .flex
+          .layout.vertical.seperator-right
             h2 Organisations
             p [[db.org.data.length]]
         .flex
-          .layout.vertical
+          .layout.vertical.seperator-right
             h2 Groups
             p [[db.group.data.length]]
         .flex
-          .layout.vertical
+          .layout.vertical.seperator-right
             h2 Apps
             p [[db.app.data.length]]
         .flex
           .layout.vertical
             h2 Users
             p [[db.user.data.length]]
-        .flex
-          .layout.vertical
-            h2 Tracking
-            p [[db.tracking.data.length]]
-        .flex
-          .layout.vertical
-            h2 Activites
-            p [[db.activity.data.length]]
 
   script(src="bjs-dashboard.js")

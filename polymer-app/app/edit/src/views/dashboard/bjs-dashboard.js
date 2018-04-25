@@ -12,9 +12,53 @@ Polymer({
 
     db: {
       type: Object
+    },
+
+    __activitiesVerbs: {
+      type: Object,
+      value: function(){
+        return {
+          GET: 'get',
+          POST: 'post',
+          PUT: 'put',
+          DEL: 'delete'
+        }
+      }
+    },
+    __trackingTypes: {
+      type: Object,
+      value: function(){
+        return {
+          INTERACTION: 'interaction',
+          ERROR: 'error',
+          LOGGING: 'logging'
+        }
+      }
+    },
+
+    __activitiesUnpaged: Array,
+    __activitiesQuery: {
+      type: Object,
+      computed: '__computeActivitiesQuery(db.activity.data.length)'
+    },
+    
+    __trackingUnpaged: Array,
+    __trackingQuery: {
+      type: Object,
+      computed: '__computeTrackingQuery(db.tracking.data.length)'
+    },
+
+    __activitiesVerbsCounts: {
+      type: Object,
+    },
+    __trackingTypesCounts: {
+      type: Object,
     }
-  
   },
+  observers: [
+    '__activitesVerbsCount(__activitiesUnpaged, __activitiesUnpaged.length)',
+    '__trackingTypesCount(__trackingUnpaged, __trackingUnpaged.length)'
+  ],
 
   /**
    * Set the page header title
@@ -24,22 +68,31 @@ Polymer({
     return 'Dashboard';
   },
 
-  __computeAppsQuery: function() {
-    return {};
-  },
-  __computeUsersQuery: function() {
-    return {};
-  },
-  __computeTrackingsQuery: function() {
-    return {};
-  },
   __computeActivitiesQuery: function() {
-    return {
-      $and: [{
-        timestamp: {
-          $gteDate: Sugar.Date.create('10 minutes ago')
-        }
-      }]
-    };
+    return { }; // Select all
+  },
+  __computeTrackingQuery: function() {
+    return { }; // Select all
+  },
+
+  __activitesVerbsCount: function(activities) {
+    const verbs = this.get('__activitiesVerbs');
+    const counts = {};
+    
+    for(let verb in verbs) {
+      counts[verb] = activities.filter(a => a.verb === verbs[verb]).length;
+    }
+
+    this.set('__activitiesVerbsCounts', counts);
+  },
+  __trackingTypesCount: function(trackings) {
+    const types = this.get('__trackingTypes');
+    const counts = {};
+    
+    for(let type in types) {
+      counts[type] = trackings.filter(t => t.type === types[type]).length;
+    }
+
+    this.set('__trackingTypesCounts', counts);
   }
 });
