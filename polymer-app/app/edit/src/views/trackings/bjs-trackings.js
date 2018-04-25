@@ -37,19 +37,6 @@ Polymer({
     __totalTracking: {
       type: Number,
       value: 0
-    },
-
-    __trackingInteractionCount: {
-      type: Number,
-      computed: '__computeTrackingInteractionCount(__trackingUnpaged)'
-    },
-    __trackingErrorCount: {
-      type: Number,
-      computed: '__computeTrackingErrorCount(__trackingUnpaged)'
-    },
-    __trackingLoggingCount: {
-      type: Number,
-      computed: '__computeTrackingLoggingCount(__trackingUnpaged)'
     }
   },
 
@@ -89,16 +76,6 @@ Polymer({
     return { 
       // Fetch all
     }
-  },
-
-  __computeTrackingInteractionCount: function(items) {
-    return items.filter(item => item.type === 'interaction').length;
-  },
-  __computeTrackingErrorCount: function(items) {
-    return items.filter(item => item.type === 'error').length;
-  },
-  __computeTrackingLoggingCount: function(items) {
-    return items.filter(item => item.type === 'logging').length;
   }
 
 });
