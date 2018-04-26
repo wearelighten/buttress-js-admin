@@ -141,7 +141,7 @@ Polymer.BJSRealtimeDbMsgHandler = {
   __handlePut: function(path, params, payload, response) {
     let updatePath = this.__getUpdatePath(path, params, payload, response);
     if (updatePath === false) {
-      this.__warn(`__handlePut Invalid Update: `, path);
+      this.__silly(`__handlePut Invalid Update: `, path);
       return;
     }
     this.__silly(`__handlePut`, path, updatePath);

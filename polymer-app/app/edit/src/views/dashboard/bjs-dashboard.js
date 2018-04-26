@@ -87,8 +87,6 @@ Polymer({
   __trackingTypesCount: function(trackings) {
     const types = this.get('__trackingTypes');
     const counts = {};
-
-    this.__warn('__trackingTypesCount', trackings);
     
     for(let type in types) {
       counts[type] = trackings.filter(t => t.type === types[type]).length;
