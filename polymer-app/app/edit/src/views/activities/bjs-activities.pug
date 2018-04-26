@@ -60,6 +60,11 @@ dom-module#bjs-activities
             )
 
           div(name="detail")
-            h1 You Must Construct Additional Pylons!
+            bjs-activity-detail(
+              db="{{db}}",
+              item="[[__selectedItem]]",
+              route="{{route}}",
+              route-data="{{routeData}}"
+            )
 
   script(src="bjs-activities.js")

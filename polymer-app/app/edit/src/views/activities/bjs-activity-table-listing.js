@@ -14,6 +14,11 @@ Polymer({
       type: Object
     },
 
+    name: {
+      type: String,
+      value: "activity-table"
+    },
+
     baseQuery: {
       type: Object
     },

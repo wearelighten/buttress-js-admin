@@ -13,6 +13,11 @@ Polymer({
     db: {
       type: Object
     },
+
+    name: {
+      type: String,
+      value: "tracking-table"
+    },
     
     baseQuery: {
       type: Object

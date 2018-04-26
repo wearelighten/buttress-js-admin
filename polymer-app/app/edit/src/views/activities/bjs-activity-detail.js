@@ -17,41 +17,32 @@ Polymer({
       type: Object
     },
 
-    __appTracking: Array,
-    __appTrackingUnpaged: Array,
-    __appTrackingQuery: {
-      type: Object,
-      computed: '__computeAppTrackingQuery(item.appId, item.timestamp, db.tracking.data.*)'
-    },
-    __appActivity: Array,
-    __appActivityUnpaged: Array,
-    __appActivityQuery: {
-      type: Object,
-      computed: '__computeAppActivityQuery(item.appId, item.timestamp, db.activity.data.*)'
-    },
-
-    __userTracking: Array,
-    __userTrackingUnpaged: Array,
-    __userTrackingQuery: {
-      type: Object,
-      computed: '__computeUserTrackingQuery(item.userId, item.appId, item.timestamp, db.tracking.data.*)'
-    },
-    __userActivity: Array,
-    __userActivityUnpaged: Array,
-    __userActivityQuery: {
-      type: Object,
-      computed: '__computeUserActivityQuery(item.userId, item.appId, item.timestamp, db.activity.data.*)'
-    },
 
     trackingView: {
       type: String,
       value: 'overview'
     },
-    
-    jsonDebug: {
-      type: String,
-      computed: '__computeJsonDebug(item, item.*)'
+
+    __appTrackingQuery: {
+      type: Object,
+      computed: '__computeAppTrackingQuery(item.appId, item.timestamp)'
     },
+    __appActivityQuery: {
+      type: Object,
+      computed: '__computeAppActivityQuery(item.appId, item.timestamp)'
+    },
+
+    __trackingUser: Array,
+    __trackingUserQuery: {
+      type: Object,
+      computed: '__computeTrackingUserQuery(item.userId, db.user.data)'
+    },
+    __trackingApp: Array,
+    __trackingAppQuery: {
+      type: Object,
+      computed: '__computeTrackingAppQuery(item.appId, db.user.data)'
+    },
+
     itemTimestampFormatted: {
       type: String,
       computed: 'timestampToStringFormatted(item.timestamp)'
@@ -72,11 +63,8 @@ Polymer({
       }
     }
   },
-  __computeUserTrackingQuery: function(userId, appId, timestamp) {
+  __computeAppActivityQuery: function(appId, timestamp) {
     return {
-      userId: {
-        $eq: userId
-      },
       appId: {
         $eq: appId
       },
@@ -86,14 +74,18 @@ Polymer({
     }
   },
 
-  __computeAppActivityQuery: function(appId) {
+  __computeTrackingUserQuery: function(userId) {
     return {
-
+      id: {
+        $eq: userId
+      }
     }
   },
-  __computeUserActivityQuery: function(appId) {
+  __computeTrackingAppQuery: function(appId) {
     return {
-
+      id: {
+        $eq: appId
+      }
     }
   }
 });

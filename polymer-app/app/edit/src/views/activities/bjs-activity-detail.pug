@@ -16,13 +16,14 @@ link(rel="import", href="/bower_components/iron-pages/iron-pages.html")
 link(rel="import", href="/bower_components/paper-styles/typography.html")
 link(rel="import", href="/bower_components/paper-tabs/paper-tab.html")
 link(rel="import", href="/bower_components/paper-tabs/paper-tabs.html")
+link(rel="import", href="/bower_components/iron-data-table/iron-data-table.html")
 
 link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
 link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
-link(rel="import", href="/src/views/activities/bjs-activity-table.html")
-link(rel="import", href="/src/views/trackings/bjs-tracking-table.html")
+link(rel="import", href="/src/views/activities/bjs-activity-table-listing.html")
+link(rel="import", href="/src/views/trackings/bjs-tracking-table-listing.html")
 
 link(rel="import", href="/src/shared-styles.html")
 
@@ -36,112 +37,87 @@ dom-module#bjs-activity-detail
         --paper-tabs-selection-bar-color: var(--paper-menu-color);
       }
 
-    bjs-app-db-query(
-      log-label="detail-app-tracking",
-      db="[[db]]",
-      doc="[[db.tracking]]",
-      query="[[__appTrackingQuery]]",
-      num-results="{{__appTrackingTotal}}",
-      num-pages="{{__appTrackingNumPages}}",
-      page="[[__appTrackingPage]]",
-      find-all="{{__appTracking}}",
-      sort-path="timestamp",
-      sort-order="DESC",
-      sort-type="date"
-    )
-    bjs-app-db-query(
-      db="[[db]]",
-      doc="[[db.activity]]",
-      query="[[__appActivityQuery]]",
-      num-results="{{__appActivityTotal}}",
-      num-pages="{{__appActivityNumPages}}",
-      page="[[__appActivityPage]]",
-      find-all="{{__appActivity}}",
-      sort-path="timestamp",
-      sort-order="DESC",
-      sort-type="date"
-    )
+      .label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
 
     bjs-app-db-query(
+      log-label="tracking-detail-user",
       db="[[db]]",
-      doc="[[db.tracking]]",
-      query="[[__userTrackingQuery]]",
-      num-results="{{__userTrackingTotal}}",
-      num-pages="{{__userTrackingNumPages}}",
-      page="[[__userTrackingPage]]",
-      find-all="{{__userTracking}}",
-      sort-path="timestamp",
-      sort-order="DESC",
-      sort-type="date"
+      doc="[[db.user]]",
+      query="[[__trackingUserQuery]]",
+      find-one="{{__trackingUser}}",
+      limit="0"
     )
     bjs-app-db-query(
+      log-label="tracking-detail-app",
       db="[[db]]",
-      doc="[[db.activity]]",
-      query="[[__userActivityQuery]]",
-      num-results="{{__userActivityTotal}}",
-      num-pages="{{__userActivityNumPages}}",
-      page="[[__userActivityPage]]",
-      find-all="{{__userActivity}}",
-      sort-path="timestamp",
-      sort-order="DESC",
-      sort-type="date"
+      doc="[[db.app]]",
+      query="[[__trackingAppQuery]]",
+      find-one="{{__trackingApp}}",
+      limit="0"
     )
 
     .card
       .layout.vertical
         .layout.horizontal
           div.flex
-            h2 [[item.type]]
+            h2 [[item.path]]
           div.flex.text-right
             h2 [[itemTimestampFormatted]]
         .layout.horizontal
-          p [[item.name]]
+          p [[item.verb]]
 
     .card
       paper-tabs(
         selected="{{trackingView}}",
+        attr-for-selected="name",
         scrollable,
         fit-container
       )
-        paper-tab(name="overview") JSON Object
+        paper-tab(name="overview") Breakdown
         paper-tab(name="appTracking") Last App Tracking
         paper-tab(name="appActivity") Last App Activity
-        paper-tab(name="userTracking") Last User Tracking
-        paper-tab(name="userActivity") Last User Activity
 
     iron-pages(
       selected="[[trackingView]]"
+      attr-for-selected="name"
     )
       div(name="overview")
         .card
-          pre.code [[jsonDebug]]
+          .layout.horizontal
+            .flex
+              .layout.horizontal
+                p.label Date
+                p.flex [[itemTimestampFormatted]]
+            .flex
+              .layout.horizontal
+                p.label App
+                p.flex [[__trackingApp.name]]
+
+          h3 Params
+          pre.code [[jsonStringify(item.params)]]
+
+          h3 Query
+          pre.code [[jsonStringify(item.query)]]
+          
+          h3 Body
+          pre.code [[jsonStringify(item.body)]]
+
+          h3 JSON Object
+          pre.code [[jsonStringify(item)]]
+
       div(name="appTracking")
-        bjs-tracking-table(
+        bjs-tracking-table-listing(
           db="[[db]]",
-          data="[[__appTracking]]",
-          current-page="{{__appTrackingPage}}",
-          total-pages="[[__appTrackingNumPages]]",
+          base-query="[[__appTrackingQuery]]"
         )
+
       div(name="appActivity")
-        bjs-activity-table(
+        bjs-activity-table-listing(
           db="[[db]]",
-          data="[[__appActivity]]",
-          current-page="{{__appActivityPage}}",
-          total-pages="[[__appActivityNumPages]]",
-        )
-      div(name="userTracking")
-        bjs-tracking-table(
-          db="[[db]]",
-          data="[[__userTracking]]",
-          current-page="{{__userTrackingPage}}",
-          total-pages="[[__userTrackingNumPages]]",
-        )
-      div(name="userActivity")
-        bjs-activity-table(
-          db="[[db]]",
-          data="[[__userActivity]]",
-          current-page="{{__userActivityPage}}",
-          total-pages="[[__userActivityNumPages]]",
+          base-query="[[__appActivityQuery]]"
         )
       
 

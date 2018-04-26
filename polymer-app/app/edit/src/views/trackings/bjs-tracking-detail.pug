@@ -51,7 +51,6 @@ dom-module#bjs-tracking-detail
       limit="0"
     )
     bjs-app-db-query(
-      log-level="4",
       log-label="tracking-detail-app",
       db="[[db]]",
       doc="[[db.app]]",
@@ -124,24 +123,28 @@ dom-module#bjs-tracking-detail
       div(name="appTracking")
         bjs-tracking-table-listing(
           db="[[db]]",
+          name="tracking-detail-app",
           base-query="[[__appTrackingQuery]]"
         )
 
       div(name="appActivity")
         bjs-activity-table-listing(
           db="[[db]]",
+          name="activity-detail-app",
           base-query="[[__appActivityQuery]]"
         )
 
       div(name="userTracking")
         bjs-tracking-table-listing(
           db="[[db]]",
+          name="tracking-detail-user",
           base-query="[[__userTrackingQuery]]"
         )
 
       div(name="userActivity")
         bjs-activity-table-listing(
           db="[[db]]",
+          name="activity-detail-user",
           base-query="[[__userActivityQuery]]"
         )
       

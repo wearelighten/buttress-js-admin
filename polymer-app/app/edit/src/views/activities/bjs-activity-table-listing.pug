@@ -33,7 +33,6 @@ dom-module#bjs-activity-table-listing
     style(include="shared-styles").
       :host {
         display: block;
-        padding: 10px;
       }
 
       .text-center{
@@ -41,7 +40,7 @@ dom-module#bjs-activity-table-listing
       }
 
     bjs-app-db-query(
-      log-label="activity-table-listing-activites",
+      log-label="[[name]]-activites",
       db="[[db]]",
       doc="[[db.activity]]",
       query="[[__activitiesQuery]]",
