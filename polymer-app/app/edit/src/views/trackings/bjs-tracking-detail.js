@@ -41,14 +41,6 @@ Polymer({
       type: Object,
       computed: '__computeAppActivityQuery(item.appId, item.timestamp)'
     },
-    __userTrackingQuery: {
-      type: Object,
-      computed: '__computeUserTrackingQuery(item.userId, item.appId, item.timestamp)'
-    },
-    __userActivityQuery: {
-      type: Object,
-      computed: '__computeUserActivityQuery(item.userId, item.appId, item.timestamp)'
-    },
 
     __trackingUser: Array,
     __trackingUserQuery: {
@@ -96,26 +88,6 @@ Polymer({
     }
   },
   __computeAppActivityQuery: function(appId, timestamp) {
-    return {
-      appId: {
-        $eq: appId
-      },
-      timestamp: {
-        $lteDate: timestamp
-      }
-    }
-  },
-  __computeUserTrackingQuery: function(userId, appId, timestamp) {
-    return {
-      appId: {
-        $eq: appId
-      },
-      timestamp: {
-        $lteDate: timestamp
-      }
-    }
-  },
-  __computeUserActivityQuery: function(userId, appId, timestamp) {
     return {
       appId: {
         $eq: appId

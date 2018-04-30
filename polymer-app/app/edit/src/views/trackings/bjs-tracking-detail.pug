@@ -60,14 +60,14 @@ dom-module#bjs-tracking-detail
     )
 
     .card
-      .layout.vertical
-        .layout.horizontal
-          div.flex
-            h2 [[item.type]]
-          div.flex.text-right
-            h2 [[itemTimestampFormatted]]
-        .layout.horizontal
-          p [[item.name]]
+      .layout.horizontal
+        .flex.layout.vertical
+          h2 [[item.type]]
+          span [[item.name]]
+        .flex.layout.vertical.text-right
+          h2 [[itemTimestampFormatted]]
+          span [[__trackingUser.person.formalName]]
+          span [[__trackingApp.name]]
 
     .card
       paper-tabs(
@@ -79,44 +79,64 @@ dom-module#bjs-tracking-detail
         paper-tab(name="overview") Breakdown
         paper-tab(name="appTracking") Last App Tracking
         paper-tab(name="appActivity") Last App Activity
-        paper-tab(name="userTracking") Last User Tracking
-        paper-tab(name="userActivity") Last User Activity
 
     iron-pages(
       selected="[[trackingView]]"
       attr-for-selected="name"
     )
-      div(name="overview")
-        .card
-          .layout.horizontal
-            .flex
-              .layout.horizontal
-                p.label Date
-                p.flex [[itemTimestampFormatted]]
-            .flex
-              .layout.horizontal
-                p.label User
-                p.flex [[__trackingUser.person.formalName]]
-            .flex
-              .layout.horizontal
-                p.label App
-                p.flex [[__trackingApp.name]]
+      div(name="overview")     
+        template(is="dom-if" if="[[isInteraction]]")
+          .card
+            h3 Context
+            pre.code [[jsonStringify(item.interaction.context)]]
 
-          template(is="dom-if" if="[[isInteraction]]")
-            h3 Message
-            pre.code [[jsonStringify(item.interaction)]]
+          .card
+            h3 Location
+            .layout.horizontal
+              span.label Href
+              span.flex [[item.interaction.location.href]]
+            .layout.horizontal
+              span.label Origin
+              span.flex [[item.interaction.location.origin]]
 
-          template(is="dom-if" if="[[isError]]")
+        template(is="dom-if" if="[[isError]]")
+          .card
             h3 Stack
-            pre.code [[jsonStringify(item.error)]]
+            .layout.horizontal
+              span.label Url
+              span.flex [[item.error.url]]
+            .layout.horizontal
+              span.label Line
+              span.flex [[item.error.line]]
+            .layout.horizontal
+              span.label Col
+              span.flex [[item.error.col]]
+            pre.code [[item.error.stack]]
 
-          template(is="dom-if" if="[[isLogging]]")
+        template(is="dom-if" if="[[isLogging]]")
+          .card
             h3 Message
             pre.code [[jsonStringify(item.logging)]]
-
+          
+        .card
           h3 Environment
-          pre.code [[jsonStringify(item.environment)]]
-
+          .layout.horizontal
+            span.label Browser
+            span.flex [[item.environment.browser]]
+          .layout.horizontal
+            span.label Vendor
+            span.flex [[item.environment.vendor]]
+          .layout.horizontal
+            span.label OS
+            span.flex [[item.environment.os]]
+          .layout.horizontal
+            span.label Software Version
+            span.flex [[item.environment.crmVersion]]
+          .layout.horizontal
+            span.label Software Build Date
+            span.flex [[item.environment.crmBuildDate]]
+        
+        .card
           h3 JSON Object
           pre.code [[jsonStringify(item)]]
 
@@ -133,20 +153,5 @@ dom-module#bjs-tracking-detail
           name="activity-detail-app",
           base-query="[[__appActivityQuery]]"
         )
-
-      div(name="userTracking")
-        bjs-tracking-table-listing(
-          db="[[db]]",
-          name="tracking-detail-user",
-          base-query="[[__userTrackingQuery]]"
-        )
-
-      div(name="userActivity")
-        bjs-activity-table-listing(
-          db="[[db]]",
-          name="activity-detail-user",
-          base-query="[[__userActivityQuery]]"
-        )
-      
 
   script(src="bjs-tracking-detail.js")
