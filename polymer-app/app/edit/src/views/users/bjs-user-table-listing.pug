@@ -21,46 +21,41 @@ link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
 
 link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
-link(rel="import", href="/src/views/users/bjs-user-table-listing.html")
-link(rel="import", href="/src/views/users/bjs-user-detail.html")
+link(rel="import", href="/src/views/users/bjs-users-filter-behavior.html")
+link(rel="import", href="/src/views/users/bjs-user-table.html")
 
 link(rel="import", href="/src/shared-styles.html")
 
-dom-module#bjs-users
+dom-module#bjs-user-table-listing
   template
     style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
     style(include="shared-styles").
       :host {
         display: block;
-        padding: 10px;
       }
-
-    iron-pages(
-      selected='[[__loadMode]]',
-      attr-for-selected='name',
-      role='loading'
+      
+    bjs-app-db-query(
+      log-label="[[name]]-user",
+      db="[[db]]",
+      doc="[[db.user]]",
+      query="[[__userQuery]]",
+      num-results="{{__userTotal}}",
+      num-pages="{{__userNumPages}}",
+      page="[[__userPage]]",
+      find-all="{{__user}}",
+      sort-path="timestamp",
+      sort-order="DESC",
+      sort-type="date"
     )
-      .layout.horizontal.center.center-justified.auth-container(name="loading", style="height: 90vh;")
-        paper-spinner(active, alt="Loading Users data...", style="width: 64px; height: 64px;")
 
-      div(name="loaded")
-        iron-pages(
-          selected='[[__pageMode]]',
-          attr-for-selected='name',
-          role='loaded'
-        )
-          div(name="list")
-            bjs-user-table-listing(
-              db="[[db]]",
-              base-query="[[__userQuery]]"
-            )
+    bjs-user-table(
+      db="[[db]]",
+      data="[[__user]]",
+      current-page="{{__userPage}}",
+      total-pages="[[__userNumPages]]",
+      total-results="[[__userTotal]]",
+      filters="{{__filters}}",
+      filter-spec="[[__filterSpec]]"
+    )
 
-          div(name="detail")
-            bjs-user-detail(
-              db="{{db}}",
-              item="[[__selectedItem]]",
-              route="{{route}}",
-              route-data="{{routeData}}"
-            )
-
-  script(src="bjs-users.js")
+  script(src="bjs-user-table-listing.js")

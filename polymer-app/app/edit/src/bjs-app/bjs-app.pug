@@ -25,6 +25,7 @@ link(rel="import" href="/bower_components/iron-icons/social-icons.html")
 link(rel="import" href="/bower_components/iron-icons/communication-icons.html")
 link(rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html")
 link(rel="import" href="/bower_components/paper-toast/paper-toast.html")
+link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
 
 link(rel="import", href="/src/bjs-auth/bjs-auth.html")
 
@@ -89,20 +90,25 @@ dom-module#bjs-app
         background-color: var(--default-primary-color);
       }
 
-      app-header#app {
+      app-header#header {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         color: #fff;
         background-color: var(--app-primary-color);
+        z-index: 999;
       }
-
-      app-header#app paper-icon-button {
+      app-header#header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
+      app-header#header paper-dropdown {
+        --paper-dropdown-menu-input {
+          color: #FFF;
+        }
+      }
 
-      #app > [main-title] {
+      #header > [main-title] {
         margin-left: 64px;
         font-size: 32px;
         font-weight: 300;
@@ -126,6 +132,11 @@ dom-module#bjs-app
         --paper-icon-button: {
           margin-right: 10px;
         }
+      }
+
+      #auth-spinner{
+        width: 128px;
+        height: 128px;
       }
 
       #viewPages {
@@ -178,11 +189,15 @@ dom-module#bjs-app
 
     iron-pages(attr-for-selected="name", selected="{{mode}}")
       section(name="authenticating")
+        .layout.horizontal.center.center-justified(style="height: 100vh;")
+          paper-spinner#auth-spinner(active)
+
       section(name="authenticate")
         .layout.horizontal.center.center-justified.auth-container(style="height: 100vh;")
           bjs-auth(auth="[[auth]]")
+
       section(name="application")
-        app-header#app(effects="waterfall blend-background parallax-background", fixed)
+        app-header#header(effects="waterfall blend-background parallax-background", fixed)
           app-toolbar
             paper-icon-button(icon="menu", hidden$="{{__hideMenuButton}}", on-click="__toggleDrawer")
             paper-icon-button(icon="arrow-back", hidden$="{{__hideBackButton}}", on-click="__backButton")
@@ -202,6 +217,7 @@ dom-module#bjs-app
             a(name="orgs", href="/orgs") Organisations
             a(name="groups", href="/groups") Groups
             a(name="apps", href="/apps") Applications
+            hr
             a(name="users", href="/users") Users
             a(name="users", href="/trackings") Tracking
             a(name="users", href="/activities") Activites
