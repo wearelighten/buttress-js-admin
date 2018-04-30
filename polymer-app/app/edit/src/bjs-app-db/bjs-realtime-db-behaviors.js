@@ -111,13 +111,18 @@ Polymer.BJSRealtimeDbMsgHandler = {
 
 
   __handlePostCommon: function(path, params, payload) {
-    if (path.length !== 1) {
+    if (path.length !== 1 || !this.get(['db', path[0], 'data'])) {
       return;
     }
-    if (!this.get(['db', path[0], 'data'])) {
-      return; // Early out if data source doesn't exist
+
+    let responses = payload.response;
+    if (!Array.isArray(responses)) {
+      responses = [responses];
     }
-    this.push(['db', path[0], 'data'], payload.response);
+
+    responses.forEach((response) => {
+      this.push(['db', path[0], 'data'], response);
+    })
   },
 
   __getUpdatePath: function(path, params, payload, response) {
