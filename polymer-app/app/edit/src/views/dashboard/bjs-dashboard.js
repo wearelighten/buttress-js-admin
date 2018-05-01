@@ -2,6 +2,7 @@ Polymer({
   is: 'bjs-dashboard',
   behaviors: [
     BJSBehaviors.Logging,
+    BJSBehaviors.Helpers,
     Polymer.BJSListView
   ],
   properties: {
@@ -109,6 +110,19 @@ Polymer({
       filter: 'activity',
       filter_permissions: 'delete'
     });
+  },
+
+  __viewOrganisations: function() {
+    this.__viewEntity('orgs');
+  },
+  __viewGroups: function() {
+    this.__viewEntity('groups');
+  },
+  __viewApps: function() {
+    this.__viewEntity('apps');
+  },
+  __viewUsers: function() {
+    this.__viewEntity('users');
   },
 
   __computeActivitiesQuery: function() {

@@ -108,19 +108,43 @@ dom-module#bjs-dashboard
       .layout.horizontal.text-center
         .flex
           .layout.vertical.seperator-right
-            h2 Organisations
-            p [[db.org.data.length]]
+            paper-button(on-tap="__viewOrganisations")
+              .layout.vertical
+                h2 Organisations
+                p [[db.org.data.length]]
         .flex
           .layout.vertical.seperator-right
-            h2 Groups
-            p [[db.group.data.length]]
+            paper-button(on-tap="__viewGroups")
+              .layout.vertical
+                h2 Groups
+                p [[db.group.data.length]]
         .flex
           .layout.vertical.seperator-right
-            h2 Apps
-            p [[db.app.data.length]]
+            paper-button(on-tap="__viewApps")
+              .layout.vertical
+                h2 Apps
+                p [[db.app.data.length]]
         .flex
           .layout.vertical
-            h2 Users
-            p [[db.user.data.length]]
+            paper-button(on-tap="__viewUsers")
+              .layout.vertical
+                h2 Users
+                p [[db.user.data.length]]
+    
+    .layout.horizontal
+      .flex
+        .card
+          h2 Status
+          .layout.horizontal
+            span.label Uptime
+            span.flex [[db.status.data.uptime]]s
+          .layout.horizontal
+            span.label Memory Used
+            span.flex [[bytesToSize(db.status.data.memory.used)]] / [[bytesToSize(db.status.data.memory.total)]] ([[db.status.data.memory.percent]]%)
+
+      .flex
+        .card
+          h2 Other
+          p Something here soon.
 
   script(src="bjs-dashboard.js")

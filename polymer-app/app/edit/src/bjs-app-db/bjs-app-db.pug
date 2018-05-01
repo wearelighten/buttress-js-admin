@@ -17,6 +17,13 @@ dom-module#bjs-app-db
       handleAs="json",
       last-response="{{dbSchema}}"
     )
+
+    iron-ajax#processStatus(
+      url="//%BUTTRESS_ADMIN_BUTTRESS_URL%/status",
+      params="{{rqProcessStatusParams}}"
+      handleAs="json",
+      last-response="{{processStatus}}"
+    )
     
     bjs-data-service#org(route="org", loaded="{{db.org.loaded}}", status="{{db.org.status}}", auth="[[auth]]", data="{{db.org.data}}", priority="1")
     bjs-data-service#group(route="group", loaded="{{db.group.loaded}}", status="{{db.group.status}}", auth="[[auth]]", data="{{db.group.data}}", priority="1")
