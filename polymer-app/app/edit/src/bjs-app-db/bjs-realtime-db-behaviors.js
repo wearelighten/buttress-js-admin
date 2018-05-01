@@ -66,6 +66,11 @@ Polymer.BJSRealtimeDbMsgHandler = {
     this.__silly(pathSpec);
     this.__silly(params);
 
+    if (path.length > 0 && !this.get(['db', path[0], 'data'])) {
+      this.__silly(`__parsePayload: No data service for ${path[0]}`);
+      return; // We don't have a data service for this data
+    }
+
     switch (payload.verb) {
       case 'post': {
         if (payload.path.includes('metadata') && params.id && params.key) {
@@ -111,7 +116,7 @@ Polymer.BJSRealtimeDbMsgHandler = {
 
 
   __handlePostCommon: function(path, params, payload) {
-    if (path.length !== 1 || !this.get(['db', path[0], 'data'])) {
+    if (path.length !== 1) {
       return;
     }
 
