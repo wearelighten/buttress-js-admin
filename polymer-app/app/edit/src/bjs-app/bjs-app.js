@@ -72,6 +72,12 @@ Polymer({
         };
       }
     },
+
+    queryParams: {
+      type: Object,
+      notify: true
+    },
+
     page: {
       type: String,
       reflectToAttribute: true,
@@ -122,13 +128,24 @@ Polymer({
   },
 
   __viewPath: function(ev) {
-    const path = ev.detail;
-    if (!path) {
+    const detail = ev.detail;
+    if (!detail) {
       this.__warn('__viewPath', 'Called with no path specified', path);
       return;
     }
+    let path = detail;
+    let query = {};
+
+    if (detail.path) {
+      path = detail.path;
+    }
+    if (detail.query) {
+      query = detail.query;
+    }
+
     this.__debug('__viewPath', path);
     this.set('route.path', `/${path}`);
+    this.set('route.__queryParams', query);
   },
 
   __authChanged: function() {

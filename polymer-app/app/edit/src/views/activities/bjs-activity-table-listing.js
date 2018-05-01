@@ -42,6 +42,34 @@ Polymer({
       value: 0
     }
   },
+  observers: [
+    '__queryParamsChanged(queryParams, queryParams.*)'
+  ],
+
+  __queryParamsChanged: function() {
+    const filterParamMatch = 'filter_';
+    const params = this.get('queryParams');
+    if (!params) return;
+
+    if (params.filter && params.filter === 'activity') {
+      // Purge __filters for query items
+      this.get('__filters').filter(i => i.query)
+        .forEach(i => {
+          const idx = this.get('__filters').indexOf(i);
+          this.splice('__filters', idx, 1);
+        });
+
+      for(let param in params) {
+        if (param.indexOf(filterParamMatch) === -1) continue;
+        const type = param.substr(filterParamMatch.length);
+        this.push('__filters', {
+          name: type,
+          value: params[param],
+          query: true
+        });
+      }
+    }
+  },
 
   __computeActivitiesQuery: function(baseQuery) {
     const orGroups = [];

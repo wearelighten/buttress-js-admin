@@ -42,6 +42,12 @@ Polymer({
       computed: '__computeAppActivityQuery(item.appId, item.timestamp)'
     },
 
+    __lastTrackingErrors: Array,
+    __lastTrackingErrorsQuery: {
+      type: Object,
+      computed: '__computeLastTrackingErrorsQuery(__appTrackingQuery)'
+    },
+
     __trackingUser: Array,
     __trackingUserQuery: {
       type: Object,
@@ -96,6 +102,13 @@ Polymer({
         $lteDate: timestamp
       }
     }
+  },
+
+  __computeLastTrackingErrorsQuery: function(query) {
+    query.type = {
+      $eq: 'error'
+    };
+    return query;
   },
 
   __computeTrackingUserQuery: function(userId) {

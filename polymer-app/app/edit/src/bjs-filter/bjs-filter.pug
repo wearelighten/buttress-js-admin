@@ -57,12 +57,12 @@ dom-module#bjs-filter
           paper-menu.dropdown-content(attr-for-selected="filter-id", selected="{{__selectedFilter}}")
             template(is="dom-repeat", items="[[filterSpec]]")
               template(is="dom-if", if="[[!item.icon]]")
-                paper-item(label="[[item.title]]", filter-id="[[item]]") {{item.title}}
+                paper-item(label="[[item.title]]", filter-id="[[item.name]]") [[item.title]]
               template(is="dom-if", if="[[item.icon]]")
                 paper-icon-item(label="[[item.title]]", filter-id="[[item]]")
                   iron-icon(icon="[[item.icon]]", item-icon)
                   paper-item-body
-                    span {{item.title}}
+                    span [[item.title]]
 
         template(is="dom-if", if="[[isText]]")
           paper-input(name="filter", label="Filter", value="{{__editing.value}}", no-label-float)

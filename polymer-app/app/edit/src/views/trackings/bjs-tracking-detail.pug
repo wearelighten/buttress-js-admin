@@ -59,6 +59,18 @@ dom-module#bjs-tracking-detail
       limit="0"
     )
 
+    bjs-app-db-query(
+      log-label="tracking-detail-last-errors",
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__lastTrackingErrorsQuery]]",
+      find-all="{{__lastTrackingErrors}}",
+      limit="5",
+      sort-path="timestamp",
+      sort-order="DESC",
+      sort-type="date"
+    )
+
     .card
       .layout.horizontal
         .flex.layout.vertical
@@ -77,8 +89,8 @@ dom-module#bjs-tracking-detail
         fit-container
       )
         paper-tab(name="overview") Breakdown
-        paper-tab(name="appTracking") Last App Tracking
-        paper-tab(name="appActivity") Last App Activity
+        paper-tab(name="appTracking") Last Tracking
+        paper-tab(name="appActivity") Last DB Activity
 
     iron-pages(
       selected="[[trackingView]]"
@@ -117,7 +129,16 @@ dom-module#bjs-tracking-detail
           .card
             h3 Message
             pre.code [[jsonStringify(item.logging)]]
-          
+
+        bjs-tracking-table(
+          db="[[db]]",
+          title="Last 5 Errors",
+          data="[[__lastTrackingErrors]]",
+          short-table,
+          disable-filters,
+          disable-paging
+        )
+
         .card
           h3 Environment
           .layout.horizontal

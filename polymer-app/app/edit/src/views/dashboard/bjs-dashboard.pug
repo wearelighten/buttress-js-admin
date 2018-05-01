@@ -70,15 +70,15 @@ dom-module#bjs-dashboard
           .layout.vertical.seperator-right
             h2 Tracking
             p [[db.tracking.data.length]]
-        .flex
+        paper-button.flex(on-tap="__viewTrackingInteraction")
           .layout.vertical
             h2 Interaction
             p [[__trackingTypesCounts.INTERACTION]]
-        .flex
+        paper-button.flex(on-tap="__viewTrackingError")
           .layout.vertical
             h2 Error
             p [[__trackingTypesCounts.ERROR]]
-        .flex
+        paper-button.flex(on-tap="__viewTrackinLogging")
           .layout.vertical
             h2 Logging
             p [[__trackingTypesCounts.LOGGING]]
@@ -90,15 +90,15 @@ dom-module#bjs-dashboard
           .layout.vertical.seperator-right
             h2 Activites
             p [[db.activity.data.length]]
-        .flex
+        paper-button.flex(on-tap="__viewActivityPost")
           .layout.vertical
             h2 POST
             p [[__activitiesVerbsCounts.POST]]
-        .flex
+        paper-button.flex(on-tap="__viewActivityPut")
           .layout.vertical
             h2 PUT
             p [[__activitiesVerbsCounts.PUT]]
-        .flex
+        paper-button.flex(on-tap="__viewActivityDel")
           .layout.vertical
             h2 DEL
             p [[__activitiesVerbsCounts.DEL]]

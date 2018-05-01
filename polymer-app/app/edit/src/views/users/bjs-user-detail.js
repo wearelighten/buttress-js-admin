@@ -82,7 +82,7 @@ Polymer({
     if (!userId) return;
 
     return {
-      _user: {
+      userId: {
         $eq: userId
       }
     }

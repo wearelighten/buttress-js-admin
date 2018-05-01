@@ -19,16 +19,14 @@ Polymer({
     },
     filters: {
       type: Array,
-      value: function() {
-        return [];
-      },
       notify: true,
     },
     filterSpec: {
       type: Array
     },
     __selectedFilter: {
-      type: Object
+      type: Object,
+      notify: true
     },
     __editing: {
       type: Object
@@ -52,7 +50,7 @@ Polymer({
   ],
 
   attached: function() {
-    this.__editing = this.get('filters.0');
+    this.set('__editing', this.get('filters.0'));
     this.linkPaths('__editing', 'filters.0');
     this.set('__selectedFilter', this.get('filterSpec.0'));
     this.__attached = true;
@@ -61,7 +59,7 @@ Polymer({
   __selectedFilterChanged: function() {
     const selected = this.get('__selectedFilter');
     this.set('__editing.name', selected.name);
-    this.set('__editing.value', '');
+    // this.set('__editing.value', '');
   },
   __filterSpecChanged: function() {
     const filterSpec = this.get('filterSpec');

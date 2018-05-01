@@ -26,14 +26,14 @@ dom-module#bjs-tracking-table
     bjs-app-db-query(log-label="tracking-table-users", db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
     bjs-app-db-query(log-label="tracking-table-apps", db="[[db]]", doc="[[db.app]]", query="[[__appsQuery]]", find-all="{{__apps}}", limit="0")
 
-    .card
+    .card(hidden$="[[disableFilters]]")
       .layout.horizontal
         bjs-filter(
           filters="{{filters}}",
           filter-spec="[[filterSpec]]"
         )
 
-    .card
+    .card(hidden$="[[disablePaging]]")
       .layout.horizontal
         .layout.horizontal.wrap
           p Page [[currentPage]] of [[totalPages]] Results: [[totalResults]]
@@ -46,9 +46,10 @@ dom-module#bjs-tracking-table
           )
 
     .card
+      h3(hidden$="[[!title]]") [[title]]
       iron-data-table#DataTable(
         items="[[__dataExpanded]]",
-        page-size="12",
+        short-table$="[[shortTable]]",
         details-enabled
       )
         template(is="row-detail")
@@ -125,6 +126,7 @@ dom-module#bjs-tracking-table
 
         filters: {
           type: Array,
+          value: null,
           notify: true
         },
         filterSpec: {

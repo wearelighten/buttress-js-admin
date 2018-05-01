@@ -60,14 +60,14 @@ dom-module#bjs-activity-detail
     )
 
     .card
-      .layout.vertical
-        .layout.horizontal
-          div.flex
-            h2 [[item.path]]
-          div.flex.text-right
-            h2 [[itemTimestampFormatted]]
-        .layout.horizontal
-          p [[item.verb]]
+      .layout.horizontal
+        .flex.layout.vertical
+          h2 [[item.path]]
+          span [[item.verb]]
+        .flex.layout.vertical.text-right
+          h2 [[itemTimestampFormatted]]
+          span [[__trackingUser.person.formalName]]
+          span [[__trackingApp.name]]
 
     .card
       paper-tabs(
@@ -77,8 +77,8 @@ dom-module#bjs-activity-detail
         fit-container
       )
         paper-tab(name="overview") Breakdown
-        paper-tab(name="appTracking") Last App Tracking
-        paper-tab(name="appActivity") Last App Activity
+        paper-tab(name="appTracking") Last Tracking
+        paper-tab(name="appActivity") Last DB Activity
 
     iron-pages(
       selected="[[trackingView]]"
@@ -86,25 +86,15 @@ dom-module#bjs-activity-detail
     )
       div(name="overview")
         .card
-          .layout.horizontal
-            .flex
-              .layout.horizontal
-                p.label Date
-                p.flex [[itemTimestampFormatted]]
-            .flex
-              .layout.horizontal
-                p.label App
-                p.flex [[__trackingApp.name]]
-
           h3 Params
           pre.code [[jsonStringify(item.params)]]
-
+        .card
           h3 Query
           pre.code [[jsonStringify(item.query)]]
-          
+        .card
           h3 Body
           pre.code [[jsonStringify(item.body)]]
-
+        .card
           h3 JSON Object
           pre.code [[jsonStringify(item)]]
 

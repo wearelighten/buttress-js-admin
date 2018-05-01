@@ -67,6 +67,50 @@ Polymer({
     return 'Dashboard';
   },
 
+  __viewEntity: function(path, query) {
+    this.fire('view-path', {
+      path: path,
+      query: query
+    })
+  },
+
+  __viewTrackingInteraction: function() {
+    this.__viewEntity('trackings', {
+      filter: 'tracking',
+      filter_type: 'interaction'
+    });
+  },
+  __viewTrackingError: function() {
+    this.__viewEntity('trackings', {
+      filter: 'tracking',
+      filter_type: 'error'
+    });
+  },
+  __viewTrackinLogging: function() {
+    this.__viewEntity('trackings', {
+      filter: 'tracking',
+      filter_type: 'logging'
+    });
+  },
+  __viewActivityPost: function() {
+    this.__viewEntity('activities', {
+      filter: 'activity',
+      filter_permissions: 'add'
+    });
+  },
+  __viewActivityPut: function() {
+    this.__viewEntity('activities', {
+      filter: 'activity',
+      filter_permissions: 'write'
+    });
+  },
+  __viewActivityDel: function() {
+    this.__viewEntity('activities', {
+      filter: 'activity',
+      filter_permissions: 'delete'
+    });
+  },
+
   __computeActivitiesQuery: function() {
     return { }; // Select all
   },

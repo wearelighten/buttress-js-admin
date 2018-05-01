@@ -13,9 +13,9 @@ link(rel="import" href="/bower_components/app-layout/app-header/app-header.html"
 link(rel="import" href="/bower_components/app-layout/app-header-layout/app-header-layout.html")
 link(rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html")
 link(rel="import" href="/bower_components/app-layout/app-toolbar/app-toolbar.html")
-link(rel="import" href="/bower_components/app-layout/demo/sample-content.html")
 link(rel="import" href="/bower_components/app-route/app-location.html")
 link(rel="import" href="/bower_components/app-route/app-route.html")
+link(rel="import" href="/bower_components/iron-location/iron-query-params.html")
 link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
@@ -150,7 +150,10 @@ dom-module#bjs-app
       }
 
     //- Routes
-    app-location(route="{{route}}")
+    app-location(
+      route="{{route}}",
+      query-params="{{queryParams}}"
+    )
     app-route(
       route="{{route}}",
       pattern="/:page",
@@ -294,6 +297,7 @@ dom-module#bjs-app
             sub-page-title="{{subPageTitle}}",
             subroute="{{subroute}}",
             subroute-data="{{subrouteData}}",
+            query-params="[[queryParams]]"
           )
           bjs-activities(
             name="activities",
@@ -306,6 +310,7 @@ dom-module#bjs-app
             sub-page-title="{{subPageTitle}}",
             subroute="{{subroute}}",
             subroute-data="{{subrouteData}}",
+            query-params="[[queryParams]]"
           )
           bjs-view404(name="view404")
 
