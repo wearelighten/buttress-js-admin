@@ -54,8 +54,10 @@ dom-module#bjs-activity-table
           template [[item.path]]
         data-table-column(name="Type")
           template [[item.permissions]]
-        data-table-column(name="Description")
-          template [[item.description]]
+        data-table-column(name="User")
+          template [[item.user.name]]
+        data-table-column(name="App")
+          template [[item.app.name]]
         data-table-column(name="Date")
           template [[item.dateTime]]
         data-table-column(name="", align-right)
@@ -135,19 +137,32 @@ dom-module#bjs-activity-table
         const apps = this.get('__apps');
         const users = this.get('__users');
         return activities.map(activity => {
-          //- const user = users.find(u => u.id === track.userId);
-          //- let email = (user) ? user.auth[0].email : '-';
+          let path = activity.path;
 
-          //- const app = apps.find(a => a.id === track.appId);
-          //- let appName = (app) ? app.name : '-';
+          const user = users.find(u => u.id === activity.userId);
+          const userName = (user) ? user.person.formalName : '';
+          //- const userImage = (user) ? user.auth[0].images.profile : '';
+
+          const app = apps.find(a => a.id === activity.appId);
+          let appName = (app) ? app.name : '';
+
+          if (activity.permissions === 'write') {
+            path = `${path}/${activity.body.path}`;
+          }
 
           return {
             id: activity.id,
-            path: activity.path,
+            path: path,
             permissions: activity.permissions,
             description: activity.description,
             dateTime: this.timestampToStringFormatted(activity.timestamp),
-            json: JSON.stringify(activity, null, 2)
+            json: JSON.stringify(activity, null, 2),
+            app: {
+              name: appName
+            },
+            user: {
+              name: userName
+            },
           }
         });
       },
