@@ -121,6 +121,9 @@ Polymer.BJSRealtimeDbMsgHandler = {
     }
 
     responses.forEach((response) => {
+      if (!response.__readonly__) {
+        response.__readonly__ = true;
+      }
       this.push(['db', path[0], 'data'], response);
     })
   },
