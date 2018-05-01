@@ -104,7 +104,8 @@ Polymer({
     }
   },
 
-  __computeLastTrackingErrorsQuery: function(query) {
+  __computeLastTrackingErrorsQuery: function() {
+    const query = Object.assign({}, this.get('__appTrackingQuery'));
     query.type = {
       $eq: 'error'
     };
