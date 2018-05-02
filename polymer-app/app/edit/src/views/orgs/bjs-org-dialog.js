@@ -1,6 +1,6 @@
 Polymer({
   is: 'bjs-org-dialog',
-  behaviors: [Polymer.BJSLogging, Polymer.BJSEditDialog],
+  behaviors: [BJSBehaviors.Logging, Polymer.BJSEditDialog],
   properties: {
     logLevel: {
       type: Number,

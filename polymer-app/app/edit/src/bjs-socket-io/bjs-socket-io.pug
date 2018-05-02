@@ -1,0 +1,13 @@
+link(rel="import", href="/bower_components/polymer/polymer.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+script(src="//%BUTTRESS_ADMIN_BUTTRESS_HOST%/socket.io/socket.io.js")
+
+dom-module#bjs-socket-io
+  template
+    style.
+      :host {
+        display: none;
+      }
+
+  script(src="bjs-socket-io.js")

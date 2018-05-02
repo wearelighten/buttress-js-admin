@@ -13,9 +13,9 @@ link(rel="import" href="/bower_components/app-layout/app-header/app-header.html"
 link(rel="import" href="/bower_components/app-layout/app-header-layout/app-header-layout.html")
 link(rel="import" href="/bower_components/app-layout/app-scroll-effects/app-scroll-effects.html")
 link(rel="import" href="/bower_components/app-layout/app-toolbar/app-toolbar.html")
-link(rel="import" href="/bower_components/app-layout/demo/sample-content.html")
 link(rel="import" href="/bower_components/app-route/app-location.html")
 link(rel="import" href="/bower_components/app-route/app-route.html")
+link(rel="import" href="/bower_components/iron-location/iron-query-params.html")
 link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
 link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
@@ -25,13 +25,21 @@ link(rel="import" href="/bower_components/iron-icons/social-icons.html")
 link(rel="import" href="/bower_components/iron-icons/communication-icons.html")
 link(rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html")
 link(rel="import" href="/bower_components/paper-toast/paper-toast.html")
+link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
 
 link(rel="import", href="/src/bjs-auth/bjs-auth.html")
+
 link(rel="import", href="/src/bjs-app-db/bjs-app-db.html")
+link(rel="import", href="/src/bjs-app-db/bjs-realtime-db-behaviors.html")
+
+link(rel="import", href="/src/bjs-socket-io/bjs-socket-io.html")
+
 link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 
 link(rel="import" href="/src/my-icons.html")
 link(rel="import" href="/src/shared-styles.html")
+
+script(src="/bower_components/sugar/dist/sugar.min.js")
 
 dom-module#bjs-app
   template
@@ -52,10 +60,12 @@ dom-module#bjs-app
       --default-primary-color-darken-10: #005F98;
       --default-primary-color-darken-15: #00528B;
       --default-primary-color-darken-20: #00457E;
+      
       --paper-menu-color: var(--default-primary-color-darken-20);
       --text-primary-color: #fff;
       --text-secondary-color: #3f3f3f;
       --text-tertiary-color: #6f6f6f;
+
       --paper-toolbar-background: var(--default-primary-color);
       --paper-toolbar-color: var(--text-primary-color);
       --paper-spinner-layer-1-color: var(--default-primary-color);
@@ -72,7 +82,7 @@ dom-module#bjs-app
       }
 
       app-drawer#drawer {
-        z-index: 1;
+        z-index: 9001; // It's Over 9000
       }
 
       #drawer > app-header {
@@ -80,58 +90,38 @@ dom-module#bjs-app
         background-color: var(--default-primary-color);
       }
 
-      #drawer > app-toolbar {
-      }
-
-      app-header#app {
+      app-header#header {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         color: #fff;
         background-color: var(--app-primary-color);
+        z-index: 999;
       }
-
-      app-header#app paper-icon-button {
+      app-header#header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
-
-      #app > app-toolbar.middle {
-        height: 120px;
+      app-header#header paper-dropdown {
+        --paper-dropdown-menu-input {
+          color: #FFF;
+        }
       }
 
-      #app > app-toolbar.bottom {
-        height: 92px;
-      }
-
-      #app > [main-title] {
+      #header > [main-title] {
         margin-left: 64px;
         font-size: 32px;
         font-weight: 300;
       }
 
-      #app > [condensed-title] {
-        margin-left: 20px;
-        font-weight: 300;
-      }
-
-      sample-content {
-        padding-top: 276px;
-      }
-
       .drawer-list {
         margin: 0 20px;
       }
-
       .drawer-list a {
         display: block;
-
         padding: 0 16px;
-
         text-decoration: none;
-
         color: var(--app-secondary-color);
-
         line-height: 40px;
       }
       iron-image {
@@ -144,8 +134,13 @@ dom-module#bjs-app
         }
       }
 
+      #auth-spinner{
+        width: 128px;
+        height: 128px;
+      }
+
       #viewPages {
-        padding-top: 276px;
+        padding-top: 64px;
       }
 
       .drawer-list a.iron-selected {
@@ -154,47 +149,81 @@ dom-module#bjs-app
         font-weight: bold;
       }
 
-    app-location(route="{{route}}")
+    //- Routes
+    app-location(
+      route="{{route}}",
+      query-params="{{queryParams}}"
+    )
     app-route(
-        route="{{route}}",
-        pattern="/:page",
-        data="{{routeData}}",
-        tail="{{subroute}}")
+      route="{{route}}",
+      pattern="/:page",
+      data="{{routeData}}",
+      tail="{{subroute}}"
+    )
     app-route(
-        route="{{subroute}}",
-        pattern="/:id",
-        data="{{subrouteData}}")
-    bjs-auth-service#authService(status="{{authStatus}}", auth="{{auth}}", login-details="[[loginDetails]]")
-    bjs-app-db#db(status="{{dbStatus}}", auth="[[auth]]", db="{{db}}", on-error="__dataServiceError")
+      route="{{subroute}}",
+      pattern="/:id",
+      data="{{subrouteData}}"
+    )
+    
+    //- Auth & Data 
+    bjs-auth-service#authService(
+      status="{{authStatus}}",
+      auth="{{auth}}", 
+      login-details="[[loginDetails]]"
+    )
+    bjs-app-db#db(
+      status="{{dbStatus}}",
+      auth="[[auth]]",
+      db="{{db}}",
+      on-error="__dataServiceError"
+    )
+    bjs-socket-io#iodb(
+      app="[[app]]",
+      auth="[[auth]]",
+      endpoint="{{iodb.endpoint}}",
+      connected="{{iodb.connected}}",
+      rx-events="{{iodb.rxEvents}}",
+      rx="{{iodb.rx}}",
+      on-rx-event="__dbRxEvent"
+    )
+    
     paper-toast#toast()
 
     iron-pages(attr-for-selected="name", selected="{{mode}}")
       section(name="authenticating")
+        .layout.horizontal.center.center-justified(style="height: 100vh;")
+          paper-spinner#auth-spinner(active)
+
       section(name="authenticate")
         .layout.horizontal.center.center-justified.auth-container(style="height: 100vh;")
           bjs-auth(auth="[[auth]]")
+
       section(name="application")
-        app-header#app(effects="waterfall resize-title blend-background parallax-background", condenses, reveals)
+        app-header#header(effects="waterfall blend-background parallax-background", fixed)
           app-toolbar
             paper-icon-button(icon="menu", hidden$="{{__hideMenuButton}}", on-click="__toggleDrawer")
             paper-icon-button(icon="arrow-back", hidden$="{{__hideBackButton}}", on-click="__backButton")
-            div(condensed-title) {{mainTitle}}
-            paper-icon-button(icon="communication:chat")
-            paper-icon-button(icon="social:notifications-none")
+            div(main-title) {{mainTitle}}
+            //- paper-icon-button(icon="communication:chat")
+            //- paper-icon-button(icon="social:notifications-none")
             img(src="{{auth.user.profiles.0.images.profile}}", width=32,height=32, style="width: 32px; height; 32px; border-radius:50%;")
-          app-toolbar.middle
-          app-toolbar(main-title).bottom {{mainTitle}}
+          //- app-toolbar.middle
+          //- app-toolbar(main-title).bottom {{mainTitle}}
 
         app-drawer#drawer(swipe-open)
-          app-header
+          app-header(fixed)
             app-toolbar
               div(main-title) ButtressJS
           iron-selector(selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation")
+            a(name="dashboard", href="/dashboard") Dashboard
             a(name="orgs", href="/orgs") Organisations
             a(name="groups", href="/groups") Groups
             a(name="apps", href="/apps") Applications
+            hr
             a(name="users", href="/users") Users
-            a(name="users", href="/trackings") Tracking
+            a(name="trackings", href="/trackings") Tracking
+            a(name="activities", href="/activities") Activites
 
         //-sample-content(size="100")
         iron-pages#viewPages(
@@ -202,6 +231,16 @@ dom-module#bjs-app
           attr-for-selected="name",
           fallback-selection="view404",
           role="main")
+          bjs-dashboard(
+            name="dashboard",
+            title="Dashboard",
+            sub-page-title="{{subPageTitle}}",
+            route="{{route}}",
+            route-data="{{routeData}}",
+            subroute="{{subroute}}",
+            subroute-data="{{subrouteData}}",
+            auth="[[auth]]",
+            db="{{db}}")
           bjs-orgs(
             name="orgs",
             title="Organisation",
@@ -250,6 +289,7 @@ dom-module#bjs-app
           bjs-trackings(
             name="trackings",
             db="{{db}}",
+            doc="{{db.tracking}}",
             auth="[[auth]]",
             title="Tracking",
             route="{{route}}",
@@ -257,6 +297,20 @@ dom-module#bjs-app
             sub-page-title="{{subPageTitle}}",
             subroute="{{subroute}}",
             subroute-data="{{subrouteData}}",
+            query-params="[[queryParams]]"
+          )
+          bjs-activities(
+            name="activities",
+            db="{{db}}",
+            doc="{{db.activity}}",
+            auth="[[auth]]",
+            title="Activity",
+            route="{{route}}",
+            route-data="{{routeData}}",
+            sub-page-title="{{subPageTitle}}",
+            subroute="{{subroute}}",
+            subroute-data="{{subrouteData}}",
+            query-params="[[queryParams]]"
           )
           bjs-view404(name="view404")
 

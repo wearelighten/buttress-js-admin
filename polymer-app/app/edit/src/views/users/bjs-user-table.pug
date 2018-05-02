@@ -1,0 +1,187 @@
+link(rel="import", href="/bower_components/polymer/polymer.html")
+link(rel="import", href="/bower_components/iron-image/iron-image.html")
+link(rel="import", href="/bower_components/iron-data-table/iron-data-table.html")
+
+link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+dom-module#bjs-user-table
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        --paper-tab-ink: var(--paper-menu-color);
+
+        --paper-tabs-selection-bar-color: var(--paper-menu-color);
+      }
+
+      iron-image.circle {
+        width: 50px;
+        height: 50px;
+      }
+
+      p.label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+
+    bjs-app-db-query(log-label="tracking-table-apps", db="[[db]]", doc="[[db.app]]", query="[[__appsQuery]]", find-all="{{__apps}}", limit="0")
+
+    .card
+      .layout.horizontal
+        bjs-filter(
+          filters="{{filters}}",
+          filter-spec="[[filterSpec]]"
+        )
+
+    .card
+      .layout.horizontal
+        .layout.horizontal.wrap
+          p Page [[currentPage]] of [[totalPages]] Results: [[totalResults]]
+        .flex
+        .layout.horizontal.wrap
+          bjs-pagination(
+            current="{{currentPage}}",
+            max-steps="5",
+            last="[[totalPages]]"
+          )
+
+    .card
+      iron-data-table#DataTable(
+        items="[[__dataExpanded]]",
+        page-size="12",
+        details-enabled
+      )
+        template(is="row-detail")
+          div.detail
+            .layout.horizontal
+              .flex
+                .layout.horizontal.wrap
+                  p.label Name
+                  p.flex [[item.name]]
+              .flex
+                .layout.horizontal.wrap
+                  p.label Date
+                  p.flex [[item.dateTime]]
+            pre [[item.json]]
+
+        data-table-column(name="Avatar", width="50px")
+          template
+            iron-image.circle(src="[[item.userImage]]", sizing="contain")
+        data-table-column(name="Name")
+          template [[item.name]]
+        data-table-column(name="", align-right)
+          template
+            paper-button(on-tap="__viewItem") View
+
+  script.
+    Polymer({
+      is: 'bjs-user-table',
+      behaviors: [
+        BJSBehaviors.Logging,
+        BJSBehaviors.Helpers
+      ],
+      properties: {
+        logLevel: {
+          type: Number,
+          value: 3
+        },
+        db: {
+          type: Object,
+          notify: true
+        },
+        data: {
+          type: Array
+        },
+        currentPage: {
+          type: Number,
+          notify: true,
+          value: 0
+        },
+        totalPages: {
+          type: Number,
+          value: 0
+        },
+        totalResults: {
+          type: Number,
+          value: 0
+        },
+
+        __users: Array,
+        __usersQuery: {
+          type: Object,
+          computed: '__computeUsersQuery(db.user.data)'
+        },
+
+        __apps: Array,
+        __appsQuery: {
+          type: Object,
+          computed: '__computeAppsQuery(db.app.data)'
+        },
+
+        filters: {
+          type: Array,
+          notify: true
+        },
+        filterSpec: {
+          type: Array,
+          notify: true
+        },
+
+        __dataExpanded: {
+          type: Array,
+          notify: true,
+          computed: '__computeDataExpanded(data, __apps)'
+        },
+      },
+      observers: [
+        '__checkCurrentPageOutBounds(totalPages)'
+      ],
+
+      __viewItem: function(ev) {
+        const item = ev.model.get('item');
+        this.__debug('__viewItem', item);
+        this.fire('view-path', `users/${item.id}`);
+      },
+
+      __computeDataExpanded: function(users) {
+        const apps = this.get('__apps');
+
+        return users.map(user => {
+          let name = (user) ? user.person.formalName : '';
+          let userImage = (user) ? user.auth[0].images.profile : '';
+
+          //- const app = apps.find(a => a.id === user.appId);
+          //- let appName = (app) ? app.name : '';
+
+          return {
+            id: user.id,
+            name: name,
+            userImage: userImage,
+            json: JSON.stringify(user, null, 2)
+          }
+        });
+      },
+
+      __checkCurrentPageOutBounds: function(total) {
+        const current = this.get('currentPage');
+
+        if (current > total) {
+          this.set('currentPage', total);
+        }
+      },
+
+      __computeUsersQuery: function() {
+        return {
+          // All
+        }
+      },
+      __computeAppsQuery: function() {
+        return {
+          // All
+        }
+      }
+    });

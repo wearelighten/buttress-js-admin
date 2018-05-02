@@ -17,7 +17,7 @@ dom-module#bjs-user-card
         .circle
           iron-image(src="[[item.auth.0.images.profile]]", sizing="contain")
         .layout.vertical
-          h2 {{item.id}}
+          h2 [[item.person.formalName]]
           p Accounts: [[item.auth.length]]
         .flex
         .layout.vertical

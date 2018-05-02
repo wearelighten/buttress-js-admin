@@ -22,6 +22,13 @@ dom-module(id="shared-styles")
         background-color: #fff;
       }
 
+      pre.code {
+        background: #333;
+        color: #FFF;
+        padding: 10px;
+        overflow-x: scroll;
+      }
+
       .circle {
         display: inline-block;
 
@@ -66,4 +73,37 @@ dom-module(id="shared-styles")
           width: 32px;
           height: 32px;
         }
+      }
+
+      .text-center{
+        text-align: center;
+      }
+      .text-right {
+        text-align: right;
+      }
+
+      .label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+
+      #DataTable {
+        height: 700px;
+      }
+      #DataTable[short-table] {
+        height: 300px;
+      }
+      #DataTable data-table-cell{
+        font-size: 13px;
+      }
+      #DataTable data-table-cell[header]{
+        font-size: 16px;
+      }
+      #DataTable .detail {
+        width: 100%;
+      }
+      #DataTable .detail pre {
+        background: #333;
+        color: #FFF;
+        overflow-x: auto;
       }

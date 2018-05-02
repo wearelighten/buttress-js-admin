@@ -1,7 +1,7 @@
 Polymer({
   is: "bjs-auth-service",
   behaviors: [
-    Polymer.BJSLogging
+    BJSBehaviors.Logging
   ],
   properties: {
     logLevel: {

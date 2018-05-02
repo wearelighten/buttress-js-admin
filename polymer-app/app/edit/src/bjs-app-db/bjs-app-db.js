@@ -319,7 +319,7 @@ const AppDb = {
 
 Polymer({
   is: 'bjs-app-db',
-  behaviors: [Polymer.BJSLogging],
+  behaviors: [BJSBehaviors.Logging],
   properties: {
     logLevel: {
       type: Number,
@@ -345,6 +345,17 @@ Polymer({
         return [];
       }
     },
+
+    rqProcessStatusParams: {
+      type: Object
+    },
+    processStatus: {
+      type: Array,
+      value: function() {
+        return [];
+      }
+    },
+
     db: {
       type: Object,
       value: function() {
@@ -373,6 +384,16 @@ Polymer({
             status: 'uninitialised',
             data: [],
             metadata: {}
+          },
+          activity: {
+            status: 'uninitialised',
+            data: [],
+            metadata: {}
+          },
+          status: {
+            status: 'uninitialised',
+            data: {},
+            metadata: {}
           }
         }
       },
@@ -389,7 +410,8 @@ Polymer({
   },
   observers: [
     '__auth(auth.user)',
-    '__dbSchema(dbSchema.*)'
+    '__dbSchema(dbSchema.*)',
+    '__processStatus(processStatus.*)'
   ],
 
   listeners: {
@@ -418,7 +440,13 @@ Polymer({
         token: this.auth.user.authToken
       };
       this.$.schema.generateRequest();
-    }   
+
+      this.rqProcessStatusParams = {
+        urq: Date.now(),
+        token: this.auth.user.authToken
+      };
+      this.$.processStatus.generateRequest();
+    }
 
     this.__services = Polymer.dom(this.root).querySelectorAll('bjs-data-service:not([loaded])');
     this.__services.sort((a,b) => a.priority - b.priority);
@@ -429,6 +457,10 @@ Polymer({
   __dbSchema: function() {
     AppDb.Schema.schema = this.get('dbSchema');
     this.__debug(AppDb.Factory.create('documents'));
+  },
+
+  __processStatus: function() {
+    this.set('db.status.data', this.get('processStatus'));
   },
 
   __onDataLoaded: function(ev) {

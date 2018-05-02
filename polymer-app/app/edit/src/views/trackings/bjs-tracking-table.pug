@@ -1,0 +1,201 @@
+link(rel="import", href="/bower_components/polymer/polymer.html")
+link(rel="import", href="/bower_components/iron-image/iron-image.html")
+link(rel="import", href="/bower_components/iron-data-table/iron-data-table.html")
+
+link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+dom-module#bjs-tracking-table
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        --paper-tab-ink: var(--paper-menu-color);
+
+        --paper-tabs-selection-bar-color: var(--paper-menu-color);
+      }
+
+      p.label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+
+    bjs-app-db-query(log-label="tracking-table-users", db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
+    bjs-app-db-query(log-label="tracking-table-apps", db="[[db]]", doc="[[db.app]]", query="[[__appsQuery]]", find-all="{{__apps}}", limit="0")
+
+    .card(hidden$="[[disableFilters]]")
+      .layout.horizontal
+        bjs-filter(
+          filters="{{filters}}",
+          filter-spec="[[filterSpec]]"
+        )
+
+    .card(hidden$="[[disablePaging]]")
+      .layout.horizontal
+        .layout.horizontal.wrap
+          p Page [[currentPage]] of [[totalPages]] Results: [[totalResults]]
+        .flex
+        .layout.horizontal.wrap
+          bjs-pagination(
+            current="{{currentPage}}",
+            max-steps="5",
+            last="[[totalPages]]"
+          )
+
+    .card
+      h3(hidden$="[[!title]]") [[title]]
+      iron-data-table#DataTable(
+        items="[[__dataExpanded]]",
+        short-table$="[[shortTable]]",
+        details-enabled
+      )
+        template(is="row-detail")
+          div.detail
+            .layout.horizontal
+              .flex
+                .layout.horizontal.wrap
+                  p.label Name
+                  p.flex [[item.name]]
+              .flex
+                .layout.horizontal.wrap
+                  p.label Date
+                  p.flex [[item.dateTime]]
+            pre [[item.json]]
+
+        data-table-column(name="Type")
+          template [[item.type]]
+        data-table-column(name="App")
+          template [[item.appName]]
+        data-table-column(name="Name")
+          template [[item.name]]
+        data-table-column(name="User")
+          template [[item.user]]
+        data-table-column(name="Timestamp")
+          template [[item.dateTime]]
+        data-table-column(name="", align-right)
+          template
+            paper-button(on-tap="__viewTrackingItem") View
+
+  script.
+    Polymer({
+      is: 'bjs-tracking-table',
+      behaviors: [
+        BJSBehaviors.Logging,
+        BJSBehaviors.Helpers
+      ],
+      properties: {
+        logLevel: {
+          type: Number,
+          value: 3
+        },
+        db: {
+          type: Object,
+          notify: true
+        },
+        data: {
+          type: Array
+        },
+        currentPage: {
+          type: Number,
+          notify: true,
+          value: 0
+        },
+        totalPages: {
+          type: Number,
+          value: 0
+        },
+        totalResults: {
+          type: Number,
+          value: 0
+        },
+
+        __users: Array,
+        __usersQuery: {
+          type: Object,
+          computed: '__computeUsersQuery(db.user.data)'
+        },
+
+        __apps: Array,
+        __appsQuery: {
+          type: Object,
+          computed: '__computeAppsQuery(db.app.data)'
+        },
+
+        filters: {
+          type: Array,
+          value: null,
+          notify: true
+        },
+        filterSpec: {
+          type: Array,
+          notify: true
+        },
+
+        __dataExpanded: {
+          type: Array,
+          notify: true,
+          computed: '__computeDataExpanded(data, __apps)'
+        },
+      },
+      observers: [
+        '__checkCurrentPageOutBounds(totalPages)'
+      ],
+
+      __testRender: function() {
+        this.__warn(this.$.DataTable);
+        this.$.DataTable.clearCache();
+      },
+
+      __viewTrackingItem: function(ev) {
+        const item = ev.model.get('item');
+        this.__debug('__viewTrackingItem', item);
+        this.fire('view-path', `trackings/${item.id}`);
+      },
+
+      __computeDataExpanded: function(tracking) {
+        const apps = this.get('__apps');
+        const users = this.get('__users');
+
+        return tracking.map(track => {
+          const user = users.find(u => u.id === track.userId);
+          let email = (user) ? user.person.formalName : '';
+          let userImage = (user) ? user.auth[0].images.profile : '';
+
+          const app = apps.find(a => a.id === track.appId);
+          let appName = (app) ? app.name : '';
+
+          return {
+            id: track.id,
+            type: track.type,
+            name: track.name,
+            appName: appName,
+            user: email,
+            userImage: userImage,
+            dateTime:  this.timestampToStringFormatted(track.timestamp),
+            json: JSON.stringify(track, null, 2)
+          }
+        });
+      },
+
+      __checkCurrentPageOutBounds: function(total) {
+        const current = this.get('currentPage');
+
+        if (current > total) {
+          this.set('currentPage', total);
+        }
+      },
+
+      __computeUsersQuery: function() {
+        return {
+          // All
+        }
+      },
+      __computeAppsQuery: function() {
+        return {
+          // All
+        }
+      }
+    });

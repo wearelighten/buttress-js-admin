@@ -1,0 +1,150 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
+link(rel="import" href="/bower_components/iron-form/iron-form.html")
+link(rel="import" href="/bower_components/paper-button/paper-button.html")
+link(rel="import" href="/bower_components/paper-fab/paper-fab.html")
+link(rel="import" href="/bower_components/paper-input/paper-input.html")
+link(rel="import" href="/bower_components/paper-dialog/paper-dialog.html")
+link(rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html")
+link(rel="import" href="/bower_components/paper-menu/paper-menu.html")
+link(rel="import" href="/bower_components/paper-item/paper-item.html")
+link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
+link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
+link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+
+link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
+
+link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+dom-module#bjs-dashboard
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        display: block;
+        padding: 10px;
+      }
+
+      .seperator-right {
+        border-right: 1px solid #d3d3d3;
+      }
+
+      .text-center{
+        text-align: center;
+      }
+
+    bjs-app-db-query(
+      log-label="dashboard-activites",
+      db="[[db]]",
+      doc="[[db.activity]]",
+      query="[[__activitiesQuery]]",
+      num-results="{{__activitiesTotal}}",
+      num-pages="{{__activitiesNumPages}}",
+      page="[[__activitiesPage]]",
+      find-all="{{__activities}}",
+      find-all-unpaged="{{__activitiesUnpaged}}"
+    )
+    bjs-app-db-query(
+      log-label="dashboard-tracking",
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__trackingQuery]]",
+      num-results="{{__trackingTotal}}",
+      num-pages="{{__trackingNumPages}}",
+      page="[[__trackingPage]]",
+      find-all="{{__tracking}}",
+      find-all-unpaged="{{__trackingUnpaged}}"
+    )
+
+    .card
+      .layout.horizontal.text-center
+        .flex
+          .layout.vertical.seperator-right
+            h2 Tracking
+            p [[db.tracking.data.length]]
+        paper-button.flex(on-tap="__viewTrackingInteraction")
+          .layout.vertical
+            h2 Interaction
+            p [[__trackingTypesCounts.INTERACTION]]
+        paper-button.flex(on-tap="__viewTrackingError")
+          .layout.vertical
+            h2 Error
+            p [[__trackingTypesCounts.ERROR]]
+        paper-button.flex(on-tap="__viewTrackinLogging")
+          .layout.vertical
+            h2 Logging
+            p [[__trackingTypesCounts.LOGGING]]
+        .flex
+
+    .card
+      .layout.horizontal.text-center
+        .flex
+          .layout.vertical.seperator-right
+            h2 Activites
+            p [[db.activity.data.length]]
+        paper-button.flex(on-tap="__viewActivityPost")
+          .layout.vertical
+            h2 POST
+            p [[__activitiesVerbsCounts.POST]]
+        paper-button.flex(on-tap="__viewActivityPut")
+          .layout.vertical
+            h2 PUT
+            p [[__activitiesVerbsCounts.PUT]]
+        paper-button.flex(on-tap="__viewActivityDel")
+          .layout.vertical
+            h2 DEL
+            p [[__activitiesVerbsCounts.DEL]]
+        .flex
+
+    .card
+      .layout.horizontal.text-center
+        .flex
+          .layout.vertical.seperator-right
+            paper-button(on-tap="__viewOrganisations")
+              .layout.vertical
+                h2 Organisations
+                p [[db.org.data.length]]
+        .flex
+          .layout.vertical.seperator-right
+            paper-button(on-tap="__viewGroups")
+              .layout.vertical
+                h2 Groups
+                p [[db.group.data.length]]
+        .flex
+          .layout.vertical.seperator-right
+            paper-button(on-tap="__viewApps")
+              .layout.vertical
+                h2 Apps
+                p [[db.app.data.length]]
+        .flex
+          .layout.vertical
+            paper-button(on-tap="__viewUsers")
+              .layout.vertical
+                h2 Users
+                p [[db.user.data.length]]
+    
+    .layout.horizontal
+      .flex
+        .card
+          h2 Status
+          .layout.horizontal
+            span.label Uptime
+            span.flex [[db.status.data.uptime]]s
+          .layout.horizontal
+            span.label Memory Used
+            span.flex [[bytesToSize(db.status.data.memory.used)]] / [[bytesToSize(db.status.data.memory.total)]] ([[db.status.data.memory.percent]]%)
+
+      .flex
+        .card
+          h2 Other
+          p Something here soon.
+
+  script(src="bjs-dashboard.js")

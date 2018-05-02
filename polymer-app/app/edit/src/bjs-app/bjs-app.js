@@ -1,17 +1,62 @@
 Polymer({
   is: 'bjs-app',
   behaviors: [
-    Polymer.BJSLogging
+    BJSBehaviors.Logging,
+    Polymer.BJSRealtimeDbMsgHandler
   ],
   properties: {
+    logLevel: {
+      type: Number,
+      value: 4
+    },
+
     mode: {
       type: String,
       value: "authenticating"
+    },
+    app: {
+      type: Object,
+      value: function() {
+        return {
+          publicId: '%BUTTRESS_ADMIN_APP_PUBLIC_ID%'
+        };
+      }
+    },
+    auth: {
+      type: Object,
+      notify: true,
+      value: function() {
+        return {
+          user: null,
+          gapi: {
+            signedIn: false,
+            user: null
+          }
+        }
+      },
     },
     authStatus: {
       type: String,
       value: "idle",
     },
+
+    db: {
+      type: Object
+    },
+    iodb: {
+      type: Object,
+      value: function() {
+        return {
+          endpoint: '//%BUTTRESS_ADMIN_BUTTRESS_HOST%',
+          connected: false,
+          rxEvents: [
+            'db-activity'
+          ],
+          rx: []
+        };
+      }
+    },
+
     context: {
       type: Object,
       value: function() {
@@ -27,28 +72,25 @@ Polymer({
         };
       }
     },
-    auth: {
+
+    queryParams: {
       type: Object,
-      value: {
-        user: null,
-      },
       notify: true
     },
-    db: {
-      type: Object
-    },
+
     page: {
       type: String,
       reflectToAttribute: true,
       observer: '__pageChanged'
     },
-    subPageTitle: {
-      type: String
-    },
     mainTitle: {
       type: String,
       computed: '__computeMainTitle(page, subPageTitle)'
     },
+    subPageTitle: {
+      type: String
+    },
+
     __hideMenuButton: {
       type: Boolean,
       computed: '__computeHideMenuButton(subroute.path)'
@@ -58,11 +100,14 @@ Polymer({
       computed: '__computeHideBackButton(subroute.path)'
     }
   },
-
   observers: [
     '__routePageChanged(routeData.page)',
+    '__dbConnected(iodb.connected)',
     '__authChanged(authStatus)'
   ],
+  listeners: {
+    'view-path': '__viewPath',
+  },
 
   attached: function() {
     this.authStatus = "begin";
@@ -73,7 +118,7 @@ Polymer({
   },
 
   __routePageChanged: function(page) {
-    this.page = page || 'orgs';
+    this.page = page || 'dashboard';
   },
 
   __pageChanged: function(page) {
@@ -82,11 +127,31 @@ Polymer({
     this.importHref(resolvedPageUrl, null, this.__showPage404, true);
   },
 
+  __viewPath: function(ev) {
+    const detail = ev.detail;
+    if (!detail) {
+      this.__warn('__viewPath', 'Called with no path specified', path);
+      return;
+    }
+    let path = detail;
+    let query = {};
+
+    if (detail.path) {
+      path = detail.path;
+    }
+    if (detail.query) {
+      query = detail.query;
+    }
+
+    this.__debug('__viewPath', path);
+    this.set('route.path', `/${path}`);
+    this.set('route.__queryParams', query);
+  },
+
   __authChanged: function() {
     if ( this.authStatus !== "done") {
       return;
     }
-    this.__debug(this.auth.user);
     if (this.auth.user) {
       this.mode = "application";
     } else {
@@ -98,6 +163,20 @@ Polymer({
 
     this.$.toast.text = ev.detail.error.message;
     this.$.toast.open();
+  },
+
+  __dbConnected: function(connected) {
+    this.__debug(`db: connected: ${connected}`);
+  },
+  __dbRxEvent: function(ev) {
+    this.__silly('__dbRxEvent', ev);
+
+    let authUser = this.get('auth.user');
+    if (!authUser) {
+      return;
+    }
+
+    this.__handleRxEvent(ev, authUser);
   },
 
   __showPage404: function() {

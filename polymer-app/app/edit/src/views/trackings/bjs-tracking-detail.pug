@@ -1,0 +1,173 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
+link(rel="import" href="/bower_components/iron-form/iron-form.html")
+link(rel="import" href="/bower_components/paper-button/paper-button.html")
+link(rel="import" href="/bower_components/paper-fab/paper-fab.html")
+link(rel="import" href="/bower_components/paper-input/paper-input.html")
+link(rel="import" href="/bower_components/paper-dialog/paper-dialog.html")
+link(rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html")
+link(rel="import" href="/bower_components/paper-menu/paper-menu.html")
+link(rel="import" href="/bower_components/paper-item/paper-item.html")
+link(rel="import", href="/bower_components/paper-spinner/paper-spinner.html")
+link(rel="import", href="/bower_components/iron-icon/iron-icon.html")
+link(rel="import", href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import", href="/bower_components/iron-pages/iron-pages.html")
+link(rel="import", href="/bower_components/paper-styles/typography.html")
+link(rel="import", href="/bower_components/paper-tabs/paper-tab.html")
+link(rel="import", href="/bower_components/paper-tabs/paper-tabs.html")
+link(rel="import", href="/bower_components/iron-data-table/iron-data-table.html")
+
+link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+link(rel="import", href="/src/views/activities/bjs-activity-table-listing.html")
+link(rel="import", href="/src/views/trackings/bjs-tracking-table-listing.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+dom-module#bjs-tracking-detail
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        --paper-tab-ink: var(--paper-menu-color);
+
+        --paper-tabs-selection-bar-color: var(--paper-menu-color);
+      }
+
+    bjs-app-db-query(
+      log-label="tracking-detail-user",
+      db="[[db]]",
+      doc="[[db.user]]",
+      query="[[__trackingUserQuery]]",
+      find-one="{{__trackingUser}}",
+      limit="0"
+    )
+    bjs-app-db-query(
+      log-label="tracking-detail-app",
+      db="[[db]]",
+      doc="[[db.app]]",
+      query="[[__trackingAppQuery]]",
+      find-one="{{__trackingApp}}",
+      limit="0"
+    )
+
+    bjs-app-db-query(
+      log-label="tracking-detail-last-errors",
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__lastTrackingErrorsQuery]]",
+      find-all="{{__lastTrackingErrors}}",
+      limit="5",
+      sort-path="timestamp",
+      sort-order="DESC",
+      sort-type="date"
+    )
+
+    .card
+      .layout.horizontal
+        .flex.layout.vertical
+          h2 [[item.type]]
+          span [[item.name]]
+        .flex.layout.vertical.text-right
+          h2 [[itemTimestampFormatted]]
+          span [[__trackingUser.person.formalName]]
+          span [[__trackingApp.name]]
+
+    .card
+      paper-tabs(
+        selected="{{trackingView}}",
+        attr-for-selected="name",
+        scrollable,
+        fit-container
+      )
+        paper-tab(name="overview") Breakdown
+        paper-tab(name="appTracking") Last Tracking
+        paper-tab(name="appActivity") Last DB Activity
+
+    iron-pages(
+      selected="[[trackingView]]"
+      attr-for-selected="name"
+    )
+      div(name="overview")     
+        template(is="dom-if" if="[[isInteraction]]")
+          .card
+            h3 Context
+            pre.code [[jsonStringify(item.interaction.context)]]
+
+          .card
+            h3 Location
+            .layout.horizontal
+              span.label Href
+              span.flex [[item.interaction.location.href]]
+            .layout.horizontal
+              span.label Origin
+              span.flex [[item.interaction.location.origin]]
+
+        template(is="dom-if" if="[[isError]]")
+          .card
+            h3 Stack
+            .layout.horizontal
+              span.label Url
+              span.flex [[item.error.url]]
+            .layout.horizontal
+              span.label Line
+              span.flex [[item.error.line]]
+            .layout.horizontal
+              span.label Col
+              span.flex [[item.error.col]]
+            pre.code [[item.error.stack]]
+
+        template(is="dom-if" if="[[isLogging]]")
+          .card
+            h3 Message
+            pre.code [[jsonStringify(item.logging)]]
+
+        bjs-tracking-table(
+          db="[[db]]",
+          title="Last 5 Errors",
+          data="[[__lastTrackingErrors]]",
+          short-table,
+          disable-filters,
+          disable-paging
+        )
+
+        .card
+          h3 Environment
+          .layout.horizontal
+            span.label Browser
+            span.flex [[item.environment.browser]]
+          .layout.horizontal
+            span.label Vendor
+            span.flex [[item.environment.vendor]]
+          .layout.horizontal
+            span.label OS
+            span.flex [[item.environment.os]]
+          .layout.horizontal
+            span.label Software Version
+            span.flex [[item.environment.crmVersion]]
+          .layout.horizontal
+            span.label Software Build Date
+            span.flex [[item.environment.crmBuildDate]]
+        
+        .card
+          h3 JSON Object
+          pre.code [[jsonStringify(item)]]
+
+      div(name="appTracking")
+        bjs-tracking-table-listing(
+          db="[[db]]",
+          name="tracking-detail-app",
+          base-query="[[__appTrackingQuery]]"
+        )
+
+      div(name="appActivity")
+        bjs-activity-table-listing(
+          db="[[db]]",
+          name="activity-detail-app",
+          base-query="[[__appActivityQuery]]"
+        )
+
+  script(src="bjs-tracking-detail.js")

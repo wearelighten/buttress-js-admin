@@ -1,6 +1,6 @@
 Polymer({
   is: 'bjs-orgs',
-  behaviors: [Polymer.BJSLogging, Polymer.BJSListView],
+  behaviors: [BJSBehaviors.Logging, Polymer.BJSListView],
   properties: {
     logLevel: {
       type: Number,

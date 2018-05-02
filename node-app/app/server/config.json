@@ -9,8 +9,11 @@
     "BUTTRESS_ADMIN_LISTEN_PORT_TEST": "6022",
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_ID": "",
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET": "",
+    "BUTTRESS_ADMIN_APP_PUBLIC_ID": "",
     "BUTTRESS_ADMIN_APP_TOKEN": "",
-    "BUTTRESS_ADMIN_BUTTRESS_URL": "http://buttressjs.example.com/api/v1",
+    "BUTTRESS_ADMIN_BUTTRESS_PROTOCOL": "http://",
+    "BUTTRESS_ADMIN_BUTTRESS_HOST": "buttressjs.example.com",
+    "BUTTRESS_ADMIN_BUTTRESS_API": "/api/v1",
     "BUTTRESS_ADMIN_APP_PATH": "./",
     "BUTTRESS_ADMIN_AUTH_USER": "chris@evansfinch.co.uk"
   },
@@ -20,7 +23,7 @@
       "title": "ButtressJS Admin",
       "description": "Administration tool for ButtressJS.",
       "code": "buttress-js-admin",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "protocol": "http",
       "host": "%BUTTRESS_ADMIN_HOST_URL%"
     },
@@ -29,7 +32,10 @@
         "%BUTTRESS_ADMIN_AUTH_USER%"
       ],
       "buttress": {
-        "url": "%BUTTRESS_ADMIN_BUTTRESS_URL%",
+        "prefix": "%BUTTRESS_ADMIN_BUTTRESS_PROTOCOL%",   
+        "host": "%BUTTRESS_ADMIN_BUTTRESS_HOST%",
+        "api": "%BUTTRESS_ADMIN_BUTTRESS_API%",
+        "url": "%BUTTRESS_ADMIN_BUTTRESS_HOST%%BUTTRESS_ADMIN_BUTTRESS_API%",
         "appToken": "%BUTTRESS_ADMIN_APP_TOKEN%"
       },
       "google": {

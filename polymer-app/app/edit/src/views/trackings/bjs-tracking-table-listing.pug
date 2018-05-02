@@ -1,0 +1,62 @@
+link(rel="import" href="/bower_components/polymer/polymer.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout.html")
+link(rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html")
+link(rel="import" href="/bower_components/iron-form/iron-form.html")
+link(rel="import" href="/bower_components/paper-button/paper-button.html")
+link(rel="import" href="/bower_components/paper-fab/paper-fab.html")
+link(rel="import" href="/bower_components/paper-input/paper-input.html")
+link(rel="import" href="/bower_components/paper-dialog/paper-dialog.html")
+link(rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html")
+link(rel="import" href="/bower_components/paper-menu/paper-menu.html")
+link(rel="import" href="/bower_components/paper-item/paper-item.html")
+link(rel="import" href="/bower_components/paper-spinner/paper-spinner.html")
+link(rel="import" href="/bower_components/iron-icon/iron-icon.html")
+link(rel="import" href="/bower_components/iron-icons/iron-icons.html")
+link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+link(rel="import" href="/bower_components/iron-pages/iron-pages.html")
+
+link(rel="import", href="/src/bjs-app-db/bjs-app-db-query.html")
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/bjs-pagination/bjs-pagination.html")
+
+link(rel="import", href="/src/views/behaviors/bjs-view-behaviors.html")
+link(rel="import", href="/src/views/trackings/bjs-trackings-filter-behavior.html")
+link(rel="import", href="/src/views/trackings/bjs-tracking-table.html")
+
+link(rel="import", href="/src/shared-styles.html")
+
+dom-module#bjs-tracking-table-listing
+  template
+    style(is="custom-style" include="iron-flex iron-positioning iron-flex-alignment")
+    style(include="shared-styles").
+      :host {
+        display: block;
+      }
+      
+    bjs-app-db-query(log-label="tracking-table-listing-users", db="[[db]]", doc="[[db.user]]", query="[[__usersQuery]]", find-all="{{__users}}", limit="0")
+    bjs-app-db-query(
+      log-label="[[name]]-tracking",
+      db="[[db]]",
+      doc="[[db.tracking]]",
+      query="[[__trackingQuery]]",
+      num-results="{{__trackingTotal}}",
+      num-pages="{{__trackingNumPages}}",
+      page="[[__trackingPage]]",
+      find-all="{{__tracking}}",
+      sort-path="timestamp",
+      sort-order="DESC",
+      sort-type="date"
+    )
+
+    bjs-tracking-table(
+      db="[[db]]",
+      data="[[__tracking]]",
+      current-page="{{__trackingPage}}",
+      total-pages="[[__trackingNumPages]]",
+      total-results="[[__trackingTotal]]",
+      filters="{{__filters}}",
+      filter-spec="[[__filterSpec]]"
+    )
+
+  script(src="bjs-tracking-table-listing.js")

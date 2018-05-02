@@ -1,7 +1,8 @@
 link(rel="import", href="/bower_components/polymer/polymer.html")
 link(rel="import", href="/bower_components/iron-ajax/iron-ajax.html")
 link(rel="import", href="/bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html")
-link(rel="import", href="../bjs-app/bjs-behaviors.html")
+
+link(rel="import", href="/src/bjs-app/bjs-behaviors.html")
 
 dom-module#bjs-data-service
   template
@@ -21,15 +22,5 @@ dom-module#bjs-data-service
       on-error="__ajaxError",
       last-response="{{rqResponse}}"
     )
-
-    //- When bower_components is removed, or overwritten
-    //- Need to use the adjusted version that forces the workerUrl
-    //- if (!this.workerUrl) {
-    //-   this.workerUrl = this.resolveUrl('./app-indexeddb-mirror-worker.js');
-    //- }
-    //-app-indexeddb-mirror(
-      key="{{route}}",
-      data="{{liveData}}",
-      persisted-data="{{data}}")
-
+    
   script(src="bjs-data-service.js")

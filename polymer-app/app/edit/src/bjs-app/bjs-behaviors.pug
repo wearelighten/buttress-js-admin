@@ -1,10 +1,11 @@
 link(rel="import" href="/bower_components/polymer/polymer.html")
 
 script.
+  window.BJSBehaviors = window.BJSBehaviors || {};
   /**
-   * @polymerBehavior Polymer.BJSLogging
+   * @polymerBehavior BJSBehaviors.Logging
    */
-  Polymer.BJSLogging = {
+  BJSBehaviors.Logging = {
     properties: {
       LogLevel: {
         type: Object,
@@ -77,5 +78,34 @@ script.
         args.splice(0, 0, `${this.is}: [silly]`);
         console.log.apply(console, args);
       }
+    }
+  }
+
+  /**
+   * @polymerBehavior Polymer.Helpers
+   */
+  BJSBehaviors.Helpers = {
+    timestampToStringFormatted: function(timestamp) {
+      if (!timestamp) return 'No timestamp';
+
+      const dateTime = Sugar.Date.create(timestamp);
+      if (!Sugar.Date.isValid(dateTime)) return 'Invalid Timestamp';
+
+      return Sugar.Date.format(dateTime, '{dd}/{MM}/{yyyy} {HH}:{mm}:{ss}');
+    },
+
+    stringComparison(strA, strB) {
+      return strA === strB;
+    },
+
+    jsonStringify(object) {
+      return JSON.stringify(object, null, 2);
+    },
+
+    bytesToSize(bytes) {
+      var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+      if (bytes === 0) return '0 Byte';
+      var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+      return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
     }
   }
