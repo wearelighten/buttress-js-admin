@@ -52,7 +52,7 @@ module.exports.init = app => {
 
     Buttress.Auth.findOrCreateUser(user, authentication)
     .then(buttressUser => cb(null, buttressUser))
-    .catch(err => Logging.logError(err));
+    .catch(err => console.log(err)); // eslint-disable-line no-console
   }));
 
   passport.serializeUser((user, done) => {
