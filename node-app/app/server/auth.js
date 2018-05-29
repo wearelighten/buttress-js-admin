@@ -11,7 +11,7 @@
  */
 
 const Logging = require('./logging');
-const Config = require('./config');
+const Config = require('node-env-obj')('../');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const Buttress = require('buttress-js-api');
