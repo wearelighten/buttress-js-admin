@@ -17,7 +17,7 @@ const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const Bootstrap = require('./bootstrap');
-const Config = require('./config');
+const Config = require('node-env-obj')('../');
 const Logging = require('./logging');
 const passport = require('passport');
 

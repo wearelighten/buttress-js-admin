@@ -11,7 +11,7 @@
  */
 
 const Logging = require('./logging');
-const Config = require('./config');
+const Config = require('node-env-obj')('../');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const Buttress = require('buttress-js-api');
@@ -40,7 +40,7 @@ module.exports.init = app => {
     if (authenticated) {
       authentication = {
         authLevel: 3,
-        domains: [`${Config.app.protocol}://${Config.app.host}`],
+        domains: [`${Config.app.url}`],
         permissions: [{
           route: "*",
           permission: "*"

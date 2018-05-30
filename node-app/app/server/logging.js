@@ -18,7 +18,7 @@ const winston = require('winston');
 proxyquire('winston-logrotate', {
   winston: winston
 });
-const Config = require('./config');
+const Config = require('node-env-obj')('../');
 // require('sugar');
 
 /**
