@@ -23,7 +23,7 @@
       "title": "ButtressJS Admin",
       "description": "Administration tool for ButtressJS.",
       "code": "buttress-js-admin",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "protocol": "%BUTTRESS_ADMIN_APP_PROTOCOL%",
       "host": "%BUTTRESS_ADMIN_APP_HOST%",
       "url": "%BUTTRESS_ADMIN_APP_PROTOCOL%://%BUTTRESS_ADMIN_APP_HOST%"
