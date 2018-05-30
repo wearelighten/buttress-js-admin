@@ -2,8 +2,8 @@
   "environment": {
     "BUTTRESS_ADMIN_SERVER_ID": "",
     "NODE_ENV": "development",
-    "BUTTRESS_HOST_URL": "",
-    "BUTTRESS_ADMIN_HOST_URL": "",
+    "BUTTRESS_ADMIN_APP_PROTOCOL": "http",
+    "BUTTRESS_ADMIN_APP_HOST": "",
     "BUTTRESS_ADMIN_LISTEN_PORT_PROD": "6020",
     "BUTTRESS_ADMIN_LISTEN_PORT_DEV": "6021",
     "BUTTRESS_ADMIN_LISTEN_PORT_TEST": "6022",
@@ -24,15 +24,16 @@
       "description": "Administration tool for ButtressJS.",
       "code": "buttress-js-admin",
       "version": "1.1.1",
-      "protocol": "http",
-      "host": "%BUTTRESS_ADMIN_HOST_URL%"
+      "protocol": "%BUTTRESS_ADMIN_APP_PROTOCOL%",
+      "host": "%BUTTRESS_ADMIN_APP_HOST%",
+      "url": "%BUTTRESS_ADMIN_APP_PROTOCOL%://%BUTTRESS_ADMIN_APP_HOST%"
     },
     "auth": {
       "users": [
         "%BUTTRESS_ADMIN_AUTH_USER%"
       ],
       "buttress": {
-        "prefix": "%BUTTRESS_ADMIN_BUTTRESS_PROTOCOL%",   
+        "prefix": "%BUTTRESS_ADMIN_BUTTRESS_PROTOCOL%",
         "host": "%BUTTRESS_ADMIN_BUTTRESS_HOST%",
         "api": "%BUTTRESS_ADMIN_BUTTRESS_API%",
         "url": "%BUTTRESS_ADMIN_BUTTRESS_HOST%%BUTTRESS_ADMIN_BUTTRESS_API%",

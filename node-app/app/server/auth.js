@@ -40,7 +40,7 @@ module.exports.init = app => {
     if (authenticated) {
       authentication = {
         authLevel: 3,
-        domains: [`${Config.app.protocol}://${Config.app.host}`],
+        domains: [`${Config.app.url}`],
         permissions: [{
           route: "*",
           permission: "*"
