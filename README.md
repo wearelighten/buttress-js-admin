@@ -1,4 +1,4 @@
-# ButtressJS Admin v1.1.0
+# ButtressJS Admin v1.1.2
 
 Admin interface for ButtressJS Realtime datastore.
 
