@@ -12,6 +12,7 @@ const pug = require('gulp-pug');
 const htmlPrettify = require('gulp-html-prettify');
 const bowerFiles = require('main-bower-files');
 const imagemin = require('gulp-imagemin');
+const Config = require('node-env-obj')('../../');
 
 const Paths = {
   SOURCE: 'app/edit',
@@ -33,38 +34,25 @@ const Globs = {
   IMAGES: [`${Paths.SOURCE}/images/**/*.png`,`${Paths.SOURCE}/images/**/*.jpg`,`${Paths.SOURCE}/images/**/*.gif`,`${Paths.SOURCE}/images/**/*.ico`]
 };
 
-let Environment = {
-  NODE_ENV: 'development',
-  BUTTRESS_ADMIN_APP_PUBLIC_ID: '',
-  BUTTRESS_ADMIN_BUTTRESS_HOST: '',
-  BUTTRESS_ADMIN_BUTTRESS_API: '',
-  BUTTRESS_ADMIN_BUTTRESS_URL: '',
-};
+const Environment = [
+  { key: 'NODE_ENV', value: Config.auth.buttress.host },
+  { key: 'BUTTRESS_ADMIN_APP_PUBLIC_ID', value: Config.auth.buttress.publicId },
+  { key: 'BUTTRESS_ADMIN_BUTTRESS_HOST', value: Config.auth.buttress.host },
+  { key: 'BUTTRESS_ADMIN_BUTTRESS_API', value: Config.auth.buttress.api },
+  { key: 'BUTTRESS_ADMIN_BUTTRESS_URL', value: Config.auth.buttress.url },
+];
 
-// Replace Environment defaults with local vars
-for (let key in Environment) {
-  if (!process.env[key]) {
-    console.log('WARNING', `You must specify the ${key} environment variable`);
-  } else {
-    Environment[key] = process.env[key];
-  }
+function _configReplacer(stream) {
+  return Environment.reduce((out, replacment) => {
+    return out.pipe(replace(`%${replacment.key}%`, replacment.value));
+  }, stream);
 }
-
-Environment.BUTTRESS_ADMIN_BUTTRESS_URL = `${Environment.BUTTRESS_ADMIN_BUTTRESS_HOST}${Environment.BUTTRESS_ADMIN_BUTTRESS_API}`;
-
-const __envReplace = (stream) => {
-  Object.keys(Environment).forEach(key => {
-    stream = stream.pipe(replace(`%${key}%`, Environment[key]));
-  })
-
-  return stream;
-};
 
 //
 // Scripts
 //
 gulp.task('js', function() {
-  return __envReplace(gulp.src(Globs.SCRIPTS, {base: `${Paths.SOURCE}`}))
+  return _configReplacer(gulp.src(Globs.SCRIPTS, {base: `${Paths.SOURCE}`}))
 		.pipe(eslint())
 		.pipe(eslint.format())
 		.pipe(gulp.dest(Paths.DEST));
@@ -83,7 +71,7 @@ gulp.task('html', function() {
 });
 
 gulp.task('pug', function() {
-  return __envReplace(gulp.src(Globs.PUG, {base: Paths.SOURCE}))
+  return _configReplacer(gulp.src(Globs.PUG, {base: Paths.SOURCE}))
 		.pipe(pug())
     .pipe(htmlPrettify())
 		.pipe(gulp.dest(Paths.DEST));

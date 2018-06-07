@@ -1,0 +1,35 @@
+{
+  "environment": {
+    "NODE_ENV": "development",
+    "BUTTRESS_ADMIN_APP_PROTOCOL": "http",
+    "BUTTRESS_ADMIN_APP_HOST": "",
+    "BUTTRESS_ADMIN_APP_PUBLIC_ID": "",
+    "BUTTRESS_ADMIN_APP_TOKEN": "",
+    "BUTTRESS_ADMIN_BUTTRESS_PROTOCOL": "http://",
+    "BUTTRESS_ADMIN_BUTTRESS_HOST": "buttressjs.example.com",
+    "BUTTRESS_ADMIN_BUTTRESS_API": "/api/v1",
+    "BUTTRESS_ADMIN_APP_PATH": "./"
+  },
+  "global": {
+    "env": "%NODE_ENV%",
+    "app": {
+      "title": "ButtressJS Admin",
+      "description": "Administration tool for ButtressJS.",
+      "code": "buttress-js-admin",
+      "version": "1.1.2",
+      "protocol": "%BUTTRESS_ADMIN_APP_PROTOCOL%",
+      "host": "%BUTTRESS_ADMIN_APP_HOST%",
+      "url": "%BUTTRESS_ADMIN_APP_PROTOCOL%://%BUTTRESS_ADMIN_APP_HOST%"
+    },
+    "auth": {
+      "buttress": {
+        "prefix": "%BUTTRESS_ADMIN_BUTTRESS_PROTOCOL%",
+        "host": "%BUTTRESS_ADMIN_BUTTRESS_HOST%",
+        "api": "%BUTTRESS_ADMIN_BUTTRESS_API%",
+        "url": "%BUTTRESS_ADMIN_BUTTRESS_HOST%%BUTTRESS_ADMIN_BUTTRESS_API%",
+        "appToken": "%BUTTRESS_ADMIN_APP_TOKEN%",
+        "publicId": "%BUTTRESS_ADMIN_APP_PUBLIC_ID%"
+      }
+    }
+  }
+}

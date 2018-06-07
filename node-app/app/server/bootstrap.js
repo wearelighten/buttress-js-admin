@@ -10,7 +10,7 @@
  *
  */
 
-const Config = require('node-env-obj')('../');
+const Config = require('node-env-obj')('../../');
 const Buttress = require('buttress-js-api');
 const Auth = require('./auth');
 

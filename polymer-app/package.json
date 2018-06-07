@@ -22,7 +22,9 @@
   "bugs": {
     "url": "https://github.com/wearelighten/buttress-js-admin/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "node-env-obj": "^0.1.0"
+  },
   "devDependencies": {
     "eslint": "^3.3.x",
     "eslint-config-google": "^0.6.x",
