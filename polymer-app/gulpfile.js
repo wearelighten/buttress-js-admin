@@ -12,7 +12,7 @@ const pug = require('gulp-pug');
 const htmlPrettify = require('gulp-html-prettify');
 const bowerFiles = require('main-bower-files');
 const imagemin = require('gulp-imagemin');
-const Config = require('node-env-obj')('../../');
+const Config = require('node-env-obj')('../');
 
 const Paths = {
   SOURCE: 'app/edit',
