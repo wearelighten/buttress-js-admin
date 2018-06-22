@@ -50,13 +50,14 @@ dom-module#bjs-tracking-table-listing
     )
 
     bjs-tracking-table(
-      db="[[db]]",
+      db="{{db}}",
       data="[[__tracking]]",
       current-page="{{__trackingPage}}",
       total-pages="[[__trackingNumPages]]",
       total-results="[[__trackingTotal]]",
       filters="{{__filters}}",
-      filter-spec="[[__filterSpec]]"
+      filter-spec="[[__filterSpec]]",
+      show-hidden="{{_showHidden}}"
     )
 
   script(src="bjs-tracking-table-listing.js")
