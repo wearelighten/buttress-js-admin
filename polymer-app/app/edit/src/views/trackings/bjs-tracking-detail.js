@@ -35,17 +35,17 @@ Polymer({
 
     __appTrackingQuery: {
       type: Object,
-      computed: '__computeAppTrackingQuery(item.appId, item.timestamp)'
+      computed: '__computeAppTrackingQuery(item.appId, item.timestamp, item, item.*)'
     },
     __appActivityQuery: {
       type: Object,
-      computed: '__computeAppActivityQuery(item.appId, item.timestamp)'
+      computed: '__computeAppActivityQuery(item.appId, item.timestamp, item, item.*)'
     },
 
     __lastTrackingErrors: Array,
     __lastTrackingErrorsQuery: {
       type: Object,
-      computed: '__computeLastTrackingErrorsQuery(__appTrackingQuery)'
+      computed: '__computeLastTrackingErrorsQuery(__appTrackingQuery, __appTrackingQuery.*)'
     },
 
     __trackingUser: Array,
