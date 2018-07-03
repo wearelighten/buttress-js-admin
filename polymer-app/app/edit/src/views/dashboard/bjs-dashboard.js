@@ -47,6 +47,13 @@ Polymer({
       type: Object,
       computed: '__computeTrackingQuery(db.tracking.data.length)'
     },
+    
+    __activityChartConfig: {
+      type: Object
+    },
+    __activityChart: {
+      type: Object
+    },
 
     __activitiesVerbsCounts: {
       type: Object,
@@ -57,8 +64,84 @@ Polymer({
   },
   observers: [
     '__activitesVerbsCount(__activitiesUnpaged, __activitiesUnpaged.length)',
-    '__trackingTypesCount(__trackingUnpaged, __trackingUnpaged.length)'
+    '__trackingTypesCount(__trackingUnpaged, __trackingUnpaged.length)',
+    '__computeChartActivity(__activitiesUnpaged)'
   ],
+  ready: function() {
+    const activityChartConfig = {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: []
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 0
+          },
+          hover: {
+            animationDuration: 0
+          },
+          responsiveAnimationDuration: 0,
+          scales: {
+            xAxes: [{
+              display: true,
+              scaleLabel: {
+                display: true,
+                labelString: 'Day'
+              }
+            }],
+            yAxes: [{
+              display: true,
+              scaleLabel: {
+                display: true,
+                labelString: '(N)'
+              },
+              ticks: {
+                  beginAtZero:true
+              }
+            }]
+          }
+      }
+    };
+    this.set('__activityChartConfig', activityChartConfig);
+    this.set('__activityChart', new Chart(this.$.activityChart, this.get('__activityChartConfig')));
+  },
+
+  __computeChartActivity: function() {
+    const chart = this.get('__activityChart');
+    const now = Sugar.Date.create('7 days ago');
+    const activites = this.get('__activitiesUnpaged').filter(a => {
+      return Sugar.Date.isBefore(now, a.timestamp);
+    });
+
+    const groupedDates = activites.reduce((dates, activity) => {
+      const dateShort = activity.timestamp.substring(0, activity.timestamp.indexOf('T'));
+
+      if (!dates[dateShort]) dates[dateShort] = 0;
+      dates[dateShort]++;
+      
+      return dates;
+    }, {});
+
+    const graphLabels = Object.keys(groupedDates).map(label => {
+      return Sugar.Date.format(Sugar.Date.create(label), '{dd}/{MM}/{yyyy}');
+    });
+    const graphData = Object.values(groupedDates);
+
+    this.set('__activityChartConfig.data', {
+      labels: graphLabels,
+      datasets: [{
+        label: 'Activites',
+        backgroundColor: '#c62828',
+        borderColor: '#c62828',
+        data: graphData,
+        fill: false,
+      }]
+    });
+    chart.update();
+  },
 
   /**
    * Set the page header title
