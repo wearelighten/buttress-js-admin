@@ -23,11 +23,16 @@ Polymer({
       type: Object
     },
 
+    _showHidden: {
+      type: Boolean,
+      value: false
+    },
+
     __tracking: Array,
     __trackingUnpaged: Array,
     __trackingQuery: {
       type: Object,
-      computed: '__computeTrackingQuery(baseQuery, db.tracking.data.length, __filters.*)'
+      computed: '__computeTrackingQuery(baseQuery, _showHidden, db.tracking.data.*, __filters.*)'
     },
     __trackingPage: {
       type: Number,
@@ -76,6 +81,12 @@ Polymer({
     const query = {
       $and: [baseQuery]
     };
+
+    if (this.get('_showHidden') !== true) {
+      query.hide = {
+        $not: true
+      };
+    }
 
     let filters = this.get('__filters');
     filters.forEach(f => {

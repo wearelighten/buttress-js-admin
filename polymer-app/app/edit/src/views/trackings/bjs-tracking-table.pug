@@ -32,6 +32,8 @@ dom-module#bjs-tracking-table
           filters="{{filters}}",
           filter-spec="[[filterSpec]]"
         )
+        .flex
+        paper-button(on-tap="_toggleHidden") Toggle Hidden
 
     .card(hidden$="[[disablePaging]]")
       .layout.horizontal
@@ -78,6 +80,7 @@ dom-module#bjs-tracking-table
         data-table-column(name="", align-right)
           template
             paper-button(on-tap="__viewTrackingItem") View
+            paper-button(on-tap="__hideTrackingItem") Hide
 
   script.
     Polymer({
@@ -110,6 +113,11 @@ dom-module#bjs-tracking-table
         totalResults: {
           type: Number,
           value: 0
+        },
+
+        showHidden: {
+          type: Boolean,
+          notify: true
         },
 
         __users: Array,
@@ -153,6 +161,29 @@ dom-module#bjs-tracking-table
         const item = ev.model.get('item');
         this.__debug('__viewTrackingItem', item);
         this.fire('view-path', `trackings/${item.id}`);
+      },
+
+      _toggleHidden() {
+        return this.set('showHidden', !this.get('showHidden'));
+      },
+
+      __hideTrackingItem(ev) {
+        const item = ev.model.get('item');
+        const tracking = this.get('db.tracking.data').find(t => t.id === item.id);
+        const groupWindowStart = Sugar.Date.addMinutes(Sugar.Date.create(tracking.timestamp), -30);
+        const groupWindowEnd = Sugar.Date.addMinutes(Sugar.Date.create(tracking.timestamp), 30);
+
+        this.get('db.tracking.data')
+        .filter(t => {
+          const timestamp = Sugar.Date.create(t.timestamp);
+          return t.name === tracking.name
+            && Sugar.Date.isAfter(timestamp, groupWindowStart)
+            && Sugar.Date.isBefore(timestamp, groupWindowEnd);
+        })
+        .forEach(tI => {
+          const trackingIdx = this.get('db.tracking.data').findIndex(t => t === tI);
+          this.set(['db.tracking.data', trackingIdx, 'hide'], true);
+        });
       },
 
       __computeDataExpanded: function(tracking) {
