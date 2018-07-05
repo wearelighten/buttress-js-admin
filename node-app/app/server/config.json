@@ -11,6 +11,7 @@
     "BUTTRESS_ADMIN_GOOGLE_CLIENT_SECRET": "",
     "BUTTRESS_ADMIN_APP_PUBLIC_ID": "",
     "BUTTRESS_ADMIN_APP_TOKEN": "",
+    "BUTTRESS_ADMIN_EXPRESS_SECRET": "",
     "BUTTRESS_ADMIN_BUTTRESS_PROTOCOL": "http://",
     "BUTTRESS_ADMIN_BUTTRESS_HOST": "buttressjs.example.com",
     "BUTTRESS_ADMIN_BUTTRESS_API": "/api/v1",
@@ -27,6 +28,9 @@
       "protocol": "%BUTTRESS_ADMIN_APP_PROTOCOL%",
       "host": "%BUTTRESS_ADMIN_APP_HOST%",
       "url": "%BUTTRESS_ADMIN_APP_PROTOCOL%://%BUTTRESS_ADMIN_APP_HOST%"
+    },
+    "express": {
+      "secret": "%BUTTRESS_ADMIN_EXPRESS_SECRET%"
     },
     "auth": {
       "users": [

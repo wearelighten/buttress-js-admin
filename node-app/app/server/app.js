@@ -12,7 +12,6 @@
 
 const express = require('express');
 const session = require('express-session');
-const LevelStore = require('level-session-store')(session);
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
@@ -56,8 +55,7 @@ const configureApp = env => {
   app.use(session({
     saveUninitialized: false,
     resave: false,
-    secret: '6gZ1GsaKbZG4Pq7boSMp7YuZQTGnP6KVBvNpptn38sfHLrSoo0pYClRasSbVGCc',
-    store: new LevelStore(`${Config.appDataPath}/sessions`)
+    secret: Config.express.secret
   }));
 
   app.use(express.static(`${Config.appDataPath}/static`));

@@ -29,30 +29,25 @@ module.exports.init = app => {
       name: profile.displayName,
       email: profile.emails[0].value,
       profileUrl: profile._json.url,
-      profileImgUrl: profile._json.image.url
-      // bannerImgUrl: profile._json.cover.coverPhoto.url
+      profileImgUrl: profile._json.image.url,
+      bannerImgUrl: profile._json.cover ? profile._json.cover.coverPhoto.url : ''
     };
 
-    Logging.logDebug(user);
+    Logging.log(user, Logging.Constants.LogLevel.SILLY);
 
-    var authenticated = Config.auth.users.indexOf(user.email) !== -1;
-    var authentication;
-    if (authenticated) {
-      authentication = {
-        authLevel: 3,
-        domains: [`${Config.app.url}`],
-        permissions: [{
-          route: "*",
-          permission: "*"
-        }]
-      };
-    }
-
-    Logging.logDebug(authentication);
-
-    Buttress.Auth.findOrCreateUser(user, authentication)
-    .then(buttressUser => cb(null, buttressUser))
-    .catch(err => console.log(err)); // eslint-disable-line no-console
+    // Look up user
+    Buttress.User.findUser('google', profile.id)
+    .then(buttressUser => {
+      if (!buttressUser) {
+        return cb(null, null);
+      }
+      buttressUser.appId = profile.id;
+      cb(null, buttressUser);
+    })
+    .catch(err => {
+      Logging.logError(err);
+      cb(null, null);
+    });
   }));
 
   passport.serializeUser((user, done) => {
@@ -73,26 +68,28 @@ module.exports.init = app => {
       return;
     }
 
-    Buttress.User.load(req.user.buttressId)
+    Buttress.User.load(req.user.id)
     .then(user => {
       res.json({
         user: {
-          profiles: req.user.auth.map(function(a) {
+          id: user.id,
+          authToken: req.user.authToken,
+          profiles: user.auth.map(function(a) {
             return {
               app: a.app,
+              appId: a.appId,
               email: a.email,
               url: a.profileUrl,
               images: a.images
             };
           }),
           person: {
-            title: req.user.person.title,
-            forename: req.user.person.forename,
-            initials: req.user.person.initials,
-            surname: req.user.person.surname,
-            formalName: req.user.person.formalName
-          },
-          authToken: req.user.buttressAuthToken
+            title: user.person.title,
+            forename: user.person.forename,
+            initials: user.person.initials,
+            surname: user.person.surname,
+            formalName: user.person.formalName
+          }
         }
       });
     });
