@@ -48,6 +48,20 @@ Polymer({
       computed: '__computeTrackingQuery(db.tracking.data.length)'
     },
     
+    __trackingPieChartConfig: {
+      type: Object
+    },
+    __trackingPieChart: {
+      type: Object
+    },
+
+    __activitesPieChartConfig: {
+      type: Object
+    },
+    __activitesPieChart: {
+      type: Object
+    },
+
     __activityChartConfig: {
       type: Object
     },
@@ -65,9 +79,45 @@ Polymer({
   observers: [
     '__activitesVerbsCount(__activitiesUnpaged, __activitiesUnpaged.length)',
     '__trackingTypesCount(__trackingUnpaged, __trackingUnpaged.length)',
-    '__computeChartActivity(__activitiesUnpaged)'
+    '__computeChartActivity(__activitiesUnpaged, __trackingTypesCounts)'
   ],
   ready: function() {
+    const trackingPieChartConfig = {
+      type: 'doughnut',
+      data: {
+        labels: [],
+        datasets: [],
+      },
+      options: {
+        responsive: false,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 0
+        },
+        hover: {
+          animationDuration: 0
+        },
+        responsiveAnimationDuration: 0
+      }
+    };
+    const activitesPieChartConfig = {
+      type: 'doughnut',
+      data: {
+        labels: [],
+        datasets: [],
+      },
+      options: {
+        responsive: false,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 0
+        },
+        hover: {
+          animationDuration: 0
+        },
+        responsiveAnimationDuration: 0
+      }
+    };
     const activityChartConfig = {
       type: 'line',
       data: {
@@ -105,13 +155,25 @@ Polymer({
           }
       }
     };
+
+    this.set('__trackingPieChartConfig', trackingPieChartConfig);
+    this.set('__activitesPieChartConfig', activitesPieChartConfig);
     this.set('__activityChartConfig', activityChartConfig);
+
+    this.set('__trackingPieChart', new Chart(this.$.trackingPieChart, this.get('__trackingPieChartConfig')));
+    this.set('__activitesPieChart', new Chart(this.$.activitesPieChart, this.get('__activitesPieChartConfig')));
     this.set('__activityChart', new Chart(this.$.activityChart, this.get('__activityChartConfig')));
   },
 
   __computeChartActivity: function() {
-    const chart = this.get('__activityChart');
-    const now = Sugar.Date.create('7 days ago');
+    const trackingPieChart = this.get('__trackingPieChart');
+    const activitesPieChart = this.get('__activitesPieChart');
+    const activityChart = this.get('__activityChart');
+
+    const trackingTypesCounts = this.get('__trackingTypesCounts');
+    const activitiesVerbsCounts = this.get('__activitiesVerbsCounts');
+  
+    const now = Sugar.Date.create('30 days ago');
     const activites = this.get('__activitiesUnpaged').filter(a => {
       return Sugar.Date.isBefore(now, a.timestamp);
     });
@@ -130,6 +192,28 @@ Polymer({
     });
     const graphData = Object.values(groupedDates);
 
+    this.set('__trackingPieChartConfig.data', {
+      labels: ['Interaction', 'Error', 'Logging'],
+      datasets: [{
+        backgroundColor: ['green', 'red', 'orange'],
+        data: [
+          trackingTypesCounts.INTERACTION,
+          trackingTypesCounts.ERROR,
+          trackingTypesCounts.LOGGING
+        ]
+      }]
+    });
+    this.set('__activitesPieChartConfig.data', {
+      labels: ['POST', 'PUT', 'DEL'],
+      datasets: [{
+        backgroundColor: ['green', 'orange', 'red'],
+        data: [
+          activitiesVerbsCounts.POST,
+          activitiesVerbsCounts.PUT,
+          activitiesVerbsCounts.DEL
+        ]
+      }]
+    });
     this.set('__activityChartConfig.data', {
       labels: graphLabels,
       datasets: [{
@@ -140,7 +224,10 @@ Polymer({
         fill: false,
       }]
     });
-    chart.update();
+
+    trackingPieChart.update();
+    activitesPieChart.update();
+    activityChart.update();
   },
 
   /**

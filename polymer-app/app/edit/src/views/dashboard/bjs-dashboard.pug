@@ -44,6 +44,13 @@ dom-module#bjs-dashboard
         text-align: center;
       }
 
+      .chartContainer {
+        position: relative;
+        margin: 0 auto;
+        width: 350px;
+        height: 100%;
+      }
+
       #activityChart{
         width: 100% !important;
       }
@@ -71,45 +78,55 @@ dom-module#bjs-dashboard
       find-all-unpaged="{{__trackingUnpaged}}"
     )
 
-    .card
-      .layout.horizontal.text-center
-        .flex
-          .layout.vertical.seperator-right
-            h2 Tracking
-            p [[db.tracking.data.length]]
-        paper-button.flex(on-tap="__viewTrackingInteraction")
-          .layout.vertical
-            h2 Interaction
-            p [[__trackingTypesCounts.INTERACTION]]
-        paper-button.flex(on-tap="__viewTrackingError")
-          .layout.vertical
-            h2 Error
-            p [[__trackingTypesCounts.ERROR]]
-        paper-button.flex(on-tap="__viewTrackinLogging")
-          .layout.vertical
-            h2 Logging
-            p [[__trackingTypesCounts.LOGGING]]
-        .flex
+    .layout.horizontal
+      .card.flex
+        .layout.horizontal.text-center
+          .flex
+            .layout.vertical.seperator-right
+              h2 Tracking
+              p [[db.tracking.data.length]]
+          paper-button.flex(on-tap="__viewTrackingInteraction")
+            .layout.vertical
+              h2 Interaction
+              p [[__trackingTypesCounts.INTERACTION]]
+          paper-button.flex(on-tap="__viewTrackingError")
+            .layout.vertical
+              h2 Error
+              p [[__trackingTypesCounts.ERROR]]
+          paper-button.flex(on-tap="__viewTrackinLogging")
+            .layout.vertical
+              h2 Logging
+              p [[__trackingTypesCounts.LOGGING]]
+        .layout.horizontal
+          .chartContainer
+            canvas#trackingPieChart
 
-    .card
-      .layout.horizontal.text-center
-        .flex
-          .layout.vertical.seperator-right
-            h2 Activites
-            p [[db.activity.data.length]]
-        paper-button.flex(on-tap="__viewActivityPost")
-          .layout.vertical
-            h2 POST
-            p [[__activitiesVerbsCounts.POST]]
-        paper-button.flex(on-tap="__viewActivityPut")
-          .layout.vertical
-            h2 PUT
-            p [[__activitiesVerbsCounts.PUT]]
-        paper-button.flex(on-tap="__viewActivityDel")
-          .layout.vertical
-            h2 DEL
-            p [[__activitiesVerbsCounts.DEL]]
-        .flex
+      .card.flex
+        .layout.horizontal.text-center
+          .flex
+            .layout.vertical.seperator-right
+              h2 Activites
+              p [[db.activity.data.length]]
+          paper-button.flex(on-tap="__viewActivityPost")
+            .layout.vertical
+              h2 POST
+              p [[__activitiesVerbsCounts.POST]]
+          paper-button.flex(on-tap="__viewActivityPut")
+            .layout.vertical
+              h2 PUT
+              p [[__activitiesVerbsCounts.PUT]]
+          paper-button.flex(on-tap="__viewActivityDel")
+            .layout.vertical
+              h2 DEL
+              p [[__activitiesVerbsCounts.DEL]]
+        .layout.horizontal
+          .chartContainer
+            canvas#activitesPieChart
+    
+    .layout.horizontal
+      .flex
+        .card
+          canvas#activityChart(width="400px" height="400px")
 
     .card
       .layout.horizontal.text-center
@@ -137,11 +154,6 @@ dom-module#bjs-dashboard
               .layout.vertical
                 h2 Users
                 p [[db.user.data.length]]
-    
-    .layout.horizontal
-      .flex
-        .card
-          canvas#activityChart(width="400px" height="400px")
 
     .layout.horizontal
       .flex
