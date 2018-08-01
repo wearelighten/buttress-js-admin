@@ -79,7 +79,7 @@ Polymer({
   observers: [
     '__activitesVerbsCount(__activitiesUnpaged, __activitiesUnpaged.length)',
     '__trackingTypesCount(__trackingUnpaged, __trackingUnpaged.length)',
-    '__computeChartActivity(__activitiesUnpaged, __trackingTypesCounts)'
+    '__computeChartActivity(__activitiesUnpaged, __trackingTypesCounts, __trackingPieChart, __activitesPieChart, __activityChart)'
   ],
   ready: function() {
     const trackingPieChartConfig = {
